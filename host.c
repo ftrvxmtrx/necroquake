@@ -1,6 +1,7 @@
 // host.c -- coordinates spawning and killing of local servers
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 
 /*

@@ -1,4 +1,5 @@
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 #include "d_local.h"	// FIXME: shouldn't need to include this
 
@@ -326,7 +327,6 @@ void R_ClipEdge (mvertex_t *pv0, mvertex_t *pv1, clipplane_t *clip)
 // add the edge
 	R_EmitEdge (pv0, pv1);
 }
-
 
 /*
 ================

@@ -3,6 +3,7 @@
 // Portable C scan-level rasterization code, all pixel depths.
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 #include "d_local.h"
 

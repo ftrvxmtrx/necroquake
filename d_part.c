@@ -1,6 +1,7 @@
 // d_part.c: software driver module for drawing particles
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "d_local.h"
 
 /*

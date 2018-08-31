@@ -2,6 +2,7 @@
 
 #include "SDL.h"
 #include "quakedef.h"
+#include "r_shared.h"
 #include "d_local.h"
 
 viddef_t    vid;                // global video state

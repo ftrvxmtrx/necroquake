@@ -1,6 +1,5 @@
-// r_bsp.c
-
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 
 //

@@ -2,6 +2,7 @@
 // sprites
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "d_local.h"
 
 static int		sprite_height;

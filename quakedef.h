@@ -1,7 +1,5 @@
 // quakedef.h -- primary header for client
 
-//#define	GLTEST			// experimental stuff
-
 #define	QUAKE_GAME			// as opposed to utilities
 
 #undef VERSION

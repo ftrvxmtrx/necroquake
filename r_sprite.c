@@ -1,4 +1,5 @@
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 
 static int				clip_current;

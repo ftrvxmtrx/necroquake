@@ -1,6 +1,7 @@
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 
 // only the refresh window will be updated unless these variables are flagged 

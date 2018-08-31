@@ -1,6 +1,7 @@
 // d_surf.c: rasterization driver surface heap manager
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "d_local.h"
 #include "r_local.h"
 

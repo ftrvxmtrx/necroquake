@@ -2,7 +2,7 @@
 // texture (used for Alias models)
 
 #include "quakedef.h"
-#include "r_local.h"
+#include "r_shared.h"
 #include "d_local.h"
 
 // TODO: put in span spilling to shrink list size

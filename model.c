@@ -4,6 +4,7 @@
 // on the same machine.
 
 #include "quakedef.h"
+#include "r_shared.h"
 #include "r_local.h"
 
 model_t	*loadmodel;
