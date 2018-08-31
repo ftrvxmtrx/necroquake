@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include "SDL_audio.h"
 #include "SDL_byteorder.h"

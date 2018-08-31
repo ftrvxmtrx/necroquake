@@ -41,7 +41,6 @@ srcs=\
 	net_main.c \
 	net_udp.c \
 	net_vcr.c \
-	net_wso.c \
 	nonintel.c \
 	pr_cmds.c \
 	pr_edict.c \
