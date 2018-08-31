@@ -11,13 +11,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <errno.h>
-#ifndef __WIN32__
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
-#endif
 
 #include "quakedef.h"
 
@@ -60,36 +58,7 @@ void Sys_Quit (void)
 
 void Sys_Init(void)
 {
-#if id386
-	Sys_SetFPCW();
-#endif
 }
-
-#if !id386
-
-/*
-================
-Sys_LowFPPrecision
-================
-*/
-void Sys_LowFPPrecision (void)
-{
-// causes weird problems on Nextstep
-}
-
-
-/*
-================
-Sys_HighFPPrecision
-================
-*/
-void Sys_HighFPPrecision (void)
-{
-// causes weird problems on Nextstep
-}
-
-#endif	// !id386
-
 
 void Sys_Error (char *error, ...)
 { 
@@ -265,11 +234,7 @@ int	Sys_FileTime (char *path)
 
 void Sys_mkdir (char *path)
 {
-#ifdef __WIN32__
-    mkdir (path);
-#else
     mkdir (path, 0777);
-#endif
 }
 
 void Sys_DebugLog(char *file, char *fmt, ...)
@@ -288,17 +253,6 @@ void Sys_DebugLog(char *file, char *fmt, ...)
 
 double Sys_FloatTime (void)
 {
-#ifdef __WIN32__
-
-	static int starttime = 0;
-
-	if ( ! starttime )
-		starttime = clock();
-
-	return (clock()-starttime)*1.0/1024;
-
-#else
-
     struct timeval tp;
     struct timezone tzp; 
     static int      secbase; 
@@ -312,8 +266,6 @@ double Sys_FloatTime (void)
     }
 
     return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
-
-#endif
 }
 
 // =======================================================================

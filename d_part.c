@@ -3,31 +3,6 @@
 #include "quakedef.h"
 #include "d_local.h"
 
-
-/*
-==============
-D_EndParticles
-==============
-*/
-void D_EndParticles (void)
-{
-// not used by software driver
-}
-
-
-/*
-==============
-D_StartParticles
-==============
-*/
-void D_StartParticles (void)
-{
-// not used by software driver
-}
-
-
-#if	!id386
-
 /*
 ==============
 D_DrawParticle
@@ -183,6 +158,3 @@ void D_DrawParticle (particle_t *pparticle)
 		break;
 	}
 }
-
-#endif	// !id386
-

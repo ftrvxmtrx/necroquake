@@ -636,24 +636,10 @@ void R_DrawParticles (void)
 	float			dvel;
 	float			frametime;
 	
-#ifdef GLQUAKE
-	vec3_t			up, right;
-	float			scale;
-
-    GL_Bind(particletexture);
-	glEnable (GL_BLEND);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBegin (GL_TRIANGLES);
-
-	VectorScale (vup, 1.5, up);
-	VectorScale (vright, 1.5, right);
-#else
-	D_StartParticles ();
-
 	VectorScale (vright, xscaleshrink, r_pright);
 	VectorScale (vup, yscaleshrink, r_pup);
 	VectorCopy (vpn, r_ppn);
-#endif
+
 	frametime = cl.time - cl.oldtime;
 	time3 = frametime * 15;
 	time2 = frametime * 10; // 15;
@@ -768,13 +754,5 @@ void R_DrawParticles (void)
 			break;
 		}
 	}
-
-#ifdef GLQUAKE
-	glEnd ();
-	glDisable (GL_BLEND);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-#else
-	D_EndParticles ();
-#endif
 }
 

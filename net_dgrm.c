@@ -1,36 +1,5 @@
-// This is enables a simple IP banning mechanism
-#define BAN_TEST
-
-#ifdef BAN_TEST
-#if defined(_WIN32)
-#include <windows.h>
-#elif defined (NeXT)
 #include <sys/socket.h>
-#include <arpa/inet.h>
-#else
-#define AF_INET 		2	/* internet */
-struct in_addr
-{
-	union
-	{
-		struct { unsigned char s_b1,s_b2,s_b3,s_b4; } S_un_b;
-		struct { unsigned short s_w1,s_w2; } S_un_w;
-		unsigned long S_addr;
-	} S_un;
-};
-#define	s_addr	S_un.S_addr	/* can be used for most tcp & ip code */
-struct sockaddr_in
-{
-    short			sin_family;
-    unsigned short	sin_port;
-	struct in_addr	sin_addr;
-    char			sin_zero[8];
-};
-char *inet_ntoa(struct in_addr in);
-unsigned long inet_addr(const char *cp);
-#endif
-#endif	// BAN_TEST
-
+#include <netinet/in.h>
 #include "quakedef.h"
 #include "net_dgrm.h"
 
@@ -77,7 +46,6 @@ char *StrAddr (struct qsockaddr *addr)
 #endif
 
 
-#ifdef BAN_TEST
 unsigned long banAddr = 0x00000000;
 unsigned long banMask = 0xffffffff;
 
@@ -134,8 +102,6 @@ void NET_Ban_f (void)
 			break;
 	}
 }
-#endif
-
 
 int Datagram_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
@@ -762,9 +728,7 @@ int Datagram_Init (void)
 		net_landrivers[i].controlSock = csock;
 		}
 
-#ifdef BAN_TEST
 	Cmd_AddCommand ("ban", NET_Ban_f);
-#endif
 	Cmd_AddCommand ("test", Test_f);
 	Cmd_AddCommand ("test2", Test2_f);
 
@@ -963,7 +927,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		return NULL;
 	}
 
-#ifdef BAN_TEST
 	// check for a ban
 	if (clientaddr.sa_family == AF_INET)
 	{
@@ -982,7 +945,6 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 			return NULL;
 		}
 	}
-#endif
 
 	// see if this guy is already connected
 	for (s = net_activeSockets; s; s = s->next)

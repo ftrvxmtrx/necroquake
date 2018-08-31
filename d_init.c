@@ -42,59 +42,6 @@ void D_Init (void)
 	r_aliasuvscale = 1.0;
 }
 
-
-/*
-===============
-D_CopyRects
-===============
-*/
-void D_CopyRects (vrect_t *prects, int transparent)
-{
-
-// this function is only required if the CPU doesn't have direct access to the
-// back buffer, and there's some driver interface function that the driver
-// doesn't support and requires Quake to do in software (such as drawing the
-// console); Quake will then draw into wherever the driver points vid.buffer
-// and will call this function before swapping buffers
-
-	UNUSED(prects);
-	UNUSED(transparent);
-}
-
-
-/*
-===============
-D_EnableBackBufferAccess
-===============
-*/
-void D_EnableBackBufferAccess (void)
-{
-	VID_LockBuffer ();
-}
-
-
-/*
-===============
-D_TurnZOn
-===============
-*/
-void D_TurnZOn (void)
-{
-// not needed for software version
-}
-
-
-/*
-===============
-D_DisableBackBufferAccess
-===============
-*/
-void D_DisableBackBufferAccess (void)
-{
-	VID_UnlockBuffer ();
-}
-
-
 /*
 ===============
 D_SetupFrame
@@ -126,29 +73,6 @@ void D_SetupFrame (void)
 	for (i=0 ; i<(NUM_MIPS-1) ; i++)
 		d_scalemip[i] = basemip[i] * d_mipscale.value;
 
-#if	id386
-				if (d_subdiv16.value)
-					d_drawspans = D_DrawSpans16;
-				else
-					d_drawspans = D_DrawSpans8;
-#else
-				d_drawspans = D_DrawSpans8;
-#endif
-
+	d_drawspans = D_DrawSpans8;
 	d_aflatcolor = 0;
 }
-
-
-/*
-===============
-D_UpdateRects
-===============
-*/
-void D_UpdateRects (vrect_t *prect)
-{
-
-// the software driver draws these directly to the vid buffer
-
-	UNUSED(prect);
-}
-

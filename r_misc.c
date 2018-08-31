@@ -59,11 +59,7 @@ void R_TimeRefresh_f (void)
 	{
 		r_refdef.viewangles[1] = i/128.0*360.0;
 
-		VID_LockBuffer ();
-
 		R_RenderView ();
-
-		VID_UnlockBuffer ();
 
 		vr.x = r_refdef.vrect.x;
 		vr.y = r_refdef.vrect.y;
@@ -270,9 +266,6 @@ void R_TransformFrustum (void)
 	}
 }
 
-
-#if	!id386
-
 /*
 ================
 TransformVector
@@ -284,9 +277,6 @@ void TransformVector (vec3_t in, vec3_t out)
 	out[1] = DotProduct(in,vup);
 	out[2] = DotProduct(in,vpn);		
 }
-
-#endif
-
 
 /*
 ================

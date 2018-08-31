@@ -2,8 +2,6 @@
 
 #include	"quakedef.h"
 
-#if	!id386
-
 // all global and static refresh variables are collected in a contiguous block
 // to avoid cache conflicts.
 
@@ -26,6 +24,3 @@ pixel_t			*d_viewbuffer;
 short			*d_pzbuffer;
 unsigned int	d_zrowbytes;
 unsigned int	d_zwidth;
-
-#endif	// !id386
-

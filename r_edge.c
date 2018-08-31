@@ -136,9 +136,6 @@ void R_BeginEdgeFrame (void)
 	}
 }
 
-
-#if	!id386
-
 /*
 ==============
 R_InsertNewEdges
@@ -180,11 +177,6 @@ addedge:
 	} while ((edgestoadd = next_edge) != NULL);
 }
 
-#endif	// !id386
-	
-
-#if	!id386
-
 /*
 ==============
 R_RemoveEdges
@@ -199,11 +191,6 @@ void R_RemoveEdges (edge_t *pedge)
 		pedge->prev->next = pedge->next;
 	} while ((pedge = pedge->nextremove) != NULL);
 }
-
-#endif	// !id386
-
-
-#if	!id386
 
 /*
 ==============
@@ -270,9 +257,6 @@ pushback:
 	}
 }
 
-#endif	// !id386
-
-
 /*
 ==============
 R_CleanupSpan
@@ -305,7 +289,6 @@ void R_CleanupSpan ()
 		surf = surf->next;
 	} while (surf != &surfaces[1]);
 }
-
 
 /*
 ==============
@@ -427,9 +410,6 @@ void R_TrailingEdge (surf_t *surf, edge_t *edge)
 		surf->next->prev = surf->prev;
 	}
 }
-
-
-#if	!id386
 
 /*
 ==============
@@ -595,9 +575,6 @@ void R_GenerateSpans (void)
 	R_CleanupSpan ();
 }
 
-#endif	// !id386
-
-
 /*
 ==============
 R_GenerateSpansBackward
@@ -703,9 +680,7 @@ void R_ScanEdges (void)
 	// the next scan
 		if (span_p >= max_span_p)
 		{
-			VID_UnlockBuffer ();
 			S_ExtraUpdate ();	// don't let sound get messed up if going slow
-			VID_LockBuffer ();
 		
 			if (r_drawculledpolys)
 			{

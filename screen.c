@@ -619,15 +619,8 @@ void SCR_ScreenShot_f (void)
 // 
 // save the pcx file 
 // 
-	D_EnableBackBufferAccess ();	// enable direct drawing of console to back
-									//  buffer
-
 	WritePCXfile (pcxname, vid.buffer, vid.width, vid.height, vid.rowbytes,
 				  host_basepal);
-
-	D_DisableBackBufferAccess ();	// for adapters that can't stay mapped in
-									//  for linear writes all the time
-
 	Con_Printf ("Wrote %s\n", pcxname);
 } 
 
@@ -851,7 +844,6 @@ void SCR_UpdateScreen (void)
 //
 // do 3D refresh drawing, and then update the screen
 //
-	D_EnableBackBufferAccess ();	// of all overlay stuff if drawing directly
 
 	if (scr_fullupdate++ < vid.numpages)
 	{	// clear the entire screen
@@ -865,17 +857,7 @@ void SCR_UpdateScreen (void)
 
 	SCR_SetUpToDrawConsole ();
 	SCR_EraseCenterString ();
-
-	D_DisableBackBufferAccess ();	// for adapters that can't stay mapped in
-									//  for linear writes all the time
-
-	VID_LockBuffer ();
-
 	V_RenderView ();
-
-	VID_UnlockBuffer ();
-
-	D_EnableBackBufferAccess ();	// of all overlay stuff if drawing directly
 
 	if (scr_drawdialog)
 	{
@@ -912,13 +894,6 @@ void SCR_UpdateScreen (void)
 		Sbar_Draw ();
 		SCR_DrawConsole ();
 		M_Draw ();
-	}
-
-	D_DisableBackBufferAccess ();	// for adapters that can't stay mapped in
-									//  for linear writes all the time
-	if (pconupdate)
-	{
-		D_UpdateRects (pconupdate);
 	}
 
 	V_UpdatePalette ();

@@ -35,7 +35,6 @@ typedef struct
 
 
 // plane_t structure
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 typedef struct mplane_s
 {
 	vec3_t	normal;
@@ -145,7 +144,6 @@ typedef struct mleaf_s
 	byte		ambient_sound_level[NUM_AMBIENTS];
 } mleaf_t;
 
-// !!! if this is changed, it must be changed in asm_i386.h too !!!
 typedef struct
 {
 	dclipnode_t	*clipnodes;
