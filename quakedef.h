@@ -150,10 +150,6 @@
 
 #define	SOUND_CHANNELS		8
 
-// This makes anyone on id's net privileged
-// Use for multiplayer testing only - VERY dangerous!!!
-// #define IDGODS
-
 #include "common.h"
 #include "bspfile.h"
 #include "vid.h"
