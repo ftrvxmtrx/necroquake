@@ -1,3 +1,4 @@
+#include <math.h>
 #include "quakedef.h"
 
 #define	RETURN_EDICT(e) (((int *)pr_globals)[OFS_RETURN] = EDICT_TO_PROG(e))
@@ -105,7 +106,7 @@ void PF_setorigin (void)
 	SV_LinkEdict (e, false);
 }
 
-void SetMinMaxSize (edict_t *e, float *min, float *max, qboolean rotate)
+void SetMinMaxSize (edict_t *e, float *min, float *max, bool rotate)
 {
 	float	*angles;
 	vec3_t	rmin, rmax;
@@ -620,12 +621,12 @@ void PF_checkpos (void)
 
 //============================================================================
 
-byte	checkpvs[MAX_MAP_LEAFS/8];
+uint8_t	checkpvs[MAX_MAP_LEAFS/8];
 
 int PF_newcheckclient (int check)
 {
 	int		i;
-	byte	*pvs;
+	uint8_t	*pvs;
 	edict_t	*ent;
 	mleaf_t	*leaf;
 	vec3_t	org;

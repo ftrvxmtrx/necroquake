@@ -1,12 +1,13 @@
 // d_surf.c: rasterization driver surface heap manager
 
+#include <stdlib.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "d_local.h"
 #include "r_local.h"
 
 float           surfscale;
-qboolean        r_cache_thrash;         // set if surface cache is thrashing
+bool        r_cache_thrash;         // set if surface cache is thrashing
 
 int                                     sc_size;
 surfcache_t                     *sc_rover, *sc_base;
@@ -19,7 +20,7 @@ int     D_SurfaceCacheForRes (int width, int height)
 
 	if (COM_CheckParm ("-surfcachesize"))
 	{
-		size = Q_atoi(com_argv[COM_CheckParm("-surfcachesize")+1]) * 1024;
+		size = strtol(com_argv[COM_CheckParm("-surfcachesize")+1], NULL, 0) * 1024;
 		return size;
 	}
 
@@ -34,23 +35,23 @@ int     D_SurfaceCacheForRes (int width, int height)
 
 void D_CheckCacheGuard (void)
 {
-	byte    *s;
+	uint8_t    *s;
 	int             i;
 
-	s = (byte *)sc_base + sc_size;
+	s = (uint8_t *)sc_base + sc_size;
 	for (i=0 ; i<GUARDSIZE ; i++)
-		if (s[i] != (byte)i)
+		if (s[i] != (uint8_t)i)
 			Sys_Error ("D_CheckCacheGuard: failed");
 }
 
 void D_ClearCacheGuard (void)
 {
-	byte    *s;
+	uint8_t    *s;
 	int             i;
 
-	s = (byte *)sc_base + sc_size;
+	s = (uint8_t *)sc_base + sc_size;
 	for (i=0 ; i<GUARDSIZE ; i++)
-		s[i] = (byte)i;
+		s[i] = (uint8_t)i;
 }
 
 /*
@@ -108,7 +109,7 @@ D_SCAlloc
 surfcache_t     *D_SCAlloc (int width, int size)
 {
 	surfcache_t             *new;
-	qboolean                wrapped_this_time;
+	bool                wrapped_this_time;
 
 	if ((width < 0) || (width > 256))
 		Sys_Error ("D_SCAlloc: bad cache width %d\n", width);
@@ -124,7 +125,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 // if there is not size bytes after the rover, reset to the start
 	wrapped_this_time = false;
 
-	if ( !sc_rover || (byte *)sc_rover - (byte *)sc_base > sc_size - size)
+	if ( !sc_rover || (uint8_t *)sc_rover - (uint8_t *)sc_base > sc_size - size)
 	{
 		if (sc_rover)
 		{
@@ -154,7 +155,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 // create a fragment out of any leftovers
 	if (new->size - size > 256)
 	{
-		sc_rover = (surfcache_t *)( (byte *)new + size);
+		sc_rover = (surfcache_t *)( (uint8_t *)new + size);
 		sc_rover->size = new->size - size;
 		sc_rover->next = new->next;
 		sc_rover->width = 0;

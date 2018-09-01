@@ -1,5 +1,6 @@
 // common.c -- misc functions used in client and server
 
+#include <stdarg.h>
 #include "quakedef.h"
 
 #define NUM_SAFE_ARGVS  7
@@ -13,13 +14,13 @@ static char     *safeargvs[NUM_SAFE_ARGVS] =
 cvar_t  registered = {"registered","0"};
 cvar_t  cmdline = {"cmdline","0", false, true};
 
-qboolean        com_modified;   // set true if using non-id files
+bool        com_modified;   // set true if using non-id files
 
-qboolean		proghack;
+bool		proghack;
 
 int             static_registered = 1;  // only for startup check, then set
 
-qboolean		msg_suppress_1 = 0;
+bool		msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
 
@@ -34,7 +35,7 @@ char	**com_argv;
 #define CMDLINE_LENGTH	256
 char	com_cmdline[CMDLINE_LENGTH];
 
-qboolean		standard_quake = true, rogue, hipnotic;
+bool		standard_quake = true, rogue, hipnotic;
 
 // this graphic needs to be in the pak file to use registered features
 unsigned short pop[] =
@@ -107,311 +108,12 @@ void InsertLinkAfter (link_t *l, link_t *after)
 /*
 ============================================================================
 
-					LIBRARY REPLACEMENT FUNCTIONS
-
-============================================================================
-*/
-
-void Q_memset (void *dest, int fill, int count)
-{
-	int             i;
-
-	if ( (((long)dest | count) & 3) == 0)
-	{
-		count >>= 2;
-		fill = fill | (fill<<8) | (fill<<16) | (fill<<24);
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = fill;
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((byte *)dest)[i] = fill;
-}
-
-void Q_memcpy (void *dest, void *src, int count)
-{
-	int             i;
-
-	if (( ( (long)dest | (long)src | count) & 3) == 0 )
-	{
-		count>>=2;
-		for (i=0 ; i<count ; i++)
-			((int *)dest)[i] = ((int *)src)[i];
-	}
-	else
-		for (i=0 ; i<count ; i++)
-			((byte *)dest)[i] = ((byte *)src)[i];
-}
-
-int Q_memcmp (void *m1, void *m2, int count)
-{
-	while(count)
-	{
-		count--;
-		if (((byte *)m1)[count] != ((byte *)m2)[count])
-			return -1;
-	}
-	return 0;
-}
-
-void Q_strcpy (char *dest, char *src)
-{
-	while (*src)
-	{
-		*dest++ = *src++;
-	}
-	*dest++ = 0;
-}
-
-void Q_strncpy (char *dest, char *src, int count)
-{
-	while (*src && count--)
-	{
-		*dest++ = *src++;
-	}
-	if (count)
-		*dest++ = 0;
-}
-
-int Q_strlen (char *str)
-{
-	int             count;
-
-	count = 0;
-	while (str[count])
-		count++;
-
-	return count;
-}
-
-char *Q_strrchr(char *s, char c)
-{
-    int len = Q_strlen(s);
-    s += len;
-    while (len--)
-	if (*--s == c) return s;
-    return 0;
-}
-
-void Q_strcat (char *dest, char *src)
-{
-	dest += Q_strlen(dest);
-	Q_strcpy (dest, src);
-}
-
-int Q_strcmp (char *s1, char *s2)
-{
-	while (1)
-	{
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-
-	return -1;
-}
-
-int Q_strncmp (char *s1, char *s2, int count)
-{
-	while (1)
-	{
-		if (!count--)
-			return 0;
-		if (*s1 != *s2)
-			return -1;              // strings not equal
-		if (!*s1)
-			return 0;               // strings are equal
-		s1++;
-		s2++;
-	}
-
-	return -1;
-}
-
-int Q_strncasecmp (char *s1, char *s2, int n)
-{
-	int             c1, c2;
-
-	while (1)
-	{
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if (!n--)
-			return 0;               // strings are equal until end point
-
-		if (c1 != c2)
-		{
-			if (c1 >= 'a' && c1 <= 'z')
-				c1 -= ('a' - 'A');
-			if (c2 >= 'a' && c2 <= 'z')
-				c2 -= ('a' - 'A');
-			if (c1 != c2)
-				return -1;              // strings not equal
-		}
-		if (!c1)
-			return 0;               // strings are equal
-//              s1++;
-//              s2++;
-	}
-
-	return -1;
-}
-
-int Q_strcasecmp (char *s1, char *s2)
-{
-	return Q_strncasecmp (s1, s2, 99999);
-}
-
-int Q_atoi (char *str)
-{
-	int             val;
-	int             sign;
-	int             c;
-
-	if (*str == '-')
-	{
-		sign = -1;
-		str++;
-	}
-	else
-		sign = 1;
-
-	val = 0;
-
-//
-// check for hex
-//
-	if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X') )
-	{
-		str += 2;
-		while (1)
-		{
-			c = *str++;
-			if (c >= '0' && c <= '9')
-				val = (val<<4) + c - '0';
-			else if (c >= 'a' && c <= 'f')
-				val = (val<<4) + c - 'a' + 10;
-			else if (c >= 'A' && c <= 'F')
-				val = (val<<4) + c - 'A' + 10;
-			else
-				return val*sign;
-		}
-	}
-
-//
-// check for character
-//
-	if (str[0] == '\'')
-	{
-		return sign * str[1];
-	}
-
-//
-// assume decimal
-//
-	while (1)
-	{
-		c = *str++;
-		if (c <'0' || c > '9')
-			return val*sign;
-		val = val*10 + c - '0';
-	}
-
-	return 0;
-}
-
-float Q_atof (char *str)
-{
-	double			val;
-	int             sign;
-	int             c;
-	int             decimal, total;
-
-	if (*str == '-')
-	{
-		sign = -1;
-		str++;
-	}
-	else
-		sign = 1;
-
-	val = 0;
-
-//
-// check for hex
-//
-	if (str[0] == '0' && (str[1] == 'x' || str[1] == 'X') )
-	{
-		str += 2;
-		while (1)
-		{
-			c = *str++;
-			if (c >= '0' && c <= '9')
-				val = (val*16) + c - '0';
-			else if (c >= 'a' && c <= 'f')
-				val = (val*16) + c - 'a' + 10;
-			else if (c >= 'A' && c <= 'F')
-				val = (val*16) + c - 'A' + 10;
-			else
-				return val*sign;
-		}
-	}
-
-//
-// check for character
-//
-	if (str[0] == '\'')
-	{
-		return sign * str[1];
-	}
-
-//
-// assume decimal
-//
-	decimal = -1;
-	total = 0;
-	while (1)
-	{
-		c = *str++;
-		if (c == '.')
-		{
-			decimal = total;
-			continue;
-		}
-		if (c <'0' || c > '9')
-			break;
-		val = val*10 + c - '0';
-		total++;
-	}
-
-	if (decimal == -1)
-		return val*sign;
-	while (total > decimal)
-	{
-		val /= 10;
-		total--;
-	}
-
-	return val*sign;
-}
-
-/*
-============================================================================
-
 					BYTE ORDER FUNCTIONS
 
 ============================================================================
 */
 
-#ifdef SDL
-#include "SDL_byteorder.h"
-#endif
-
-qboolean        bigendien;
+bool        bigendien;
 
 short   (*BigShort) (short l);
 short   (*LittleShort) (short l);
@@ -422,7 +124,7 @@ float   (*LittleFloat) (float l);
 
 short   ShortSwap (short l)
 {
-	byte    b1,b2;
+	uint8_t    b1,b2;
 
 	b1 = l&255;
 	b2 = (l>>8)&255;
@@ -437,7 +139,7 @@ short   ShortNoSwap (short l)
 
 int    LongSwap (int l)
 {
-	byte    b1,b2,b3,b4;
+	uint8_t    b1,b2,b3,b4;
 
 	b1 = l&255;
 	b2 = (l>>8)&255;
@@ -457,7 +159,7 @@ float FloatSwap (float f)
 	union
 	{
 		float   f;
-		byte    b[4];
+		uint8_t    b[4];
 	} dat1, dat2;
 
 	dat1.f = f;
@@ -488,7 +190,7 @@ Handles byte ordering and avoids alignment errors
 
 void MSG_WriteChar (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < -128 || c > 127)
@@ -501,7 +203,7 @@ void MSG_WriteChar (sizebuf_t *sb, int c)
 
 void MSG_WriteByte (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < 0 || c > 255)
@@ -514,7 +216,7 @@ void MSG_WriteByte (sizebuf_t *sb, int c)
 
 void MSG_WriteShort (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 #ifdef PARANOID
 	if (c < ((short)0x8000) || c > (short)0x7fff)
@@ -528,7 +230,7 @@ void MSG_WriteShort (sizebuf_t *sb, int c)
 
 void MSG_WriteLong (sizebuf_t *sb, int c)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
 	buf = SZ_GetSpace (sb, 4);
 	buf[0] = c&0xff;
@@ -556,7 +258,7 @@ void MSG_WriteString (sizebuf_t *sb, char *s)
 	if (!s)
 		SZ_Write (sb, "", 1);
 	else
-		SZ_Write (sb, s, Q_strlen(s)+1);
+		SZ_Write (sb, s, strlen(s)+1);
 }
 
 void MSG_WriteCoord (sizebuf_t *sb, float f)
@@ -573,7 +275,7 @@ void MSG_WriteAngle (sizebuf_t *sb, float f)
 // reading functions
 //
 int                     msg_readcount;
-qboolean        msg_badread;
+bool        msg_badread;
 
 void MSG_BeginReading (void)
 {
@@ -656,7 +358,7 @@ float MSG_ReadFloat (void)
 {
 	union
 	{
-		byte    b[4];
+		uint8_t    b[4];
 		float   f;
 		int     l;
 	} dat;
@@ -751,20 +453,20 @@ void *SZ_GetSpace (sizebuf_t *buf, int length)
 
 void SZ_Write (sizebuf_t *buf, void *data, int length)
 {
-	Q_memcpy (SZ_GetSpace(buf,length),data,length);
+	memcpy (SZ_GetSpace(buf,length),data,length);
 }
 
 void SZ_Print (sizebuf_t *buf, char *data)
 {
 	int             len;
 
-	len = Q_strlen(data)+1;
+	len = strlen(data)+1;
 
-// byte * cast to keep VC++ happy
+
 	if (buf->data[buf->cursize-1])
-		Q_memcpy ((byte *)SZ_GetSpace(buf, len),data,len); // no trailing 0
+		memcpy ((uint8_t *)SZ_GetSpace(buf, len),data,len); // no trailing 0
 	else
-		Q_memcpy ((byte *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
+		memcpy ((uint8_t *)SZ_GetSpace(buf, len-1)-1,data,len); // write over trailing 0
 }
 
 //============================================================================
@@ -964,7 +666,7 @@ int COM_CheckParm (char *parm)
 	{
 		if (!com_argv[i])
 			continue;               // NEXTSTEP sometimes clears appkit vars.
-		if (!Q_strcmp (parm,com_argv[i]))
+		if (!strcmp (parm,com_argv[i]))
 			return i;
 	}
 
@@ -1020,7 +722,7 @@ COM_InitArgv
 */
 void COM_InitArgv (int argc, char **argv)
 {
-	qboolean        safe;
+	bool        safe;
 	int             i, j, n;
 
 // reconstitute the command line for the cmdline externally visible cvar
@@ -1049,7 +751,7 @@ void COM_InitArgv (int argc, char **argv)
 		 com_argc++)
 	{
 		largv[com_argc] = argv[com_argc];
-		if (!Q_strcmp ("-safe", argv[com_argc]))
+		if (!strcmp ("-safe", argv[com_argc]))
 			safe = true;
 	}
 
@@ -1087,15 +789,9 @@ COM_Init
 */
 void COM_Init (char *basedir)
 {
-	byte    swaptest[2] = {1,0};
+	uint8_t    swaptest[2] = {1,0};
 
-// set the byte swapping variables in a portable manner
-#ifdef SDL
-	// This is necessary because egcs 1.1.1 mis-compiles swaptest with -O2
-	if ( SDL_BYTEORDER == SDL_LIL_ENDIAN )
-#else
 	if ( *(short *)swaptest == 1)
-#endif
 	{
 		bigendien = false;
 		BigShort = ShortSwap;
@@ -1146,7 +842,7 @@ char    *va(char *format, ...)
 }
 
 /// just for debugging
-int     memsearch (byte *start, int count, int search)
+int     memsearch (uint8_t *start, int count, int search)
 {
 	int             i;
 
@@ -1481,12 +1177,12 @@ Allways appends a 0 byte.
 ============
 */
 cache_user_t *loadcache;
-byte    *loadbuf;
+uint8_t    *loadbuf;
 int             loadsize;
-byte *COM_LoadFile (char *path, int usehunk)
+uint8_t *COM_LoadFile (char *path, int usehunk)
 {
 	int             h;
-	byte    *buf;
+	uint8_t    *buf;
 	char    base[32];
 	int             len;
 
@@ -1521,7 +1217,7 @@ byte *COM_LoadFile (char *path, int usehunk)
 	if (!buf)
 		Sys_Error ("COM_LoadFile: not enough space for %s", path);
 
-	((byte *)buf)[len] = 0;
+	((uint8_t *)buf)[len] = 0;
 
 	Draw_BeginDisc ();
 	Sys_FileRead (h, buf, len);
@@ -1531,12 +1227,12 @@ byte *COM_LoadFile (char *path, int usehunk)
 	return buf;
 }
 
-byte *COM_LoadHunkFile (char *path)
+uint8_t *COM_LoadHunkFile (char *path)
 {
 	return COM_LoadFile (path, 1);
 }
 
-byte *COM_LoadTempFile (char *path)
+uint8_t *COM_LoadTempFile (char *path)
 {
 	return COM_LoadFile (path, 2);
 }
@@ -1548,11 +1244,11 @@ void COM_LoadCacheFile (char *path, struct cache_user_s *cu)
 }
 
 // uses temp hunk if larger than bufsize
-byte *COM_LoadStackFile (char *path, void *buffer, int bufsize)
+uint8_t *COM_LoadStackFile (char *path, void *buffer, int bufsize)
 {
-	byte    *buf;
+	uint8_t    *buf;
 
-	loadbuf = (byte *)buffer;
+	loadbuf = (uint8_t *)buffer;
 	loadsize = bufsize;
 	buf = COM_LoadFile (path, 4);
 
@@ -1608,7 +1304,7 @@ pack_t *COM_LoadPackFile (char *packfile)
 // crc the directory to check for modifications
 	CRC_Init (&crc);
 	for (i=0 ; i<header.dirlen ; i++)
-		CRC_ProcessByte (&crc, ((byte *)info)[i]);
+		CRC_ProcessByte (&crc, ((uint8_t *)info)[i]);
 	if (crc != PAK0_CRC)
 		com_modified = true;
 

@@ -16,11 +16,11 @@ unsigned short  d_8to16table[256];
 #define    BASEHEIGHT   (200*2)
 
 int    VGA_width, VGA_height, VGA_rowbytes, VGA_bufferrowbytes = 0;
-byte    *VGA_pagebase;
+uint8_t    *VGA_pagebase;
 
 static SDL_Surface *screen = NULL;
 
-static qboolean mouse_avail;
+static bool mouse_avail;
 static float   mouse_x, mouse_y;
 static int mouse_oldbuttonstate = 0;
 
@@ -50,7 +50,7 @@ void    VID_ShiftPalette (unsigned char *palette)
 void    VID_Init (unsigned char *palette)
 {
     int pnum, chunk;
-    byte *cache;
+    uint8_t *cache;
     int cachesize;
     Uint8 video_bpp;
     Uint16 video_w, video_h;
@@ -69,8 +69,8 @@ void    VID_Init (unsigned char *palette)
     {
         if (pnum >= com_argc-2)
             Sys_Error("VID: -winsize <width> <height>\n");
-        vid.width = Q_atoi(com_argv[pnum+1]);
-        vid.height = Q_atoi(com_argv[pnum+2]);
+        vid.width = atoi(com_argv[pnum+1]);
+        vid.height = atoi(com_argv[pnum+2]);
         if (!vid.width || !vid.height)
             Sys_Error("VID: Bad window width/height\n");
     }
@@ -107,7 +107,7 @@ void    VID_Init (unsigned char *palette)
         Sys_Error ("Not enough memory for video mode\n");
 
     // initialize the cache memory
-        cache = (byte *) d_pzbuffer
+        cache = (uint8_t *) d_pzbuffer
                 + vid.width * vid.height * sizeof (*d_pzbuffer);
     D_InitCaches (cache, cachesize);
 
@@ -153,7 +153,7 @@ void    VID_Update (vrect_t *rects)
 D_BeginDirectRect
 ================
 */
-void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height)
+void D_BeginDirectRect (int x, int y, uint8_t *pbitmap, int width, int height)
 {
     Uint8 *offset;
 

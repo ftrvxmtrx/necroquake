@@ -1,5 +1,5 @@
 // cl.input.c  -- builds an intended movement command to send to the server
-
+#include <stdio.h>
 #include "quakedef.h"
 
 /*
@@ -38,7 +38,7 @@ void KeyDown (kbutton_t *b)
 
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = strtol(c, NULL, 0);
 	else
 		k = -1;		// typed manually at the console for continuous down
 
@@ -67,7 +67,7 @@ void KeyUp (kbutton_t *b)
 
 	c = Cmd_Argv(1);
 	if (c[0])
-		k = atoi(c);
+		k = strtol(c, NULL, 0);
 	else
 	{ // typed manually at the console, assume for unsticking, so clear all
 		b->down[0] = b->down[1] = 0;
@@ -132,7 +132,7 @@ void IN_UseUp (void) {KeyUp(&in_use);}
 void IN_JumpDown (void) {KeyDown(&in_jump);}
 void IN_JumpUp (void) {KeyUp(&in_jump);}
 
-void IN_Impulse (void) {in_impulse=Q_atoi(Cmd_Argv(1));}
+void IN_Impulse (void) {in_impulse=strtol(Cmd_Argv(1), NULL, 0);}
 
 /*
 ===============
@@ -147,7 +147,7 @@ Returns 0.25 if a key was pressed and released during the frame,
 float CL_KeyState (kbutton_t *key)
 {
 	float		val;
-	qboolean	impulsedown, impulseup, down;
+	bool	impulsedown, impulseup, down;
 
 	impulsedown = key->state & 2;
 	impulseup = key->state & 4;
@@ -259,7 +259,7 @@ void CL_BaseMove (usercmd_t *cmd)
 
 	CL_AdjustAngles ();
 
-	Q_memset (cmd, 0, sizeof(*cmd));
+	memset (cmd, 0, sizeof(*cmd));
 
 	if (in_strafe.state & 1)
 	{
@@ -300,7 +300,7 @@ void CL_SendMove (usercmd_t *cmd)
 	int		i;
 	int		bits;
 	sizebuf_t	buf;
-	byte	data[128];
+	uint8_t	data[128];
 
 	buf.maxsize = 128;
 	buf.cursize = 0;

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "quakedef.h"
 #include "net_vcr.h"
 
@@ -5,9 +6,9 @@ qsocket_t	*net_activeSockets = NULL;
 qsocket_t	*net_freeSockets = NULL;
 int			net_numsockets = 0;
 
-qboolean	serialAvailable = false;
-qboolean	ipxAvailable = false;
-qboolean	tcpipAvailable = false;
+bool	serialAvailable = false;
+bool	ipxAvailable = false;
+bool	tcpipAvailable = false;
 
 int			net_hostport;
 int			DEFAULTnet_hostport = 26000;
@@ -15,16 +16,16 @@ int			DEFAULTnet_hostport = 26000;
 char		my_ipx_address[NET_NAMELEN];
 char		my_tcpip_address[NET_NAMELEN];
 
-void (*GetComPortConfig) (int portNumber, int *port, int *irq, int *baud, qboolean *useModem);
-void (*SetComPortConfig) (int portNumber, int port, int irq, int baud, qboolean useModem);
+void (*GetComPortConfig) (int portNumber, int *port, int *irq, int *baud, bool *useModem);
+void (*SetComPortConfig) (int portNumber, int port, int irq, int baud, bool useModem);
 void (*GetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
 void (*SetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
 
-static qboolean	listening = false;
+static bool	listening = false;
 
-qboolean	slistInProgress = false;
-qboolean	slistSilent = false;
-qboolean	slistLocal = true;
+bool	slistInProgress = false;
+bool	slistSilent = false;
+bool	slistLocal = true;
 static double	slistStartTime;
 static int		slistLastShown;
 
@@ -44,7 +45,7 @@ int unreliableMessagesReceived = 0;
 cvar_t	net_messagetimeout = {"net_messagetimeout","300"};
 cvar_t	hostname = {"hostname", "UNNAMED"};
 
-qboolean	configRestored = false;
+bool	configRestored = false;
 cvar_t	config_com_port = {"_config_com_port", "0x3f8", true};
 cvar_t	config_com_irq = {"_config_com_irq", "4", true};
 cvar_t	config_com_baud = {"_config_com_baud", "57600", true};
@@ -55,7 +56,7 @@ cvar_t	config_modem_init = {"_config_modem_init", "", true};
 cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
 
 int	vcrFile = -1;
-qboolean recording = false;
+bool recording = false;
 
 // these two macros are to make the code more readable
 #define sfunc	net_drivers[sock->driver]
@@ -99,7 +100,7 @@ qsocket_t *NET_NewQSocket (void)
 
 	sock->disconnected = false;
 	sock->connecttime = net_time;
-	Q_strcpy (sock->address,"UNSET ADDRESS");
+	strcpy (sock->address,"UNSET ADDRESS");
 	sock->driver = net_driverlevel;
 	sock->socket = 0;
 	sock->driverdata = NULL;
@@ -150,7 +151,7 @@ static void NET_Listen_f (void)
 		return;
 	}
 
-	listening = Q_atoi(Cmd_Argv(1)) ? true : false;
+	listening = strtol(Cmd_Argv(1), NULL, 0) ? true : false;
 
 	for (net_driverlevel=0 ; net_driverlevel<net_numdrivers; net_driverlevel++)
 	{
@@ -176,7 +177,7 @@ static void MaxPlayers_f (void)
 		return;
 	}
 
-	n = Q_atoi(Cmd_Argv(1));
+	n = strtol(Cmd_Argv(1), NULL, 0);
 	if (n < 1)
 		n = 1;
 	if (n > svs.maxclientslimit)
@@ -208,7 +209,7 @@ static void NET_Port_f (void)
 		return;
 	}
 
-	n = Q_atoi(Cmd_Argv(1));
+	n = strtol(Cmd_Argv(1), NULL, 0);
 	if (n < 1 || n > 65534)
 	{
 		Con_Printf ("Bad value, must be between 1 and 65534\n");
@@ -339,7 +340,7 @@ qsocket_t *NET_Connect (char *host)
 
 	if (host)
 	{
-		if (Q_strcasecmp (host, "local") == 0)
+		if (strcasecmp (host, "local") == 0)
 		{
 			numdrivers = 1;
 			goto JustDoIt;
@@ -348,7 +349,7 @@ qsocket_t *NET_Connect (char *host)
 		if (hostCacheCount)
 		{
 			for (n = 0; n < hostCacheCount; n++)
-				if (Q_strcasecmp (host, hostcache[n].name) == 0)
+				if (strcasecmp (host, hostcache[n].name) == 0)
 				{
 					host = hostcache[n].cname;
 					break;
@@ -374,7 +375,7 @@ qsocket_t *NET_Connect (char *host)
 
 	if (hostCacheCount)
 		for (n = 0; n < hostCacheCount; n++)
-			if (Q_strcasecmp (host, hostcache[n].name) == 0)
+			if (strcasecmp (host, hostcache[n].name) == 0)
 			{
 				host = hostcache[n].cname;
 				break;
@@ -647,7 +648,7 @@ Returns true or false if the given qsocket can currently accept a
 message to be transmitted.
 ==================
 */
-qboolean NET_CanSendMessage (qsocket_t *sock)
+bool NET_CanSendMessage (qsocket_t *sock)
 {
 	int		r;
 
@@ -678,8 +679,8 @@ int NET_SendToAll(sizebuf_t *data, int blocktime)
 	double		start;
 	int			i;
 	int			count = 0;
-	qboolean	state1 [MAX_SCOREBOARD];
-	qboolean	state2 [MAX_SCOREBOARD];
+	bool	state1 [MAX_SCOREBOARD];
+	bool	state2 [MAX_SCOREBOARD];
 
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
@@ -778,7 +779,7 @@ void NET_Init (void)
 	if (i)
 	{
 		if (i < com_argc-1)
-			DEFAULTnet_hostport = Q_atoi (com_argv[i+1]);
+			DEFAULTnet_hostport = strtol (com_argv[i+1], NULL, 0);
 		else
 			Sys_Error ("NET_Init: you must specify a number after -port");
 	}
@@ -876,7 +877,7 @@ static PollProcedure *pollProcedureList = NULL;
 void NET_Poll(void)
 {
 	PollProcedure *pp;
-	qboolean	useModem;
+	bool	useModem;
 
 	if (!configRestored)
 	{

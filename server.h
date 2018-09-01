@@ -4,7 +4,7 @@ typedef struct
 	int			maxclientslimit;
 	struct client_s	*clients;		// [maxclients]
 	int			serverflags;		// episode completion information
-	qboolean	changelevel_issued;	// cleared when at SV_SpawnServer
+	bool	changelevel_issued;	// cleared when at SV_SpawnServer
 } server_static_t;
 
 //=============================================================================
@@ -13,10 +13,10 @@ typedef enum {ss_loading, ss_active} server_state_t;
 
 typedef struct
 {
-	qboolean	active;				// false if only a net client
+	bool	active;				// false if only a net client
 
-	qboolean	paused;
-	qboolean	loadgame;			// handle connections specially
+	bool	paused;
+	bool	loadgame;			// handle connections specially
 
 	double		time;
 
@@ -38,13 +38,13 @@ typedef struct
 	server_state_t	state;			// some actions are only valid during load
 
 	sizebuf_t	datagram;
-	byte		datagram_buf[MAX_DATAGRAM];
+	uint8_t		datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t	reliable_datagram;	// copied to all clients at end of frame
-	byte		reliable_datagram_buf[MAX_DATAGRAM];
+	uint8_t		reliable_datagram_buf[MAX_DATAGRAM];
 
 	sizebuf_t	signon;
-	byte		signon_buf[8192];
+	uint8_t		signon_buf[8192];
 } server_t;
 
 #define	NUM_PING_TIMES		16
@@ -52,11 +52,11 @@ typedef struct
 
 typedef struct client_s
 {
-	qboolean		active;				// false = client is free
-	qboolean		spawned;			// false = don't send datagrams
-	qboolean		dropasap;			// has been told to go to another level
-	qboolean		privileged;			// can execute any host command
-	qboolean		sendsignon;			// only valid before spawned
+	bool		active;				// false = client is free
+	bool		spawned;			// false = don't send datagrams
+	bool		dropasap;			// has been told to go to another level
+	bool		privileged;			// can execute any host command
+	bool		sendsignon;			// only valid before spawned
 
 	double			last_message;		// reliable messages must be sent
 										// periodically
@@ -68,7 +68,7 @@ typedef struct client_s
 
 	sizebuf_t		message;			// can be added to at any time,
 										// copied and clear once per frame
-	byte			msgbuf[MAX_MSGLEN];
+	uint8_t			msgbuf[MAX_MSGLEN];
 	edict_t			*edict;				// EDICT_NUM(clientnum+1)
 	char			name[32];			// for printing to other people
 	int				colors;
@@ -170,7 +170,7 @@ void SV_StartParticle (vec3_t org, vec3_t dir, int color, int count);
 void SV_StartSound (edict_t *entity, int channel, char *sample, int volume,
     float attenuation);
 
-void SV_DropClient (qboolean crash);
+void SV_DropClient (bool crash);
 
 void SV_SendClientMessages (void);
 void SV_ClearDatagram (void);
@@ -189,8 +189,8 @@ void SV_BroadcastPrintf (char *fmt, ...);
 
 void SV_Physics (void);
 
-qboolean SV_CheckBottom (edict_t *ent);
-qboolean SV_movestep (edict_t *ent, vec3_t move, qboolean relink);
+bool SV_CheckBottom (edict_t *ent);
+bool SV_movestep (edict_t *ent, vec3_t move, bool relink);
 
 void SV_WriteClientdataToMessage (edict_t *ent, sizebuf_t *msg);
 

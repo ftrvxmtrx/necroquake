@@ -19,7 +19,7 @@
 
 #include "quakedef.h"
 
-qboolean			isDedicated;
+bool			isDedicated;
 
 int noconinput = 0;
 
@@ -279,7 +279,7 @@ void alarm_handler(int x)
 	oktogo=1;
 }
 
-byte *Sys_ZoneBase (int *size)
+uint8_t *Sys_ZoneBase (int *size)
 {
 
 	char *QUAKEOPT = getenv("QUAKEOPT");

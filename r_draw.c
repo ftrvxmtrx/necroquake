@@ -1,3 +1,4 @@
+#include <math.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
@@ -23,9 +24,9 @@ clipplane_t	world_clipplanes[16];
 
 medge_t			*r_pedge;
 
-qboolean		r_leftclipped, r_rightclipped;
-static qboolean	makeleftedge, makerightedge;
-qboolean		r_nearzionly;
+bool		r_leftclipped, r_rightclipped;
+static bool	makeleftedge, makerightedge;
+bool		r_nearzionly;
 
 int		sintable[SIN_BUFFER_SIZE];
 int		intsintable[SIN_BUFFER_SIZE];
@@ -44,7 +45,7 @@ float			r_nearzi;
 float			r_u1, r_v1, r_lzi1;
 int				r_ceilv1;
 
-qboolean	r_lastvertvalid;
+bool	r_lastvertvalid;
 
 /*
 ================
@@ -432,7 +433,7 @@ void R_RenderFace (msurface_t *fa, int clipflags)
 			}
 
 		// assume it's cacheable
-			cacheoffset = (byte *)edge_p - (byte *)r_edges;
+			cacheoffset = (uint8_t *)edge_p - (uint8_t *)r_edges;
 			r_leftclipped = r_rightclipped = false;
 			R_ClipEdge (&r_pcurrentvertbase[r_pedge->v[0]],
 						&r_pcurrentvertbase[r_pedge->v[1]],
@@ -478,7 +479,7 @@ void R_RenderFace (msurface_t *fa, int clipflags)
 			}
 
 		// assume it's cacheable
-			cacheoffset = (byte *)edge_p - (byte *)r_edges;
+			cacheoffset = (uint8_t *)edge_p - (uint8_t *)r_edges;
 			r_leftclipped = r_rightclipped = false;
 			R_ClipEdge (&r_pcurrentvertbase[r_pedge->v[1]],
 						&r_pcurrentvertbase[r_pedge->v[0]],
@@ -674,7 +675,7 @@ void R_RenderPoly (msurface_t *fa, int clipflags)
 	mvertex_t	verts[2][100];	//FIXME: do real number
 	polyvert_t	pverts[100];	//FIXME: do real number, safely
 	int			vertpage, newverts, newpage, lastvert;
-	qboolean	visible;
+	bool	visible;
 
 // FIXME: clean this up and make it faster
 // FIXME: guard against running out of vertices

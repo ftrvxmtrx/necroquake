@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "quakedef.h"
 
 void CL_FinishTimeDemo (void);
@@ -203,7 +205,7 @@ void CL_Record_f (void)
 // write the forced cd track number, or -1
 	if (c == 4)
 	{
-		track = atoi(Cmd_Argv(3));
+		track = strtol(Cmd_Argv(3), NULL, 0);
 		Con_Printf ("Forcing CD track to %i\n", cls.forcetrack);
 	}
 	else
@@ -247,7 +249,7 @@ void CL_PlayDemo_f (void)
 {
 	char	name[256];
 	int c;
-	qboolean neg = false;
+	bool neg = false;
 
 	if (cmd_source != src_command)
 		return;

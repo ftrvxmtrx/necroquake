@@ -37,9 +37,9 @@ typedef struct mplane_s
 {
 	vec3_t	normal;
 	float	dist;
-	byte	type;			// for texture axis selection and fast side tests
-	byte	signbits;		// signx + signy<<1 + signz<<1
-	byte	pad[2];
+	uint8_t	type;			// for texture axis selection and fast side tests
+	uint8_t	signbits;		// signx + signy<<1 + signz<<1
+	uint8_t	pad[2];
 } mplane_t;
 
 typedef struct texture_s
@@ -97,8 +97,8 @@ typedef struct msurface_s
 	mtexinfo_t	*texinfo;
 
 // lighting info
-	byte		styles[MAXLIGHTMAPS];
-	byte		*samples;		// [numstyles*surfsize]
+	uint8_t		styles[MAXLIGHTMAPS];
+	uint8_t		*samples;		// [numstyles*surfsize]
 } msurface_t;
 
 typedef struct mnode_s
@@ -130,13 +130,13 @@ typedef struct mleaf_s
 	struct mnode_s	*parent;
 
 // leaf specific
-	byte		*compressed_vis;
+	uint8_t		*compressed_vis;
 	efrag_t		*efrags;
 
 	msurface_t	**firstmarksurface;
 	int			nummarksurfaces;
 	int			key;			// BSP sequence number for leaf's contents
-	byte		ambient_sound_level[NUM_AMBIENTS];
+	uint8_t		ambient_sound_level[NUM_AMBIENTS];
 } mleaf_t;
 
 typedef struct
@@ -164,7 +164,7 @@ typedef struct mspriteframe_s
 	int		height;
 	void	*pcachespot;			// remove?
 	float	up, down, left, right;
-	byte	pixels[4];
+	uint8_t	pixels[4];
 } mspriteframe_t;
 
 typedef struct
@@ -271,7 +271,7 @@ typedef enum {mod_brush, mod_sprite, mod_alias} modtype_t;
 typedef struct model_s
 {
 	char		name[MAX_QPATH];
-	qboolean	needload;		// bmodels and sprites don't cache normally
+	bool	needload;		// bmodels and sprites don't cache normally
 
 	modtype_t	type;
 	int			numframes;
@@ -328,8 +328,8 @@ typedef struct model_s
 	int			numtextures;
 	texture_t	**textures;
 
-	byte		*visdata;
-	byte		*lightdata;
+	uint8_t		*visdata;
+	uint8_t		*lightdata;
 	char		*entities;
 
 //
@@ -343,11 +343,11 @@ typedef struct model_s
 
 void	Mod_Init (void);
 void	Mod_ClearAll (void);
-model_t *Mod_ForName (char *name, qboolean crash);
+model_t *Mod_ForName (char *name, bool crash);
 void	*Mod_Extradata (model_t *mod);	// handles caching
 void	Mod_TouchModel (char *name);
 
 mleaf_t *Mod_PointInLeaf (float *p, model_t *model);
-byte	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
+uint8_t	*Mod_LeafPVS (mleaf_t *leaf, model_t *model);
 
 #endif	// __MODEL__

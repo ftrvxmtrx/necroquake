@@ -1,5 +1,6 @@
 // screen.c -- master for refresh, status bar, console, chat, notify, etc
 
+#include <math.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
@@ -21,7 +22,7 @@ cvar_t		scr_showturtle = {"showturtle","0"};
 cvar_t		scr_showpause = {"showpause","1"};
 cvar_t		scr_printspeed = {"scr_printspeed","8"};
 
-qboolean	scr_initialized;		// ready to draw
+bool	scr_initialized;		// ready to draw
 
 qpic_t		*scr_ram;
 qpic_t		*scr_net;
@@ -37,12 +38,12 @@ viddef_t	vid;				// global video state
 vrect_t		*pconupdate;
 vrect_t		scr_vrect;
 
-qboolean	scr_disabled_for_loading;
-qboolean	scr_drawloading;
+bool	scr_disabled_for_loading;
+bool	scr_drawloading;
 float		scr_disabled_time;
-qboolean	scr_skipupdate;
+bool	scr_skipupdate;
 
-qboolean	block_drawing;
+bool	block_drawing;
 
 void SCR_ScreenShot_f (void);
 
@@ -515,12 +516,12 @@ typedef struct
 WritePCXfile
 ==============
 */
-void WritePCXfile (char *filename, byte *data, int width, int height,
-	int rowbytes, byte *palette)
+void WritePCXfile (char *filename, uint8_t *data, int width, int height,
+	int rowbytes, uint8_t *palette)
 {
 	int		i, j, length;
 	pcx_t	*pcx;
-	byte		*pack;
+	uint8_t		*pack;
 
 	pcx = Hunk_TempAlloc (width*height*2+1000);
 	if (pcx == NULL)
@@ -539,11 +540,11 @@ void WritePCXfile (char *filename, byte *data, int width, int height,
 	pcx->ymax = LittleShort((short)(height-1));
 	pcx->hres = LittleShort((short)width);
 	pcx->vres = LittleShort((short)height);
-	Q_memset (pcx->palette,0,sizeof(pcx->palette));
+	memset (pcx->palette,0,sizeof(pcx->palette));
 	pcx->color_planes = 1;		// chunky image
 	pcx->bytes_per_line = LittleShort((short)width);
 	pcx->palette_type = LittleShort(2);		// not a grey scale
-	Q_memset (pcx->filler,0,sizeof(pcx->filler));
+	memset (pcx->filler,0,sizeof(pcx->filler));
 
 // pack the image
 	pack = &pcx->data;
@@ -570,7 +571,7 @@ void WritePCXfile (char *filename, byte *data, int width, int height,
 		*pack++ = *palette++;
 
 // write output file
-	length = pack - (byte *)pcx;
+	length = pack - (uint8_t *)pcx;
 	COM_WriteFile (filename, pcx, length);
 }
 
@@ -661,7 +662,7 @@ void SCR_EndLoadingPlaque (void)
 //=============================================================================
 
 char	*scr_notifystring;
-qboolean	scr_drawdialog;
+bool	scr_drawdialog;
 
 void SCR_DrawNotifyString (void)
 {

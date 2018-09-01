@@ -13,7 +13,7 @@ void D_DrawParticle (particle_t *pparticle)
 {
 	vec3_t	local, transformed;
 	float	zi;
-	byte	*pdest;
+	uint8_t	*pdest;
 	short	*pz;
 	int		i, izi, pix, count, u, v;
 

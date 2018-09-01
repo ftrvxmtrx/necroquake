@@ -14,7 +14,7 @@ typedef union eval_s
 #define	MAX_ENT_LEAFS	16
 typedef struct edict_s
 {
-	qboolean	free;
+	bool	free;
 	link_t		area;				// linked to a division node or leaf
 
 	int			num_leafs;
@@ -66,21 +66,21 @@ void ED_ParseGlobals (char *data);
 void ED_LoadFromFile (char *data);
 
 //define EDICT_NUM(n) ((edict_t *)(sv.edicts+ (n)*pr_edict_size))
-//define NUM_FOR_EDICT(e) (((byte *)(e) - sv.edicts)/pr_edict_size)
+//define NUM_FOR_EDICT(e) (((uint8_t *)(e) - sv.edicts)/pr_edict_size)
 
 edict_t *EDICT_NUM(int n);
 int NUM_FOR_EDICT(edict_t *e);
 
-#define	NEXT_EDICT(e) ((edict_t *)( (byte *)e + pr_edict_size))
+#define	NEXT_EDICT(e) ((edict_t *)( (uint8_t *)e + pr_edict_size))
 
-#define	EDICT_TO_PROG(e) ((byte *)e - (byte *)sv.edicts)
-#define PROG_TO_EDICT(e) ((edict_t *)((byte *)sv.edicts + e))
+#define	EDICT_TO_PROG(e) ((uint8_t *)e - (uint8_t *)sv.edicts)
+#define PROG_TO_EDICT(e) ((edict_t *)((uint8_t *)sv.edicts + e))
 
 //============================================================================
 
 #define	G_FLOAT(o) (pr_globals[o])
 #define	G_INT(o) (*(int *)&pr_globals[o])
-#define	G_EDICT(o) ((edict_t *)((byte *)sv.edicts+ *(int *)&pr_globals[o]))
+#define	G_EDICT(o) ((edict_t *)((uint8_t *)sv.edicts+ *(int *)&pr_globals[o]))
 #define G_EDICTNUM(o) NUM_FOR_EDICT(G_EDICT(o))
 #define	G_VECTOR(o) (&pr_globals[o])
 #define	G_STRING(o) (pr_strings + *(string_t *)&pr_globals[o])
@@ -99,7 +99,7 @@ extern int pr_numbuiltins;
 
 extern int		pr_argc;
 
-extern	qboolean	pr_trace;
+extern	bool	pr_trace;
 extern	dfunction_t	*pr_xfunction;
 extern	int			pr_xstatement;
 

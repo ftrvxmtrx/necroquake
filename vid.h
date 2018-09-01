@@ -4,7 +4,7 @@
 #define VID_GRADES	(1 << VID_CBITS)
 
 // a pixel can be one, two, or four bytes
-typedef byte pixel_t;
+typedef uint8_t pixel_t;
 
 typedef struct vrect_s
 {
@@ -61,6 +61,6 @@ int VID_SetMode (int modenum, unsigned char *palette);
 // sets the mode; only used by the Quake engine for resetting to mode 0 (the
 // base mode) on memory allocation failures
 
-void VID_HandlePause (qboolean pause);
+void VID_HandlePause (bool pause);
 // called only on Win32, when pause happens, so the mouse can be released
 

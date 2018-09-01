@@ -1,12 +1,6 @@
-// console.c
-
-#ifdef NeXT
-#include <libc.h>
-#endif
-#ifndef _MSC_VER
 #include <unistd.h>
-#endif
 #include <fcntl.h>
+#include <stdarg.h>
 #include "quakedef.h"
 
 int 		con_linewidth;
@@ -15,7 +9,7 @@ float		con_cursorspeed = 4;
 
 #define		CON_TEXTSIZE	16384
 
-qboolean 	con_forcedup;		// because no entities to refresh
+bool 	con_forcedup;		// because no entities to refresh
 
 int			con_totallines;		// total lines in console scrollback
 int			con_backscroll;		// lines up from bottom to display
@@ -31,14 +25,14 @@ float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
 
 int			con_vislines;
 
-qboolean	con_debuglog;
+bool	con_debuglog;
 
 #define		MAXCMDLINE	256
 extern	char	key_lines[32][MAXCMDLINE];
 extern	int		edit_line;
 extern	int		key_linepos;
 
-qboolean	con_initialized;
+bool	con_initialized;
 
 int			con_notifylines;		// scan lines to clear for notify lines
 
@@ -79,7 +73,7 @@ Con_Clear_f
 void Con_Clear_f (void)
 {
 	if (con_text)
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		memset (con_text, ' ', CON_TEXTSIZE);
 }
 
 /*
@@ -100,7 +94,7 @@ void Con_ClearNotify (void)
 Con_MessageMode_f
 ================
 */
-extern qboolean team_message;
+extern bool team_message;
 
 void Con_MessageMode_f (void)
 {
@@ -141,7 +135,7 @@ void Con_CheckResize (void)
 		width = 38;
 		con_linewidth = width;
 		con_totallines = CON_TEXTSIZE / con_linewidth;
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		memset (con_text, ' ', CON_TEXTSIZE);
 	}
 	else
 	{
@@ -159,8 +153,8 @@ void Con_CheckResize (void)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		Q_memcpy (tbuf, con_text, CON_TEXTSIZE);
-		Q_memset (con_text, ' ', CON_TEXTSIZE);
+		memcpy (tbuf, con_text, CON_TEXTSIZE);
+		memset (con_text, ' ', CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
 		{
@@ -202,7 +196,7 @@ void Con_Init (void)
 	}
 
 	con_text = Hunk_AllocName (CON_TEXTSIZE, "context");
-	Q_memset (con_text, ' ', CON_TEXTSIZE);
+	memset (con_text, ' ', CON_TEXTSIZE);
 	con_linewidth = -1;
 	Con_CheckResize ();
 
@@ -230,7 +224,7 @@ void Con_Linefeed (void)
 	if ( ! con_initialized ) return;
 	con_x = 0;
 	con_current++;
-	Q_memset (&con_text[(con_current%con_totallines)*con_linewidth]
+	memset (&con_text[(con_current%con_totallines)*con_linewidth]
 	, ' ', con_linewidth);
 }
 
@@ -350,7 +344,7 @@ void Con_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
-	static qboolean	inupdate;
+	static bool	inupdate;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
@@ -544,7 +538,7 @@ Draws the console with the solid background
 The typing input line at the bottom should only be drawn if typing is allowed
 ================
 */
-void Con_DrawConsole (int lines, qboolean drawinput)
+void Con_DrawConsole (int lines, bool drawinput)
 {
 	int				i, x, y;
 	int				rows;

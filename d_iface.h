@@ -91,14 +91,14 @@ extern cvar_t	r_drawflat;
 extern int		d_spanpixcount;
 extern int		r_framecount;		// sequence # of current frame since Quake
 									//  started
-extern qboolean	r_drawpolys;		// 1 if driver wants clipped polygons
+extern bool	r_drawpolys;		// 1 if driver wants clipped polygons
 									//  rather than a span list
-extern qboolean	r_drawculledpolys;	// 1 if driver wants clipped polygons that
+extern bool	r_drawculledpolys;	// 1 if driver wants clipped polygons that
 									//  have been culled by the edge list
-extern qboolean	r_worldpolysbacktofront;	// 1 if driver wants polygons
+extern bool	r_worldpolysbacktofront;	// 1 if driver wants polygons
 											//  delivered back to front rather
 											//  than front to back
-extern qboolean	r_recursiveaffinetriangles;	// true if a driver wants to use
+extern bool	r_recursiveaffinetriangles;	// true if a driver wants to use
 											//  recursive triangular subdivison
 											//  and vertex drawing via
 											//  D_PolysetDrawFinalVerts() past
@@ -108,7 +108,7 @@ extern qboolean	r_recursiveaffinetriangles;	// true if a driver wants to use
 extern float	r_aliasuvscale;		// scale-up factor for screen u and v
 									//  on Alias vertices passed to driver
 extern int		r_pixbytes;
-extern qboolean	r_dowarp;
+extern bool	r_dowarp;
 
 extern affinetridesc_t	r_affinetridesc;
 extern spritedesc_t		r_spritedesc;
@@ -123,7 +123,7 @@ extern int		d_con_indirect;	// if 0, Quake will draw console directly
 extern vec3_t	r_pright, r_pup, r_ppn;
 
 void D_Aff8Patch (void *pcolormap);
-void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height);
+void D_BeginDirectRect (int x, int y, uint8_t *pbitmap, int width, int height);
 void D_DisableBackBufferAccess (void);
 void D_EndDirectRect (int x, int y, int width, int height);
 void D_PolysetDraw (void);
@@ -153,7 +153,7 @@ void D_PolysetUpdateTables (void);
 
 // these are currently for internal use only, and should not be used by drivers
 extern int				r_skydirect;
-extern byte				*r_skysource;
+extern uint8_t				*r_skysource;
 
 // transparency types for D_DrawRect ()
 #define DR_SOLID		0
@@ -204,5 +204,5 @@ extern float	skytime;
 extern int		c_surf;
 extern vrect_t	scr_vrect;
 
-extern byte		*r_warpbuffer;
+extern uint8_t		*r_warpbuffer;
 

@@ -18,7 +18,7 @@
 typedef struct
 {
 	int			width, height;
-	byte		data[4];			// variably sized
+	uint8_t		data[4];			// variably sized
 } qpic_t;
 
 typedef struct
@@ -41,7 +41,7 @@ typedef struct
 
 extern	int			wad_numlumps;
 extern	lumpinfo_t	*wad_lumps;
-extern	byte		*wad_base;
+extern	uint8_t		*wad_base;
 
 void	W_LoadWadFile (char *filename);
 void	W_CleanupName (char *in, char *out);

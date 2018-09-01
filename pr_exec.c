@@ -1,3 +1,4 @@
+#include <stdarg.h>
 #include "quakedef.h"
 
 typedef struct
@@ -14,7 +15,7 @@ int			pr_depth;
 int			localstack[LOCALSTACK_SIZE];
 int			localstack_used;
 
-qboolean	pr_trace;
+bool	pr_trace;
 dfunction_t	*pr_xfunction;
 int			pr_xstatement;
 
@@ -515,11 +516,11 @@ while (1)
 	case OP_STOREP_FLD:		// integers
 	case OP_STOREP_S:
 	case OP_STOREP_FNC:		// pointers
-		ptr = (eval_t *)((byte *)sv.edicts + b->_int);
+		ptr = (eval_t *)((uint8_t *)sv.edicts + b->_int);
 		ptr->_int = a->_int;
 		break;
 	case OP_STOREP_V:
-		ptr = (eval_t *)((byte *)sv.edicts + b->_int);
+		ptr = (eval_t *)((uint8_t *)sv.edicts + b->_int);
 		ptr->vector[0] = a->vector[0];
 		ptr->vector[1] = a->vector[1];
 		ptr->vector[2] = a->vector[2];
@@ -532,7 +533,7 @@ while (1)
 #endif
 		if (ed == (edict_t *)sv.edicts && sv.state == ss_active)
 			PR_RunError ("assignment to world entity");
-		c->_int = (byte *)((int *)&ed->v + b->_int) - (byte *)sv.edicts;
+		c->_int = (uint8_t *)((int *)&ed->v + b->_int) - (uint8_t *)sv.edicts;
 		break;
 
 	case OP_LOAD_F:
@@ -615,11 +616,7 @@ while (1)
 
 	case OP_STATE:
 		ed = PROG_TO_EDICT(pr_global_struct->self);
-#ifdef FPS_20
-		ed->v.nextthink = pr_global_struct->time + 0.05;
-#else
 		ed->v.nextthink = pr_global_struct->time + 0.1;
-#endif
 		if (a->_float != ed->v.frame)
 		{
 			ed->v.frame = a->_float;

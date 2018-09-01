@@ -1,5 +1,7 @@
 // host.c -- coordinates spawning and killing of local servers
 
+#include <stdlib.h>
+#include <stdarg.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
@@ -17,7 +19,7 @@ Memory is cleared / released when a server or client begins, not when they end.
 
 quakeparms_t host_parms;
 
-qboolean	host_initialized;		// true if into command execution
+bool	host_initialized;		// true if into command execution
 
 double		host_frametime;
 double		host_time;
@@ -33,8 +35,8 @@ client_t	*host_client;			// current client
 
 jmp_buf 	host_abortserver;
 
-byte		*host_basepal;
-byte		*host_colormap;
+uint8_t		*host_basepal;
+uint8_t		*host_colormap;
 
 cvar_t	host_framerate = {"host_framerate","0"};	// set for slow motion
 cvar_t	host_speeds = {"host_speeds","0"};			// set for running times
@@ -92,7 +94,7 @@ void Host_Error (char *error, ...)
 {
 	va_list		argptr;
 	char		string[1024];
-	static	qboolean inerror = false;
+	static	bool inerror = false;
 
 	if (inerror)
 		Sys_Error ("Host_Error: recursively entered");
@@ -136,7 +138,7 @@ void	Host_FindMaxClients (void)
 		cls.state = ca_dedicated;
 		if (i != (com_argc - 1))
 		{
-			svs.maxclients = Q_atoi (com_argv[i+1]);
+			svs.maxclients = strtol(com_argv[i+1], NULL, 0);
 		}
 		else
 			svs.maxclients = 8;
@@ -150,7 +152,7 @@ void	Host_FindMaxClients (void)
 		if (cls.state == ca_dedicated)
 			Sys_Error ("Only one of -dedicated or -listen can be specified");
 		if (i != (com_argc - 1))
-			svs.maxclients = Q_atoi (com_argv[i+1]);
+			svs.maxclients = atoi (com_argv[i+1]);
 		else
 			svs.maxclients = 8;
 	}
@@ -307,7 +309,7 @@ Called when the player is getting totally kicked off the host
 if (crash = true), don't bother sending signofs
 =====================
 */
-void SV_DropClient (qboolean crash)
+void SV_DropClient (bool crash)
 {
 	int		saveSelf;
 	int		i;
@@ -369,7 +371,7 @@ Host_ShutdownServer
 This only happens at the end of a game, not between levels
 ==================
 */
-void Host_ShutdownServer(qboolean crash)
+void Host_ShutdownServer(bool crash)
 {
 	int		i;
 	int		count;
@@ -462,7 +464,7 @@ Host_FilterTime
 Returns false if the time is too short to run a frame
 ===================
 */
-qboolean Host_FilterTime (float time)
+bool Host_FilterTime (float time)
 {
 	realtime += time;
 
@@ -511,54 +513,6 @@ Host_ServerFrame
 
 ==================
 */
-#ifdef FPS_20
-
-void _Host_ServerFrame (void)
-{
-// run the world state
-	pr_global_struct->frametime = host_frametime;
-
-// read client messages
-	SV_RunClients ();
-
-// move things around and think
-// always pause in single player if in console or menus
-	if (!sv.paused && (svs.maxclients > 1 || key_dest == key_game) )
-		SV_Physics ();
-}
-
-void Host_ServerFrame (void)
-{
-	float	save_host_frametime;
-	float	temp_host_frametime;
-
-// run the world state
-	pr_global_struct->frametime = host_frametime;
-
-// set the time and clear the general datagram
-	SV_ClearDatagram ();
-
-// check for new clients
-	SV_CheckForNewClients ();
-
-	temp_host_frametime = save_host_frametime = host_frametime;
-	while(temp_host_frametime > (1.0/72.0))
-	{
-		if (temp_host_frametime > 0.05)
-			host_frametime = 0.05;
-		else
-			host_frametime = temp_host_frametime;
-		temp_host_frametime -= host_frametime;
-		_Host_ServerFrame ();
-	}
-	host_frametime = save_host_frametime;
-
-// send all messages to the clients
-	SV_SendClientMessages ();
-}
-
-#else
-
 void Host_ServerFrame (void)
 {
 // run the world state
@@ -581,8 +535,6 @@ void Host_ServerFrame (void)
 // send all messages to the clients
 	SV_SendClientMessages ();
 }
-
-#endif
 
 /*
 ==================
@@ -779,7 +731,7 @@ void Host_InitVCR (quakeparms_t *parms)
 				Sys_FileWrite(vcrFile, "-playback", len);
 				continue;
 			}
-			len = Q_strlen(com_argv[i]) + 1;
+			len = strlen(com_argv[i]) + 1;
 			Sys_FileWrite(vcrFile, &len, sizeof(int));
 			Sys_FileWrite(vcrFile, com_argv[i], len);
 		}
@@ -835,10 +787,10 @@ void Host_Init (quakeparms_t *parms)
 
 	if (cls.state != ca_dedicated)
 	{
-		host_basepal = (byte *)COM_LoadHunkFile ("gfx/palette.lmp");
+		host_basepal = (uint8_t *)COM_LoadHunkFile ("gfx/palette.lmp");
 		if (!host_basepal)
 			Sys_Error ("Couldn't load gfx/palette.lmp");
-		host_colormap = (byte *)COM_LoadHunkFile ("gfx/colormap.lmp");
+		host_colormap = (uint8_t *)COM_LoadHunkFile ("gfx/colormap.lmp");
 		if (!host_colormap)
 			Sys_Error ("Couldn't load gfx/colormap.lmp");
 
@@ -874,7 +826,7 @@ to run quit through here before the final handoff to the sys code.
 */
 void Host_Shutdown(void)
 {
-	static qboolean isdown = false;
+	static bool isdown = false;
 
 	if (isdown)
 	{

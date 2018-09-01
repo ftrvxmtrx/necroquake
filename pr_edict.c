@@ -1,5 +1,6 @@
 // sv_edict.c -- entity dictionary
 
+#include <stdlib.h>
 #include "quakedef.h"
 
 dprograms_t		*progs;
@@ -17,7 +18,7 @@ unsigned short		pr_crc;
 int		type_size[8] = {1,sizeof(string_t)/4,1,3,1,1,sizeof(func_t)/4,sizeof(void *)/4};
 
 ddef_t *ED_FieldAtOfs (int ofs);
-qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s);
+bool	ED_ParseEpair (void *base, ddef_t *key, char *s);
 
 cvar_t	nomonsters = {"nomonsters", "0"};
 cvar_t	gamecfg = {"gamecfg", "0"};
@@ -530,7 +531,7 @@ void ED_PrintEdict_f (void)
 {
 	int		i;
 
-	i = Q_atoi (Cmd_Argv(1));
+	i = strtol (Cmd_Argv(1), NULL, 0);
 	if (i >= sv.num_edicts)
 	{
 		Con_Printf("Bad edict number\n");
@@ -699,7 +700,7 @@ Can parse either fields or globals
 returns false if error
 =============
 */
-qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
+bool	ED_ParseEpair (void *base, ddef_t *key, char *s)
 {
 	int		i;
 	char	string[128];
@@ -717,7 +718,7 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 		break;
 
 	case ev_float:
-		*(float *)d = atof (s);
+		*(float *)d = strtof(s, NULL);
 		break;
 
 	case ev_vector:
@@ -729,13 +730,13 @@ qboolean	ED_ParseEpair (void *base, ddef_t *key, char *s)
 			while (*v && *v != ' ')
 				v++;
 			*v = 0;
-			((float *)d)[i] = atof (w);
+			((float *)d)[i] = strtof(w, NULL);
 			w = v = v+1;
 		}
 		break;
 
 	case ev_entity:
-		*(int *)d = EDICT_TO_PROG(EDICT_NUM(atoi (s)));
+		*(int *)d = EDICT_TO_PROG(EDICT_NUM(strtol(s, NULL, 0)));
 		break;
 
 	case ev_field:
@@ -776,8 +777,8 @@ Used for initial level load and for savegames.
 char *ED_ParseEdict (char *data, edict_t *ent)
 {
 	ddef_t		*key;
-	qboolean	anglehack;
-	qboolean	init;
+	bool	anglehack;
+	bool	init;
 	char		keyname[256];
 	int			n;
 
@@ -970,7 +971,7 @@ void PR_LoadProgs (void)
 	Con_DPrintf ("Programs occupy %iK.\n", com_filesize/1024);
 
 	for (i=0 ; i<com_filesize ; i++)
-		CRC_ProcessByte (&pr_crc, ((byte *)progs)[i]);
+		CRC_ProcessByte (&pr_crc, ((uint8_t *)progs)[i]);
 
 // byte swap the header
 	for (i=0 ; i<sizeof(*progs)/4 ; i++)
@@ -981,13 +982,13 @@ void PR_LoadProgs (void)
 	if (progs->crc != PROGHEADER_CRC)
 		Sys_Error ("progs.dat system vars have been modified, progdefs.h is out of date");
 
-	pr_functions = (dfunction_t *)((byte *)progs + progs->ofs_functions);
+	pr_functions = (dfunction_t *)((uint8_t *)progs + progs->ofs_functions);
 	pr_strings = (char *)progs + progs->ofs_strings;
-	pr_globaldefs = (ddef_t *)((byte *)progs + progs->ofs_globaldefs);
-	pr_fielddefs = (ddef_t *)((byte *)progs + progs->ofs_fielddefs);
-	pr_statements = (dstatement_t *)((byte *)progs + progs->ofs_statements);
+	pr_globaldefs = (ddef_t *)((uint8_t *)progs + progs->ofs_globaldefs);
+	pr_fielddefs = (ddef_t *)((uint8_t *)progs + progs->ofs_fielddefs);
+	pr_statements = (dstatement_t *)((uint8_t *)progs + progs->ofs_statements);
 
-	pr_global_struct = (globalvars_t *)((byte *)progs + progs->ofs_globals);
+	pr_global_struct = (globalvars_t *)((uint8_t *)progs + progs->ofs_globals);
 	pr_globals = (float *)pr_global_struct;
 
 	pr_edict_size = progs->entityfields * 4 + sizeof (edict_t) - sizeof(entvars_t);
@@ -1059,14 +1060,14 @@ edict_t *EDICT_NUM(int n)
 {
 	if (n < 0 || n >= sv.max_edicts)
 		Sys_Error ("EDICT_NUM: bad number %i", n);
-	return (edict_t *)((byte *)sv.edicts+ (n)*pr_edict_size);
+	return (edict_t *)((uint8_t *)sv.edicts+ (n)*pr_edict_size);
 }
 
 int NUM_FOR_EDICT(edict_t *e)
 {
 	int		b;
 
-	b = (byte *)e - (byte *)sv.edicts;
+	b = (uint8_t *)e - (uint8_t *)sv.edicts;
 	b = b / pr_edict_size;
 
 	if (b < 0 || b >= sv.num_edicts)

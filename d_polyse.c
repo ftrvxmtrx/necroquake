@@ -1,6 +1,7 @@
 // d_polyset.c: routines for drawing sets of polygons sharing the same
 // texture (used for Alias models)
 
+#include <math.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "d_local.h"
@@ -13,7 +14,7 @@ typedef struct {
 	void			*pdest;
 	short			*pz;
 	int				count;
-	byte			*ptex;
+	uint8_t			*ptex;
 	int				sfrac, tfrac, light, zi;
 } spanpackage_t;
 
@@ -31,7 +32,7 @@ typedef struct {
 
 int	r_p0[6], r_p1[6], r_p2[6];
 
-byte		*d_pcolormap;
+uint8_t		*d_pcolormap;
 
 int			d_aflatcolor;
 int			d_xdenom;
@@ -62,7 +63,7 @@ int				d_aspancount, d_countextrastep;
 spanpackage_t			*a_spans;
 spanpackage_t			*d_pedgespanpackage;
 static int				ystart;
-byte					*d_pdest, *d_ptex;
+uint8_t					*d_pdest, *d_ptex;
 short					*d_pz;
 int						d_sfrac, d_tfrac, d_light, d_zi;
 int						d_ptexextrastep, d_sfracextrastep;
@@ -81,9 +82,9 @@ static adivtab_t	adivtab[32*32] = {
 #include "adivtab.h"
 };
 
-byte	*skintable[MAX_LBM_HEIGHT];
+uint8_t	*skintable[MAX_LBM_HEIGHT];
 int		skinwidth;
-byte	*skinstart;
+uint8_t	*skinstart;
 
 void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage);
 void D_PolysetCalcGradients (int skinwidth);
@@ -143,7 +144,7 @@ void D_PolysetDrawFinalVerts (finalvert_t *fv, int numverts)
 
 				*zbuf = z;
 				pix = skintable[fv->v[3]>>16][fv->v[2]>>16];
-				pix = ((byte *)acolormap)[pix + (fv->v[4] & 0xFF00) ];
+				pix = ((uint8_t *)acolormap)[pix + (fv->v[4] & 0xFF00) ];
 				d_viewbuffer[d_scantable[fv->v[1]] + fv->v[0]] = pix;
 			}
 		}
@@ -180,7 +181,7 @@ void D_DrawSubdiv (void)
 			continue;
 		}
 
-		d_pcolormap = &((byte *)acolormap)[index0->v[4] & 0xFF00];
+		d_pcolormap = &((uint8_t *)acolormap)[index0->v[4] & 0xFF00];
 
 		if (ptri[i].facesfront)
 		{
@@ -366,7 +367,7 @@ D_PolysetUpdateTables
 void D_PolysetUpdateTables (void)
 {
 	int		i;
-	byte	*s;
+	uint8_t	*s;
 
 	if (r_affinetridesc.skinwidth != skinwidth ||
 		r_affinetridesc.pskin != skinstart)
@@ -546,8 +547,8 @@ D_PolysetDrawSpans8
 void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 {
 	int		lcount;
-	byte	*lpdest;
-	byte	*lptex;
+	uint8_t	*lpdest;
+	uint8_t	*lptex;
 	int		lsfrac, ltfrac;
 	int		llight;
 	int		lzi;
@@ -582,7 +583,7 @@ void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 			{
 				if ((lzi >> 16) >= *lpz)
 				{
-					*lpdest = ((byte *)acolormap)[*lptex + (llight & 0xFF00)];
+					*lpdest = ((uint8_t *)acolormap)[*lptex + (llight & 0xFF00)];
 // gel mapping					*lpdest = gelmap[*lpdest];
 					*lpz = lzi >> 16;
 				}
@@ -623,7 +624,7 @@ void D_PolysetFillSpans8 (spanpackage_t *pspanpackage)
 	while (1)
 	{
 		int		lcount;
-		byte	*lpdest;
+		uint8_t	*lpdest;
 
 		lcount = pspanpackage->count;
 
@@ -682,14 +683,14 @@ void D_RasterizeAliasPolySmooth (void)
 	ystart = plefttop[1];
 	d_aspancount = plefttop[0] - prighttop[0];
 
-	d_ptex = (byte *)r_affinetridesc.pskin + (plefttop[2] >> 16) +
+	d_ptex = (uint8_t *)r_affinetridesc.pskin + (plefttop[2] >> 16) +
 			(plefttop[3] >> 16) * r_affinetridesc.skinwidth;
 	d_sfrac = plefttop[2] & 0xFFFF;
 	d_tfrac = plefttop[3] & 0xFFFF;
 	d_light = plefttop[4];
 	d_zi = plefttop[5];
 
-	d_pdest = (byte *)d_viewbuffer +
+	d_pdest = (uint8_t *)d_viewbuffer +
 			ystart * screenwidth + plefttop[0];
 	d_pz = d_pzbuffer + ystart * d_zwidth + plefttop[0];
 
@@ -765,14 +766,14 @@ void D_RasterizeAliasPolySmooth (void)
 
 		ystart = plefttop[1];
 		d_aspancount = plefttop[0] - prighttop[0];
-		d_ptex = (byte *)r_affinetridesc.pskin + (plefttop[2] >> 16) +
+		d_ptex = (uint8_t *)r_affinetridesc.pskin + (plefttop[2] >> 16) +
 				(plefttop[3] >> 16) * r_affinetridesc.skinwidth;
 		d_sfrac = 0;
 		d_tfrac = 0;
 		d_light = plefttop[4];
 		d_zi = plefttop[5];
 
-		d_pdest = (byte *)d_viewbuffer + ystart * screenwidth + plefttop[0];
+		d_pdest = (uint8_t *)d_viewbuffer + ystart * screenwidth + plefttop[0];
 		d_pz = d_pzbuffer + ystart * d_zwidth + plefttop[0];
 
 		if (height == 1)
@@ -961,7 +962,7 @@ split:
 
 		d_pzbuffer[ofs] = new[5];
 		pix = skintable[new[3]>>16][new[2]>>16];
-//		pix = ((byte *)acolormap)[pix + (new[4] & 0xFF00)];
+//		pix = ((uint8_t *)acolormap)[pix + (new[4] & 0xFF00)];
 		d_viewbuffer[ofs] = pix;
 	}
 

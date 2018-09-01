@@ -1,5 +1,6 @@
 // cvar.c -- dynamic variable tracking
 
+#include <stdlib.h>
 #include "quakedef.h"
 
 cvar_t	*cvar_vars;
@@ -15,7 +16,7 @@ cvar_t *Cvar_FindVar (char *var_name)
 	cvar_t	*var;
 
 	for (var=cvar_vars ; var ; var=var->next)
-		if (!Q_strcmp (var_name, var->name))
+		if (!strcmp (var_name, var->name))
 			return var;
 
 	return NULL;
@@ -33,7 +34,7 @@ float	Cvar_VariableValue (char *var_name)
 	var = Cvar_FindVar (var_name);
 	if (!var)
 		return 0;
-	return Q_atof (var->string);
+	return strtof (var->string, NULL);
 }
 
 /*
@@ -61,14 +62,14 @@ char *Cvar_CompleteVariable (char *partial)
 	cvar_t		*cvar;
 	int			len;
 
-	len = Q_strlen(partial);
+	len = strlen(partial);
 
 	if (!len)
 		return NULL;
 
 // check functions
 	for (cvar=cvar_vars ; cvar ; cvar=cvar->next)
-		if (!Q_strncmp (partial,cvar->name, len))
+		if (!strncmp (partial,cvar->name, len))
 			return cvar->name;
 
 	return NULL;
@@ -82,7 +83,7 @@ Cvar_Set
 void Cvar_Set (char *var_name, char *value)
 {
 	cvar_t	*var;
-	qboolean changed;
+	bool changed;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
@@ -91,13 +92,13 @@ void Cvar_Set (char *var_name, char *value)
 		return;
 	}
 
-	changed = Q_strcmp(var->string, value);
+	changed = strcmp(var->string, value);
 
 	Z_Free (var->string);	// free the old value string
 
-	var->string = Z_Malloc (Q_strlen(value)+1);
-	Q_strcpy (var->string, value);
-	var->value = Q_atof (var->string);
+	var->string = Z_Malloc (strlen(value)+1);
+	strcpy (var->string, value);
+	var->value = strtof (var->string, NULL);
 	if (var->server && changed)
 	{
 		if (sv.active)
@@ -145,9 +146,9 @@ void Cvar_RegisterVariable (cvar_t *variable)
 
 // copy the value off, because future sets will Z_Free it
 	oldstr = variable->string;
-	variable->string = Z_Malloc (Q_strlen(variable->string)+1);
-	Q_strcpy (variable->string, oldstr);
-	variable->value = Q_atof (variable->string);
+	variable->string = Z_Malloc (strlen(variable->string)+1);
+	strcpy (variable->string, oldstr);
+	variable->value = strtof (variable->string, NULL);
 
 // link the variable in
 	variable->next = cvar_vars;
@@ -161,7 +162,7 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-qboolean	Cvar_Command (void)
+bool	Cvar_Command (void)
 {
 	cvar_t			*v;
 

@@ -24,7 +24,7 @@ typedef struct surfcache_s
 	unsigned			height;		// DEBUG only needed for debug
 	float				mipscale;
 	struct texture_s	*texture;	// checked for animating textures
-	byte				data[4];	// width*height elements
+	uint8_t				data[4];	// width*height elements
 } surfcache_t;
 
 // !!! if this is changed, it must be changed in asm_draw.h too !!!
@@ -37,7 +37,7 @@ extern cvar_t	d_subdiv16;
 
 extern float	scale_for_mip;
 
-extern qboolean		d_roverwrapped;
+extern bool		d_roverwrapped;
 extern surfcache_t	*sc_rover;
 extern surfcache_t	*d_initial_rover;
 

@@ -1,3 +1,5 @@
+#include <math.h>
+#include <stdlib.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
@@ -31,7 +33,7 @@ void R_InitParticles (void)
 
 	if (i)
 	{
-		r_numparticles = (int)(Q_atoi(com_argv[i+1]));
+		r_numparticles = strtol(com_argv[i+1], NULL, 0);
 		if (r_numparticles < ABSOLUTE_MIN_PARTICLES)
 			r_numparticles = ABSOLUTE_MIN_PARTICLES;
 	}

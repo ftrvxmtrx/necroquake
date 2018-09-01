@@ -8,21 +8,6 @@
 // * pass data from one to the other via model files.      *
 // *********************************************************
 
-#ifdef INCLUDELIBS
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <math.h>
-#include <string.h>
-
-#include "cmdlib.h"
-#include "scriplib.h"
-#include "trilib.h"
-#include "lbmlib.h"
-#include "mathlib.h"
-
-#endif
-
 #define ALIAS_VERSION	6
 
 #define ALIAS_ONSEAM				0x0020
@@ -74,8 +59,8 @@ typedef struct dtriangle_s {
 // load this data
 
 typedef struct {
-	byte	v[3];
-	byte	lightnormalindex;
+	uint8_t	v[3];
+	uint8_t	lightnormalindex;
 } trivertx_t;
 
 typedef struct {

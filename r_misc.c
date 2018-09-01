@@ -83,7 +83,7 @@ Only called by R_DisplayTime
 void R_LineGraph (int x, int y, int h)
 {
 	int		i;
-	byte	*dest;
+	uint8_t	*dest;
 	int		s;
 
 // FIXME: should be disabled on no-buffer adapters, or should be in the driver
@@ -124,7 +124,7 @@ void R_TimeGraph (void)
 	static	int		timex;
 	int		a;
 	float	r_time2;
-	static byte	r_timings[MAX_TIMINGS];
+	static uint8_t	r_timings[MAX_TIMINGS];
 	int		x;
 
 	r_time2 = Sys_FloatTime ();
@@ -213,7 +213,7 @@ void R_PrintAliasStats (void)
 void WarpPalette (void)
 {
 	int		i,j;
-	byte	newpalette[768];
+	uint8_t	newpalette[768];
 	int		basecolor[3];
 
 	basecolor[0] = 130;

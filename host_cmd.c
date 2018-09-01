@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "quakedef.h"
 
 extern cvar_t	pausable;
@@ -124,7 +125,7 @@ void Host_Notarget_f (void)
 		SV_ClientPrintf ("notarget ON\n");
 }
 
-qboolean noclip_anglehack;
+bool noclip_anglehack;
 
 void Host_Noclip_f (void)
 {
@@ -652,7 +653,7 @@ void Host_Name_f (void)
 
 	if (cmd_source == src_command)
 	{
-		if (Q_strcmp(cl_name.string, newName) == 0)
+		if (strcmp(cl_name.string, newName) == 0)
 			return;
 		Cvar_Set ("_cl_name", newName);
 		if (cls.state == ca_connected)
@@ -661,9 +662,9 @@ void Host_Name_f (void)
 	}
 
 	if (host_client->name[0] && strcmp(host_client->name, "unconnected") )
-		if (Q_strcmp(host_client->name, newName) != 0)
+		if (strcmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
-	Q_strcpy (host_client->name, newName);
+	strcpy (host_client->name, newName);
 	host_client->edict->v.netname = host_client->name - pr_strings;
 
 // send notification to all clients
@@ -679,14 +680,14 @@ void Host_Version_f (void)
 	Con_Printf ("Exe: "__TIME__" "__DATE__"\n");
 }
 
-void Host_Say(qboolean teamonly)
+void Host_Say(bool teamonly)
 {
 	client_t *client;
 	client_t *save;
 	int		j;
 	char	*p;
 	unsigned char	text[64];
-	qboolean	fromServer = false;
+	bool	fromServer = false;
 
 	if (cmd_source == src_command)
 	{
@@ -712,7 +713,7 @@ void Host_Say(qboolean teamonly)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[strlen(p)-1] = 0;
 	}
 
 // turn on color set 1
@@ -721,8 +722,8 @@ void Host_Say(qboolean teamonly)
 	else
 		sprintf (text, "%c<%s> ", 1, hostname.string);
 
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
-	if (Q_strlen(p) > j)
+	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+	if (strlen(p) > j)
 		p[j] = 0;
 
 	strcat (text, p);
@@ -769,8 +770,8 @@ void Host_Tell_f(void)
 	if (Cmd_Argc () < 3)
 		return;
 
-	Q_strcpy(text, host_client->name);
-	Q_strcat(text, ": ");
+	strcpy(text, host_client->name);
+	strcat(text, ": ");
 
 	p = Cmd_Args();
 
@@ -778,12 +779,12 @@ void Host_Tell_f(void)
 	if (*p == '"')
 	{
 		p++;
-		p[Q_strlen(p)-1] = 0;
+		p[strlen(p)-1] = 0;
 	}
 
 // check length & truncate if necessary
-	j = sizeof(text) - 2 - Q_strlen(text);  // -2 for /n and null terminator
-	if (Q_strlen(p) > j)
+	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+	if (strlen(p) > j)
 		p[j] = 0;
 
 	strcat (text, p);
@@ -794,7 +795,7 @@ void Host_Tell_f(void)
 	{
 		if (!client->active || !client->spawned)
 			continue;
-		if (Q_strcasecmp(client->name, Cmd_Argv(1)))
+		if (strcasecmp(client->name, Cmd_Argv(1)))
 			continue;
 		host_client = client;
 		SV_ClientPrintf("%s", text);
@@ -821,11 +822,11 @@ void Host_Color_f(void)
 	}
 
 	if (Cmd_Argc() == 2)
-		top = bottom = atoi(Cmd_Argv(1));
+		top = bottom = strtol(Cmd_Argv(1), NULL, 0);
 	else
 	{
-		top = atoi(Cmd_Argv(1));
-		bottom = atoi(Cmd_Argv(2));
+		top = strtol(Cmd_Argv(1), NULL, 0);
+		bottom = strtol(Cmd_Argv(2), NULL, 0);
 	}
 
 	top &= 15;
@@ -1092,7 +1093,7 @@ void Host_Kick_f (void)
 	char		*message = NULL;
 	client_t	*save;
 	int			i;
-	qboolean	byNumber = false;
+	bool	byNumber = false;
 
 	if (cmd_source == src_command)
 	{
@@ -1107,9 +1108,9 @@ void Host_Kick_f (void)
 
 	save = host_client;
 
-	if (Cmd_Argc() > 2 && Q_strcmp(Cmd_Argv(1), "#") == 0)
+	if (Cmd_Argc() > 2 && strcmp(Cmd_Argv(1), "#") == 0)
 	{
-		i = Q_atof(Cmd_Argv(2)) - 1;
+		i = atof(Cmd_Argv(2)) - 1;
 		if (i < 0 || i >= svs.maxclients)
 			return;
 		if (!svs.clients[i].active)
@@ -1123,7 +1124,7 @@ void Host_Kick_f (void)
 		{
 			if (!host_client->active)
 				continue;
-			if (Q_strcasecmp(host_client->name, Cmd_Argv(1)) == 0)
+			if (strcasecmp(host_client->name, Cmd_Argv(1)) == 0)
 				break;
 		}
 	}
@@ -1150,7 +1151,7 @@ void Host_Kick_f (void)
 				message++;							// skip the #
 				while (*message == ' ')				// skip white space
 					message++;
-				message += Q_strlen(Cmd_Argv(2));	// skip the number
+				message += strlen(Cmd_Argv(2));	// skip the number
 			}
 			while (*message && *message == ' ')
 				message++;
@@ -1194,7 +1195,7 @@ void Host_Give_f (void)
 		return;
 
 	t = Cmd_Argv(1);
-	v = atoi (Cmd_Argv(2));
+	v = strtol(Cmd_Argv(2), NULL, 0);
 
 	switch (t[0])
 	{
@@ -1388,7 +1389,7 @@ void Host_Viewframe_f (void)
 		return;
 	m = cl.model_precache[(int)e->v.modelindex];
 
-	f = atoi(Cmd_Argv(1));
+	f = strtol(Cmd_Argv(1), NULL, 0);
 	if (f >= m->numframes)
 		f = m->numframes-1;
 

@@ -1,5 +1,6 @@
 // cl_parse.c  -- parse a message received from the server
 
+#include <stdio.h>
 #include "quakedef.h"
 
 char *svc_strings[] =
@@ -129,7 +130,7 @@ void CL_KeepaliveMessage (void)
 	static float lastmsg;
 	int		ret;
 	sizebuf_t	old;
-	byte		olddata[8192];
+	uint8_t		olddata[8192];
 
 	if (sv.active)
 		return;		// no need if server is local
@@ -310,7 +311,7 @@ void CL_ParseUpdate (int bits)
 	int			i;
 	model_t		*model;
 	int			modnum;
-	qboolean	forcelink;
+	bool	forcelink;
 	entity_t	*ent;
 	int			num;
 	int			skin;
@@ -590,7 +591,7 @@ void CL_NewTranslation (int slot)
 {
 	int		i, j;
 	int		top, bottom;
-	byte	*dest, *source;
+	uint8_t	*dest, *source;
 
 	if (slot > cl.maxclients)
 		Sys_Error ("CL_NewTranslation: slot > cl.maxclients");
@@ -778,8 +779,8 @@ void CL_ParseServerMessage (void)
 			i = MSG_ReadByte ();
 			if (i >= MAX_LIGHTSTYLES)
 				Sys_Error ("svc_lightstyle > MAX_LIGHTSTYLES");
-			Q_strcpy (cl_lightstyle[i].map,  MSG_ReadString());
-			cl_lightstyle[i].length = Q_strlen(cl_lightstyle[i].map);
+			strcpy (cl_lightstyle[i].map,  MSG_ReadString());
+			cl_lightstyle[i].length = strlen(cl_lightstyle[i].map);
 			break;
 
 		case svc_sound:
@@ -874,9 +875,9 @@ void CL_ParseServerMessage (void)
 			cl.cdtrack = MSG_ReadByte ();
 			cl.looptrack = MSG_ReadByte ();
 			if ( (cls.demoplayback || cls.demorecording) && (cls.forcetrack != -1) )
-				CDAudio_Play ((byte)cls.forcetrack, true);
+				CDAudio_Play (cls.forcetrack, true);
 			else
-				CDAudio_Play ((byte)cl.cdtrack, true);
+				CDAudio_Play (cl.cdtrack, true);
 			break;
 
 		case svc_intermission:

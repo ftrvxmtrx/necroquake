@@ -1,5 +1,6 @@
 // chase.c -- chase camera code
 
+#include <math.h>
 #include "quakedef.h"
 
 cvar_t	chase_back = {"chase_back", "100"};

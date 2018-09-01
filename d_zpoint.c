@@ -11,7 +11,7 @@ D_DrawZPoint
 */
 void D_DrawZPoint (void)
 {
-	byte	*pdest;
+	uint8_t	*pdest;
 	short	*pz;
 	int		izi;
 

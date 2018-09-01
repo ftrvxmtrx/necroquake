@@ -7,13 +7,13 @@ typedef struct {
 	vrect_t	rect;
 	int		width;
 	int		height;
-	byte	*ptexbytes;
+	uint8_t	*ptexbytes;
 	int		rowbytes;
 } rectdesc_t;
 
 static rectdesc_t	r_rectdesc;
 
-byte		*draw_chars;				// 8*8 graphic characters
+uint8_t		*draw_chars;				// 8*8 graphic characters
 qpic_t		*draw_disc;
 qpic_t		*draw_backtile;
 
@@ -109,8 +109,8 @@ smoothly scrolled off.
 */
 void Draw_Character (int x, int y, int num)
 {
-	byte			*dest;
-	byte			*source;
+	uint8_t			*dest;
+	uint8_t			*source;
 	unsigned short	*pusdest;
 	int				drawline;
 	int				row, col;
@@ -170,7 +170,7 @@ void Draw_Character (int x, int y, int num)
 	{
 	// FIXME: pre-expand to native format?
 		pusdest = (unsigned short *)
-				((byte *)vid.conbuffer + y*vid.conrowbytes + (x<<1));
+				((uint8_t *)vid.conbuffer + y*vid.conrowbytes + (x<<1));
 
 		while (drawline--)
 		{
@@ -223,10 +223,10 @@ of the code.
 */
 void Draw_DebugChar (char num)
 {
-	byte			*dest;
-	byte			*source;
+	uint8_t			*dest;
+	uint8_t			*source;
 	int				drawline;
-	extern byte		*draw_chars;
+	extern uint8_t		*draw_chars;
 	int				row, col;
 
 	if (!vid.direct)
@@ -262,7 +262,7 @@ Draw_Pic
 */
 void Draw_Pic (int x, int y, qpic_t *pic)
 {
-	byte			*dest, *source;
+	uint8_t			*dest, *source;
 	unsigned short	*pusdest;
 	int				v, u;
 
@@ -282,7 +282,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 
 		for (v=0 ; v<pic->height ; v++)
 		{
-			Q_memcpy (dest, source, pic->width);
+			memcpy (dest, source, pic->width);
 			dest += vid.rowbytes;
 			source += pic->width;
 		}
@@ -312,7 +312,7 @@ Draw_TransPic
 */
 void Draw_TransPic (int x, int y, qpic_t *pic)
 {
-	byte	*dest, *source, tbyte;
+	uint8_t	*dest, *source, tbyte;
 	unsigned short	*pusdest;
 	int				v, u;
 
@@ -396,9 +396,9 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 Draw_TransPicTranslate
 =============
 */
-void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
+void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 {
-	byte	*dest, *source, tbyte;
+	uint8_t	*dest, *source, tbyte;
 	unsigned short	*pusdest;
 	int				v, u;
 
@@ -477,10 +477,10 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	}
 }
 
-void Draw_CharToConback (int num, byte *dest)
+void Draw_CharToConback (int num, uint8_t *dest)
 {
 	int		row, col;
-	byte	*source;
+	uint8_t	*source;
 	int		drawline;
 	int		x;
 
@@ -510,7 +510,7 @@ Draw_ConsoleBackground
 void Draw_ConsoleBackground (int lines)
 {
 	int				x, y, v;
-	byte			*src, *dest;
+	uint8_t			*src, *dest;
 	unsigned short	*pusdest;
 	int				f, fstep;
 	qpic_t			*conback;
@@ -586,12 +586,12 @@ void Draw_ConsoleBackground (int lines)
 R_DrawRect8
 ==============
 */
-void R_DrawRect8 (vrect_t *prect, int rowbytes, byte *psrc,
+void R_DrawRect8 (vrect_t *prect, int rowbytes, uint8_t *psrc,
 	int transparent)
 {
-	byte	t;
+	uint8_t	t;
 	int		i, j, srcdelta, destdelta;
-	byte	*pdest;
+	uint8_t	*pdest;
 
 	pdest = vid.buffer + (prect->y * vid.rowbytes) + prect->x;
 
@@ -634,10 +634,10 @@ void R_DrawRect8 (vrect_t *prect, int rowbytes, byte *psrc,
 R_DrawRect16
 ==============
 */
-void R_DrawRect16 (vrect_t *prect, int rowbytes, byte *psrc,
+void R_DrawRect16 (vrect_t *prect, int rowbytes, uint8_t *psrc,
 	int transparent)
 {
-	byte			t;
+	uint8_t			t;
 	int				i, j, srcdelta, destdelta;
 	unsigned short	*pdest;
 
@@ -697,7 +697,7 @@ refresh window.
 void Draw_TileClear (int x, int y, int w, int h)
 {
 	int				width, height, tileoffsetx, tileoffsety;
-	byte			*psrc;
+	uint8_t			*psrc;
 	vrect_t			vr;
 
 	r_rectdesc.rect.x = x;
@@ -767,7 +767,7 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
-	byte			*dest;
+	uint8_t			*dest;
 	unsigned short	*pusdest;
 	unsigned		uc;
 	int				u, v;
@@ -800,7 +800,7 @@ Draw_FadeScreen
 void Draw_FadeScreen (void)
 {
 	int			x,y;
-	byte		*pbuf;
+	uint8_t		*pbuf;
 
 	S_ExtraUpdate ();
 
@@ -808,7 +808,7 @@ void Draw_FadeScreen (void)
 	{
 		int	t;
 
-		pbuf = (byte *)(vid.buffer + vid.rowbytes*y);
+		pbuf = (uint8_t *)(vid.buffer + vid.rowbytes*y);
 		t = (y & 1) << 1;
 
 		for (x=0 ; x<vid.width ; x++)

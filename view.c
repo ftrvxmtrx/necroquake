@@ -1,5 +1,7 @@
 // view.c -- player eye positioning
 
+#include <stdlib.h>
+#include <math.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
@@ -230,7 +232,7 @@ cshift_t	cshift_lava = { {255,80,0}, 150 };
 
 cvar_t		v_gamma = {"gamma", "1", true};
 
-byte		gammatable[256];	// palette is sent through this
+uint8_t		gammatable[256];	// palette is sent through this
 
 void BuildGammaTable (float g)
 {
@@ -259,7 +261,7 @@ void BuildGammaTable (float g)
 V_CheckGamma
 =================
 */
-qboolean V_CheckGamma (void)
+bool V_CheckGamma (void)
 {
 	static float oldgammavalue;
 
@@ -350,10 +352,10 @@ V_cshift_f
 */
 void V_cshift_f (void)
 {
-	cshift_empty.destcolor[0] = atoi(Cmd_Argv(1));
-	cshift_empty.destcolor[1] = atoi(Cmd_Argv(2));
-	cshift_empty.destcolor[2] = atoi(Cmd_Argv(3));
-	cshift_empty.percent = atoi(Cmd_Argv(4));
+	cshift_empty.destcolor[0] = strtol(Cmd_Argv(1), NULL, 0);
+	cshift_empty.destcolor[1] = strtol(Cmd_Argv(2), NULL, 0);
+	cshift_empty.destcolor[2] = strtol(Cmd_Argv(3), NULL, 0);
+	cshift_empty.percent = strtol(Cmd_Argv(4), NULL, 0);
 }
 
 /*
@@ -444,11 +446,11 @@ V_UpdatePalette
 void V_UpdatePalette (void)
 {
 	int		i, j;
-	qboolean	new;
-	byte	*basepal, *newpal;
-	byte	pal[768];
+	bool	new;
+	uint8_t	*basepal, *newpal;
+	uint8_t	pal[768];
 	int		r,g,b;
-	qboolean force;
+	bool force;
 
 	V_CalcPowerupCshift ();
 

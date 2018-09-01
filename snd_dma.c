@@ -1,12 +1,12 @@
 // snd_dma.c -- main control for any streaming sound output device
 
+#include <stdlib.h>
 #include "quakedef.h"
 
 void S_Play(void);
 void S_PlayVol(void);
 void S_SoundList(void);
-void S_Update_();
-void S_StopAllSounds(qboolean clear);
+void S_StopAllSounds(bool clear);
 void S_StopAllSoundsC(void);
 
 // =======================================================================
@@ -17,8 +17,8 @@ channel_t   channels[MAX_CHANNELS];
 int			total_channels;
 
 int				snd_blocked = 0;
-static qboolean	snd_ambient = 1;
-qboolean		snd_initialized = false;
+static bool	snd_ambient = 1;
+bool		snd_initialized = false;
 
 // pointer should go away
 volatile dma_t  *shm = 0;
@@ -67,7 +67,7 @@ cvar_t _snd_mixahead = {"_snd_mixahead", "0.1", true};
 // number of times S_Update() is called per second.
 //
 
-qboolean fakedma = false;
+bool fakedma = false;
 int fakedma_updates = 15;
 
 void S_AmbientOff (void)
@@ -247,12 +247,12 @@ sfx_t *S_FindName (char *name)
 	if (!name)
 		Sys_Error ("S_FindName: NULL\n");
 
-	if (Q_strlen(name) >= MAX_QPATH)
+	if (strlen(name) >= MAX_QPATH)
 		Sys_Error ("Sound name too long: %s", name);
 
 // see if already loaded
 	for (i=0 ; i < num_sfx ; i++)
-		if (!Q_strcmp(known_sfx[i].name, name))
+		if (!strcmp(known_sfx[i].name, name))
 		{
 			return &known_sfx[i];
 		}
@@ -494,7 +494,7 @@ void S_StopSound(int entnum, int entchannel)
 	}
 }
 
-void S_StopAllSounds(qboolean clear)
+void S_StopAllSounds(bool clear)
 {
 	int		i;
 
@@ -507,7 +507,7 @@ void S_StopAllSounds(qboolean clear)
 		if (channels[i].sfx)
 			channels[i].sfx = NULL;
 
-	Q_memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
+	memset(channels, 0, MAX_CHANNELS * sizeof(channel_t));
 
 	if (clear)
 		S_ClearBuffer ();
@@ -530,7 +530,7 @@ void S_ClearBuffer (void)
 	else
 		clear = 0;
 
-	Q_memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
+	memset(shm->buffer, clear, shm->samples * shm->samplebits/8);
 }
 
 /*
@@ -720,9 +720,6 @@ void S_Update(vec3_t origin, vec3_t forward, vec3_t right, vec3_t up)
 
 		Con_Printf ("----(%i)----\n", total);
 	}
-
-// mix some sound
-	S_Update_();
 }
 
 void GetSoundtime(void)
@@ -736,9 +733,6 @@ void GetSoundtime(void)
 
 // it is possible to miscount buffers if it has wrapped twice between
 // calls to S_Update.  Oh well.
-#ifdef __sun__
-	soundtime = SNDDMA_GetSamples();
-#else
 	samplepos = SNDDMA_GetDMAPos();
 
 	if (samplepos < oldsamplepos)
@@ -755,45 +749,12 @@ void GetSoundtime(void)
 	oldsamplepos = samplepos;
 
 	soundtime = buffers*fullsamples + samplepos/shm->channels;
-#endif
 }
 
 void S_ExtraUpdate (void)
 {
 	if (snd_noextraupdate.value)
 		return;		// don't pollute timings
-	S_Update_();
-}
-
-void S_Update_(void)
-{
-#ifndef SDL
-
-	unsigned        endtime;
-	int				samps;
-
-	if (!sound_started || (snd_blocked > 0))
-		return;
-
-// Updates DMA time
-	GetSoundtime();
-
-// check to make sure that we haven't overshot
-	if (paintedtime < soundtime)
-	{
-		//Con_Printf ("S_Update_ : overflow\n");
-		paintedtime = soundtime;
-	}
-
-// mix ahead of current position
-	endtime = soundtime + _snd_mixahead.value * shm->speed;
-	samps = shm->samples >> (shm->channels-1);
-	if (endtime - soundtime > samps)
-		endtime = soundtime + samps;
-	S_PaintChannels (endtime);
-
-	SNDDMA_Submit ();
-#endif /* ! SDL */
 }
 
 /*
@@ -814,13 +775,13 @@ void S_Play(void)
 	i = 1;
 	while (i<Cmd_Argc())
 	{
-		if (!Q_strrchr(Cmd_Argv(i), '.'))
+		if (!strrchr(Cmd_Argv(i), '.'))
 		{
-			Q_strcpy(name, Cmd_Argv(i));
-			Q_strcat(name, ".wav");
+			strcpy(name, Cmd_Argv(i));
+			strcat(name, ".wav");
 		}
 		else
-			Q_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 		sfx = S_PrecacheSound(name);
 		S_StartSound(hash++, 0, sfx, listener_origin, 1.0, 1.0);
 		i++;
@@ -838,15 +799,15 @@ void S_PlayVol(void)
 	i = 1;
 	while (i<Cmd_Argc())
 	{
-		if (!Q_strrchr(Cmd_Argv(i), '.'))
+		if (!strrchr(Cmd_Argv(i), '.'))
 		{
-			Q_strcpy(name, Cmd_Argv(i));
-			Q_strcat(name, ".wav");
+			strcpy(name, Cmd_Argv(i));
+			strcat(name, ".wav");
 		}
 		else
-			Q_strcpy(name, Cmd_Argv(i));
+			strcpy(name, Cmd_Argv(i));
 		sfx = S_PrecacheSound(name);
-		vol = Q_atof(Cmd_Argv(i+1));
+		vol = strtof(Cmd_Argv(i+1), NULL);
 		S_StartSound(hash++, 0, sfx, listener_origin, vol, 1.0);
 		i+=2;
 	}

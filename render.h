@@ -17,7 +17,7 @@ typedef struct efrag_s
 
 typedef struct entity_s
 {
-	qboolean				forcelink;		// model changed
+	bool				forcelink;		// model changed
 
 	int						update_type;
 
@@ -32,7 +32,7 @@ typedef struct entity_s
 	struct efrag_s			*efrag;			// linked list of efrags
 	int						frame;
 	float					syncbase;		// for client-side animations
-	byte					*colormap;
+	uint8_t					*colormap;
 	int						effects;		// light, particals, etc
 	int						skinnum;		// for Alias models
 	int						visframe;		// last frame this entity was
@@ -119,7 +119,7 @@ void R_PushDlights (void);
 // surface cache related
 //
 extern	int		reinit_surfcache;	// if 1, surface cache is currently empty and
-extern qboolean	r_cache_thrash;	// set if thrashing the surface cache
+extern bool	r_cache_thrash;	// set if thrashing the surface cache
 
 int	D_SurfaceCacheForRes (int width, int height);
 void D_FlushCaches (void);

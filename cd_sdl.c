@@ -6,13 +6,13 @@
 */
 
 #include <SDL.h>
-
 #include "quakedef.h"
+#include "cdaudio.h"
 
-static qboolean cdValid = false;
-static qboolean initialized = false;
-static qboolean enabled = true;
-static qboolean playLooping = false;
+static bool cdValid = false;
+static bool initialized = false;
+static bool enabled = true;
+static bool playLooping = false;
 static SDL_CD *cd_id;
 static float cdvolume = 1.0;
 
@@ -26,7 +26,7 @@ static void CDAudio_Eject()
 		Con_DPrintf("Unable to eject CD-ROM tray.\n");
 }
 
-void CDAudio_Play(byte track, qboolean looping)
+void CDAudio_Play(int track, bool looping)
 {
 	CDstatus cd_stat;
 	if(!cd_id || !enabled) return;
@@ -157,11 +157,11 @@ static void CD_f()
 	if(Cmd_Argc() < 2) return;
 
 	command = Cmd_Argv(1);
-	if(!Q_strcasecmp(command,"on"))
+	if(!strcasecmp(command,"on"))
 	{
 		enabled = true;
 	}
-	if(!Q_strcasecmp(command,"off"))
+	if(!strcasecmp(command,"off"))
 	{
 		if(!cd_id) return;
 		cdstate = SDL_CDStatus(cd_id);
@@ -170,37 +170,37 @@ static void CD_f()
 		enabled = false;
 		return;
 	}
-	if(!Q_strcasecmp(command,"play"))
+	if(!strcasecmp(command,"play"))
 	{
-		CDAudio_Play(Q_atoi(Cmd_Argv(2)),false);
+		CDAudio_Play(atoi(Cmd_Argv(2)),false);
 		return;
 	}
-	if(!Q_strcasecmp(command,"loop"))
+	if(!strcasecmp(command,"loop"))
 	{
-		CDAudio_Play(Q_atoi(Cmd_Argv(2)),true);
+		CDAudio_Play(atoi(Cmd_Argv(2)),true);
 		return;
 	}
-	if(!Q_strcasecmp(command,"stop"))
+	if(!strcasecmp(command,"stop"))
 	{
 		CDAudio_Stop();
 		return;
 	}
-	if(!Q_strcasecmp(command,"pause"))
+	if(!strcasecmp(command,"pause"))
 	{
 		CDAudio_Pause();
 		return;
 	}
-	if(!Q_strcasecmp(command,"resume"))
+	if(!strcasecmp(command,"resume"))
 	{
 		CDAudio_Resume();
 		return;
 	}
-	if(!Q_strcasecmp(command,"eject"))
+	if(!strcasecmp(command,"eject"))
 	{
 		CDAudio_Eject();
 		return;
 	}
-	if(!Q_strcasecmp(command,"info"))
+	if(!strcasecmp(command,"info"))
 	{
 		if(!cd_id) return;
 		cdstate = SDL_CDStatus(cd_id);

@@ -1,7 +1,7 @@
 extern	cvar_t		v_gamma;
 
-extern	byte		gammatable[256];	// palette is sent through this
-extern	byte		ramps[3][256];
+extern	uint8_t		gammatable[256];	// palette is sent through this
+extern	uint8_t		ramps[3][256];
 extern float v_blend[4];
 
 extern cvar_t lcd_x;

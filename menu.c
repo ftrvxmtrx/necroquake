@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "quakedef.h"
 
 void (*vid_menudrawfn)(void);
@@ -62,12 +63,12 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 
-qboolean	m_entersound;		// play after drawing a frame, so caching
+bool	m_entersound;		// play after drawing a frame, so caching
 								// won't disrupt the sound
-qboolean	m_recursiveDraw;
+bool	m_recursiveDraw;
 
 int			m_return_state;
-qboolean	m_return_onerror;
+bool	m_return_onerror;
 char		m_return_reason [32];
 
 #define StartingGame	(m_multiplayer_cursor == 1)
@@ -121,13 +122,13 @@ void M_DrawPic (int x, int y, qpic_t *pic)
 	Draw_Pic (x + ((vid.width - 320)>>1), y, pic);
 }
 
-byte identityTable[256];
-byte translationTable[256];
+uint8_t identityTable[256];
+uint8_t translationTable[256];
 
 void M_BuildTranslationTable(int top, int bottom)
 {
 	int		j;
-	byte	*dest, *source;
+	uint8_t	*dest, *source;
 
 	for (j = 0; j < 256; j++)
 		identityTable[j] = j;
@@ -657,8 +658,8 @@ void M_Menu_Setup_f (void)
 	key_dest = key_menu;
 	m_state = m_setup;
 	m_entersound = true;
-	Q_strcpy(setup_myname, cl_name.string);
-	Q_strcpy(setup_hostname, hostname.string);
+	strcpy(setup_myname, cl_name.string);
+	strcpy(setup_hostname, hostname.string);
 	setup_top = setup_oldtop = ((int)cl_color.value) >> 4;
 	setup_bottom = setup_oldbottom = ((int)cl_color.value) & 15;
 }
@@ -752,9 +753,9 @@ forward:
 			goto forward;
 
 		// setup_cursor == 4 (OK)
-		if (Q_strcmp(cl_name.string, setup_myname) != 0)
+		if (strcmp(cl_name.string, setup_myname) != 0)
 			Cbuf_AddText ( va ("name \"%s\"\n", setup_myname) );
-		if (Q_strcmp(hostname.string, setup_hostname) != 0)
+		if (strcmp(hostname.string, setup_hostname) != 0)
 			Cvar_Set("hostname", setup_hostname);
 		if (setup_top != setup_oldtop || setup_bottom != setup_oldbottom)
 			Cbuf_AddText( va ("color %i %i\n", setup_top, setup_bottom) );
@@ -1454,7 +1455,7 @@ void M_Help_Key (int key)
 
 int		msgNumber;
 int		m_quit_prevstate;
-qboolean	wasInMenus;
+bool	wasInMenus;
 
 char *quitMessage [] =
 {
@@ -1582,7 +1583,7 @@ void M_Menu_SerialConfig_f (void)
 	int		n;
 	int		port;
 	int		baudrate;
-	qboolean	useModem;
+	bool	useModem;
 
 	key_dest = key_menu;
 	m_state = m_serialconfig;
@@ -2209,7 +2210,7 @@ void M_LanConfig_Key (int key)
 		else
 			lanConfig_cursor = 0;
 
-	l =  Q_atoi(lanConfig_portname);
+	l =  strtol(lanConfig_portname, NULL, 0);
 	if (l > 65535)
 		l = lanConfig_port;
 	else
@@ -2367,7 +2368,7 @@ episode_t	rogueepisodes[] =
 int	startepisode;
 int	startlevel;
 int maxplayers;
-qboolean m_serverInfoMessage = false;
+bool m_serverInfoMessage = false;
 double m_serverInfoMessageTime;
 
 void M_Menu_GameOptions_f (void)
@@ -2675,7 +2676,7 @@ void M_GameOptions_Key (int key)
 //=============================================================================
 /* SEARCH MENU */
 
-qboolean	searchComplete = false;
+bool	searchComplete = false;
 double		searchCompleteTime;
 
 void M_Menu_Search_f (void)
@@ -2734,7 +2735,7 @@ void M_Search_Key (int key)
 /* SLIST MENU */
 
 int		slist_cursor;
-qboolean slist_sorted;
+bool slist_sorted;
 
 void M_Menu_ServerList_f (void)
 {
@@ -2763,9 +2764,9 @@ void M_ServerList_Draw (void)
 				for (j = i+1; j < hostCacheCount; j++)
 					if (strcmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
-						Q_memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
-						Q_memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
-						Q_memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
+						memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
+						memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
+						memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
 					}
 		}
 		slist_sorted = true;

@@ -52,7 +52,7 @@ void D_DrawSkyScans8 (espan_t *pspan)
 
 	do
 	{
-		pdest = (unsigned char *)((byte *)d_viewbuffer +
+		pdest = (unsigned char *)((uint8_t *)d_viewbuffer +
 				(screenwidth * pspan->v) + pspan->u);
 
 		count = pspan->count;

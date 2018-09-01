@@ -1,6 +1,6 @@
 .PHONY: clean all
 
-CFLAGS=$(shell pkg-config --cflags sdl) -Wall -Wextra -Wno-error=format-security
+CFLAGS=$(shell pkg-config --cflags sdl) -Wall -Wextra -Wno-error=format-security -Wno-missing-field-initializers
 LDFLAGS=$(shell pkg-config --libs sdl)
 
 srcs=\

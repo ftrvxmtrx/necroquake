@@ -25,14 +25,14 @@ typedef struct
 	int 	speed;
 	int 	width;
 	int 	stereo;
-	byte	data[1];		// variable sized
+	uint8_t	data[1];		// variable sized
 } sfxcache_t;
 
 typedef struct
 {
-	qboolean		gamealive;
-	qboolean		soundalive;
-	qboolean		splitbuffer;
+	bool		gamealive;
+	bool		soundalive;
+	bool		splitbuffer;
 	int				channels;
 	int				samples;				// mono samples in buffer
 	int				submission_chunk;		// don't mix less than this #
@@ -73,7 +73,7 @@ void S_Shutdown (void);
 void S_StartSound (int entnum, int entchannel, sfx_t *sfx, vec3_t origin, float fvol,  float attenuation);
 void S_StaticSound (sfx_t *sfx, vec3_t origin, float vol, float attenuation);
 void S_StopSound (int entnum, int entchannel);
-void S_StopAllSounds(qboolean clear);
+void S_StopAllSounds(bool clear);
 void S_ClearBuffer (void);
 void S_Update (vec3_t origin, vec3_t v_forward, vec3_t v_right, vec3_t v_up);
 void S_ExtraUpdate (void);
@@ -93,7 +93,7 @@ channel_t *SND_PickChannel(int entnum, int entchannel);
 void SND_Spatialize(channel_t *ch);
 
 // initializes cycling through a DMA buffer and returns information on it
-qboolean SNDDMA_Init(void);
+bool SNDDMA_Init(void);
 
 // gets the current DMA position
 int SNDDMA_GetDMAPos(void);
@@ -121,7 +121,7 @@ extern	int			total_channels;
 // number of times S_Update() is called per second.
 //
 
-extern qboolean 		fakedma;
+extern bool 		fakedma;
 extern int 			fakedma_updates;
 extern int		paintedtime;
 extern vec3_t listener_origin;
@@ -136,14 +136,14 @@ extern	cvar_t loadas8bit;
 extern	cvar_t bgmvolume;
 extern	cvar_t volume;
 
-extern qboolean	snd_initialized;
+extern bool	snd_initialized;
 
 extern int		snd_blocked;
 
 void S_LocalSound (char *s);
 sfxcache_t *S_LoadSound (sfx_t *s);
 
-wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength);
+wavinfo_t GetWavinfo (char *name, uint8_t *wav, int wavlength);
 
 void SND_InitScaletable (void);
 void SNDDMA_Submit(void);

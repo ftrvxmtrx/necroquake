@@ -11,7 +11,7 @@ cvar_t	d_mipcap = {"d_mipcap", "0"};
 cvar_t	d_mipscale = {"d_mipscale", "1"};
 
 surfcache_t		*d_initial_rover;
-qboolean		d_roverwrapped;
+bool		d_roverwrapped;
 int				d_minmip;
 float			d_scalemip[NUM_MIPS-1];
 
@@ -54,7 +54,7 @@ void D_SetupFrame (void)
 	if (r_dowarp)
 		d_viewbuffer = r_warpbuffer;
 	else
-		d_viewbuffer = (void *)(byte *)vid.buffer;
+		d_viewbuffer = (void *)(uint8_t *)vid.buffer;
 
 	if (r_dowarp)
 		screenwidth = WARP_WIDTH;

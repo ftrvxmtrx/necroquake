@@ -1,24 +1,23 @@
+#include <math.h>
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
-
-//define	PASSAGES
 
 void		*colormap;
 vec3_t		viewlightvec;
 alight_t	r_viewlighting = {128, 192, viewlightvec};
 float		r_time1;
 int			r_numallocatededges;
-qboolean	r_drawpolys;
-qboolean	r_drawculledpolys;
-qboolean	r_worldpolysbacktofront;
-qboolean	r_recursiveaffinetriangles = true;
+bool	r_drawpolys;
+bool	r_drawculledpolys;
+bool	r_worldpolysbacktofront;
+bool	r_recursiveaffinetriangles = true;
 int			r_pixbytes = 1;
 float		r_aliasuvscale = 1.0;
 int			r_outofsurfaces;
 int			r_outofedges;
 
-qboolean	r_dowarp, r_dowarpold, r_viewchanged;
+bool	r_dowarp, r_dowarpold, r_viewchanged;
 
 int			numbtofpolys;
 btofpoly_t	*pbtofpolys;
@@ -26,14 +25,14 @@ mvertex_t	*r_pcurrentvertbase;
 
 int			c_surf;
 int			r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
-qboolean	r_surfsonstack;
+bool	r_surfsonstack;
 int			r_clipflags;
 
-byte		*r_warpbuffer;
+uint8_t		*r_warpbuffer;
 
-byte		*r_stack_start;
+uint8_t		*r_stack_start;
 
-qboolean	r_fov_greater_than_90;
+bool	r_fov_greater_than_90;
 
 //
 // view origin
@@ -130,7 +129,7 @@ R_InitTextures
 void	R_InitTextures (void)
 {
 	int		x,y, m;
-	byte	*dest;
+	uint8_t	*dest;
 
 // create a simple checkerboard texture for the default
 	r_notexture_mip = Hunk_AllocName (sizeof(texture_t) + 16*16+8*8+4*4+2*2, "notexture");
@@ -143,7 +142,7 @@ void	R_InitTextures (void)
 
 	for (m=0 ; m<4 ; m++)
 	{
-		dest = (byte *)r_notexture_mip + r_notexture_mip->offsets[m];
+		dest = (uint8_t *)r_notexture_mip + r_notexture_mip->offsets[m];
 		for (y=0 ; y< (16>>m) ; y++)
 			for (x=0 ; x< (16>>m) ; x++)
 			{
@@ -165,7 +164,7 @@ void R_Init (void)
 	int		dummy;
 
 // get stack position so we can guess if we are going to overflow
-	r_stack_start = (byte *)&dummy;
+	r_stack_start = (uint8_t *)&dummy;
 
 	R_InitTurb ();
 
@@ -268,9 +267,6 @@ void R_NewMap (void)
 
 	r_dowarpold = false;
 	r_viewchanged = false;
-#ifdef PASSAGES
-CreatePassages ();
-#endif
 }
 
 /*
@@ -441,7 +437,7 @@ R_MarkLeaves
 */
 void R_MarkLeaves (void)
 {
-	byte	*vis;
+	uint8_t	*vis;
 	mnode_t	*node;
 	int		i;
 
@@ -885,7 +881,7 @@ r_refdef must be set before the first call
 */
 void R_RenderView_ (void)
 {
-	byte	warpbuffer[WARP_WIDTH * WARP_HEIGHT];
+	uint8_t	warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 
 	r_warpbuffer = warpbuffer;
 
@@ -893,12 +889,7 @@ void R_RenderView_ (void)
 		r_time1 = Sys_FloatTime ();
 
 	R_SetupFrame ();
-
-#ifdef PASSAGES
-SetVisibilityByPassages ();
-#else
 	R_MarkLeaves ();	// done here so we know if we're in water
-#endif
 
 	if (!cl_entities[0].model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
@@ -967,7 +958,7 @@ void R_RenderView (void)
 	int		dummy;
 	int		delta;
 
-	delta = (byte *)&dummy - r_stack_start;
+	delta = (uint8_t *)&dummy - r_stack_start;
 	if (delta < -10000 || delta > 10000)
 		Sys_Error ("R_RenderView: called without enough stack");
 
