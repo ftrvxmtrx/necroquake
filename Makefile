@@ -57,7 +57,6 @@ srcs=\
 	r_sky.c \
 	r_sprite.c \
 	r_surf.c \
-	r_vars.c \
 	sbar.c \
 	screen.c \
 	snd_dma.c \
