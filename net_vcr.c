@@ -43,21 +43,18 @@ void VCR_ReadNext (void)
 		Sys_Error ("VCR_ReadNext: bad op");
 }
 
-
 void VCR_Listen (qboolean state)
 {
 }
-
 
 void VCR_Shutdown (void)
 {
 }
 
-
 int VCR_GetMessage (qsocket_t *sock)
 {
 	int	ret;
-	
+
 	if (host_time != next.time || next.op != VCR_OP_GETMESSAGE || next.session != *(long *)(&sock->driverdata))
 		Sys_Error ("VCR missmatch");
 
@@ -76,7 +73,6 @@ int VCR_GetMessage (qsocket_t *sock)
 	return 1;
 }
 
-
 int VCR_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
 	int	ret;
@@ -90,7 +86,6 @@ int VCR_SendMessage (qsocket_t *sock, sizebuf_t *data)
 
 	return ret;
 }
-
 
 qboolean VCR_CanSendMessage (qsocket_t *sock)
 {
@@ -106,22 +101,18 @@ qboolean VCR_CanSendMessage (qsocket_t *sock)
 	return ret;
 }
 
-
 void VCR_Close (qsocket_t *sock)
 {
 }
-
 
 void VCR_SearchForHosts (qboolean xmit)
 {
 }
 
-
 qsocket_t *VCR_Connect (char *host)
 {
 	return NULL;
 }
-
 
 qsocket_t *VCR_CheckNewConnections (void)
 {

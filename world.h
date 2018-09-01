@@ -15,11 +15,9 @@ typedef struct
 	edict_t	*ent;			// entity the surface is on
 } trace_t;
 
-
 #define	MOVE_NORMAL		0
 #define	MOVE_NOMONSTERS	1
 #define	MOVE_MISSILE	2
-
 
 void SV_ClearWorld (void);
 // called after the world model has been loaded, before linking any entities

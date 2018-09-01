@@ -26,7 +26,6 @@ void D_DrawPoly (void)
 // this driver takes spans, not polygons
 }
 
-
 /*
 =============
 D_MipLevelForScale
@@ -51,7 +50,6 @@ int D_MipLevelForScale (float scale)
 	return lmiplevel;
 }
 
-
 /*
 ==============
 D_DrawSolidSurface
@@ -65,7 +63,7 @@ void D_DrawSolidSurface (surf_t *surf, int color)
 	espan_t	*span;
 	byte	*pdest;
 	int		u, u2, pix;
-	
+
 	pix = (color<<24) | (color<<16) | (color<<8) | color;
 	for (span=surf->spans ; span ; span=span->pnext)
 	{
@@ -93,7 +91,6 @@ void D_DrawSolidSurface (surf_t *surf, int color)
 		}
 	}
 }
-
 
 /*
 ==============
@@ -144,7 +141,6 @@ void D_CalcGradients (msurface_t *pface)
 	bbextents = ((pface->extents[0] << 16) >> miplevel) - 1;
 	bbextentt = ((pface->extents[1] << 16) >> miplevel) - 1;
 }
-
 
 /*
 ==============

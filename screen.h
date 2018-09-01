@@ -2,7 +2,6 @@ void SCR_Init (void);
 
 void SCR_UpdateScreen (void);
 
-
 void SCR_SizeUp (void);
 void SCR_SizeDown (void);
 void SCR_BringDownConsole (void);
@@ -27,7 +26,7 @@ extern	cvar_t		scr_viewsize;
 
 extern cvar_t scr_viewsize;
 
-// only the refresh window will be updated unless these variables are flagged 
+// only the refresh window will be updated unless these variables are flagged
 extern	int			scr_copytop;
 extern	int			scr_copyeverything;
 

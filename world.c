@@ -10,7 +10,6 @@ line of sight checks trace->crosscontent, but bullets don't
 
 */
 
-
 typedef struct
 {
 	vec3_t		boxmins, boxmaxs;// enclose the test object along entire move
@@ -22,7 +21,6 @@ typedef struct
 	edict_t		*passedict;
 } moveclip_t;
 
-
 int SV_HullPointContents (hull_t *hull, int num, vec3_t p);
 
 /*
@@ -32,7 +30,6 @@ HULL BOXES
 
 ===============================================================================
 */
-
 
 static	hull_t		box_hull;
 static	dclipnode_t	box_clipnodes[6];
@@ -59,21 +56,20 @@ void SV_InitBoxHull (void)
 	for (i=0 ; i<6 ; i++)
 	{
 		box_clipnodes[i].planenum = i;
-		
+
 		side = i&1;
-		
+
 		box_clipnodes[i].children[side] = CONTENTS_EMPTY;
 		if (i != 5)
 			box_clipnodes[i].children[side^1] = i + 1;
 		else
 			box_clipnodes[i].children[side^1] = CONTENTS_SOLID;
-		
+
 		box_planes[i].type = i>>1;
 		box_planes[i].normal[i>>1] = 1;
 	}
-	
-}
 
+}
 
 /*
 ===================
@@ -94,8 +90,6 @@ hull_t	*SV_HullForBox (vec3_t mins, vec3_t maxs)
 
 	return &box_hull;
 }
-
-
 
 /*
 ================
@@ -143,10 +137,9 @@ hull_t *SV_HullForEntity (edict_t *ent, vec3_t mins, vec3_t maxs, vec3_t offset)
 		VectorSubtract (ent->v.mins, maxs, hullmins);
 		VectorSubtract (ent->v.maxs, mins, hullmaxs);
 		hull = SV_HullForBox (hullmins, hullmaxs);
-		
+
 		VectorCopy (ent->v.origin, offset);
 	}
-
 
 	return hull;
 }
@@ -191,28 +184,28 @@ areanode_t *SV_CreateAreaNode (int depth, vec3_t mins, vec3_t maxs)
 
 	ClearLink (&anode->trigger_edicts);
 	ClearLink (&anode->solid_edicts);
-	
+
 	if (depth == AREA_DEPTH)
 	{
 		anode->axis = -1;
 		anode->children[0] = anode->children[1] = NULL;
 		return anode;
 	}
-	
+
 	VectorSubtract (maxs, mins, size);
 	if (size[0] > size[1])
 		anode->axis = 0;
 	else
 		anode->axis = 1;
-	
+
 	anode->dist = 0.5 * (maxs[anode->axis] + mins[anode->axis]);
-	VectorCopy (mins, mins1);	
-	VectorCopy (mins, mins2);	
-	VectorCopy (maxs, maxs1);	
-	VectorCopy (maxs, maxs2);	
-	
+	VectorCopy (mins, mins1);
+	VectorCopy (mins, mins2);
+	VectorCopy (maxs, maxs1);
+	VectorCopy (maxs, maxs2);
+
 	maxs1[anode->axis] = mins2[anode->axis] = anode->dist;
-	
+
 	anode->children[0] = SV_CreateAreaNode (depth+1, mins2, maxs2);
 	anode->children[1] = SV_CreateAreaNode (depth+1, mins1, maxs1);
 
@@ -228,12 +221,11 @@ SV_ClearWorld
 void SV_ClearWorld (void)
 {
 	SV_InitBoxHull ();
-	
+
 	memset (sv_areanodes, 0, sizeof(sv_areanodes));
 	sv_numareanodes = 0;
 	SV_CreateAreaNode (0, sv.worldmodel->mins, sv.worldmodel->maxs);
 }
-
 
 /*
 ===============
@@ -248,7 +240,6 @@ void SV_UnlinkEdict (edict_t *ent)
 	RemoveLink (&ent->area);
 	ent->area.prev = ent->area.next = NULL;
 }
-
 
 /*
 ====================
@@ -288,17 +279,16 @@ void SV_TouchLinks ( edict_t *ent, areanode_t *node )
 		pr_global_struct->self = old_self;
 		pr_global_struct->other = old_other;
 	}
-	
+
 // recurse down both sides
 	if (node->axis == -1)
 		return;
-	
+
 	if ( ent->v.absmax[node->axis] > node->dist )
 		SV_TouchLinks ( ent, node->children[0] );
 	if ( ent->v.absmin[node->axis] < node->dist )
 		SV_TouchLinks ( ent, node->children[1] );
 }
-
 
 /*
 ===============
@@ -315,7 +305,7 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 
 	if (node->contents == CONTENTS_SOLID)
 		return;
-	
+
 // add an efrag if the node is a leaf
 
 	if ( node->contents < 0)
@@ -327,19 +317,19 @@ void SV_FindTouchedLeafs (edict_t *ent, mnode_t *node)
 		leafnum = leaf - sv.worldmodel->leafs - 1;
 
 		ent->leafnums[ent->num_leafs] = leafnum;
-		ent->num_leafs++;			
+		ent->num_leafs++;
 		return;
 	}
-	
+
 // NODE_MIXED
 
 	splitplane = node->plane;
 	sides = BOX_ON_PLANE_SIDE(ent->v.absmin, ent->v.absmax, splitplane);
-	
+
 // recurse down the contacted sides
 	if (sides & 1)
 		SV_FindTouchedLeafs (ent, node->children[0]);
-		
+
 	if (sides & 2)
 		SV_FindTouchedLeafs (ent, node->children[1]);
 }
@@ -356,7 +346,7 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 
 	if (ent->area.prev)
 		SV_UnlinkEdict (ent);	// unlink from old position
-		
+
 	if (ent == sv.edicts)
 		return;		// don't add the world
 
@@ -364,7 +354,7 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 		return;
 
 // set the abs box
-	VectorAdd (ent->v.origin, ent->v.mins, ent->v.absmin);	
+	VectorAdd (ent->v.origin, ent->v.mins, ent->v.absmin);
 	VectorAdd (ent->v.origin, ent->v.maxs, ent->v.absmax);
 
 //
@@ -388,7 +378,7 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 		ent->v.absmax[1] += 1;
 		ent->v.absmax[2] += 1;
 	}
-	
+
 // link to PVS leafs
 	ent->num_leafs = 0;
 	if (ent->v.modelindex)
@@ -410,20 +400,18 @@ void SV_LinkEdict (edict_t *ent, qboolean touch_triggers)
 		else
 			break;		// crosses the node
 	}
-	
-// link it in	
+
+// link it in
 
 	if (ent->v.solid == SOLID_TRIGGER)
 		InsertLinkBefore (&ent->area, &node->trigger_edicts);
 	else
 		InsertLinkBefore (&ent->area, &node->solid_edicts);
-	
+
 // if touch_triggers, touch all entities at this node and decend for more
 	if (touch_triggers)
 		SV_TouchLinks ( ent, sv_areanodes );
 }
-
-
 
 /*
 ===============================================================================
@@ -449,10 +437,10 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 	{
 		if (num < hull->firstclipnode || num > hull->lastclipnode)
 			Sys_Error ("SV_HullPointContents: bad node number");
-	
+
 		node = hull->clipnodes + num;
 		plane = hull->planes + node->planenum;
-		
+
 		if (plane->type < 3)
 			d = p[plane->type] - plane->dist;
 		else
@@ -462,7 +450,7 @@ int SV_HullPointContents (hull_t *hull, int num, vec3_t p)
 		else
 			num = node->children[0];
 	}
-	
+
 	return num;
 }
 
@@ -501,13 +489,12 @@ edict_t	*SV_TestEntityPosition (edict_t *ent)
 	trace_t	trace;
 
 	trace = SV_Move (ent->v.origin, ent->v.mins, ent->v.maxs, ent->v.origin, 0, ent);
-	
+
 	if (trace.startsolid)
 		return sv.edicts;
-		
+
 	return NULL;
 }
-
 
 /*
 ===============================================================================
@@ -572,7 +559,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		t1 = DotProduct (plane->normal, p1) - plane->dist;
 		t2 = DotProduct (plane->normal, p2) - plane->dist;
 	}
-	
+
 #if 1
 	if (t1 >= 0 && t2 >= 0)
 		return SV_RecursiveHullCheck (hull, node->children[0], p1f, p2f, p1, p2, trace);
@@ -594,7 +581,7 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		frac = 0;
 	if (frac > 1)
 		frac = 1;
-		
+
 	midf = p1f + (p2f - p1f)*frac;
 	for (i=0 ; i<3 ; i++)
 		mid[i] = p1[i] + frac*(p2[i] - p1[i]);
@@ -613,15 +600,15 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 		return false;
 	}
 #endif
-	
+
 	if (SV_HullPointContents (hull, node->children[side^1], mid)
 	!= CONTENTS_SOLID)
 // go past the node
 		return SV_RecursiveHullCheck (hull, node->children[side^1], midf, p2f, mid, p2, trace);
-	
+
 	if (trace->allsolid)
 		return false;		// never got out of the solid area
-		
+
 //==================
 // the other side of the node is solid, this is the impact point
 //==================
@@ -657,7 +644,6 @@ qboolean SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec
 
 	return false;
 }
-
 
 /*
 ==================
@@ -771,7 +757,7 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 		else if (trace.startsolid)
 			clip->trace.startsolid = true;
 	}
-	
+
 // recurse down both sides
 	if (node->axis == -1)
 		return;
@@ -781,7 +767,6 @@ void SV_ClipToLinks ( areanode_t *node, moveclip_t *clip )
 	if ( clip->boxmins[node->axis] < node->dist )
 		SV_ClipToLinks ( node->children[1], clip );
 }
-
 
 /*
 ==================
@@ -796,7 +781,7 @@ boxmins[0] = boxmins[1] = boxmins[2] = -9999;
 boxmaxs[0] = boxmaxs[1] = boxmaxs[2] = 9999;
 #else
 	int		i;
-	
+
 	for (i=0 ; i<3 ; i++)
 	{
 		if (end[i] > start[i])
@@ -848,7 +833,7 @@ trace_t SV_Move (vec3_t start, vec3_t mins, vec3_t maxs, vec3_t end, int type, e
 		VectorCopy (mins, clip.mins2);
 		VectorCopy (maxs, clip.maxs2);
 	}
-	
+
 // create the bounding box of the entire move
 	SV_MoveBounds ( start, clip.mins2, clip.maxs2, end, clip.boxmins, clip.boxmaxs );
 

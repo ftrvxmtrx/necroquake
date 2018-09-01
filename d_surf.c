@@ -13,7 +13,6 @@ surfcache_t                     *sc_rover, *sc_base;
 
 #define GUARDSIZE       4
 
-
 int     D_SurfaceCacheForRes (int width, int height)
 {
 	int             size, pix;
@@ -23,13 +22,12 @@ int     D_SurfaceCacheForRes (int width, int height)
 		size = Q_atoi(com_argv[COM_CheckParm("-surfcachesize")+1]) * 1024;
 		return size;
 	}
-	
+
 	size = SURFCACHE_SIZE_AT_320X200;
 
 	pix = width*height;
 	if (pix > 64000)
 		size += (pix-64000)*3;
-		
 
 	return size;
 }
@@ -49,12 +47,11 @@ void D_ClearCacheGuard (void)
 {
 	byte    *s;
 	int             i;
-	
+
 	s = (byte *)sc_base + sc_size;
 	for (i=0 ; i<GUARDSIZE ; i++)
 		s[i] = (byte)i;
 }
-
 
 /*
 ================
@@ -71,14 +68,13 @@ void D_InitCaches (void *buffer, int size)
 	sc_size = size - GUARDSIZE;
 	sc_base = (surfcache_t *)buffer;
 	sc_rover = sc_base;
-	
+
 	sc_base->next = NULL;
 	sc_base->owner = NULL;
 	sc_base->size = sc_size;
-	
+
 	D_ClearCacheGuard ();
 }
-
 
 /*
 ==================
@@ -88,7 +84,7 @@ D_FlushCaches
 void D_FlushCaches (void)
 {
 	surfcache_t     *c;
-	
+
 	if (!sc_base)
 		return;
 
@@ -97,7 +93,7 @@ void D_FlushCaches (void)
 		if (c->owner)
 			*c->owner = NULL;
 	}
-	
+
 	sc_rover = sc_base;
 	sc_base->next = NULL;
 	sc_base->owner = NULL;
@@ -119,7 +115,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 
 	if ((size <= 0) || (size > 0x10000))
 		Sys_Error ("D_SCAlloc: bad cache size %d\n", size);
-	
+
 	size = (int)&((surfcache_t *)0)->data[size];
 	size = (size + 3) & ~3;
 	if (size > sc_size)
@@ -136,12 +132,12 @@ surfcache_t     *D_SCAlloc (int width, int size)
 		}
 		sc_rover = sc_base;
 	}
-		
+
 // colect and free surfcache_t blocks until the rover block is large enough
 	new = sc_rover;
 	if (sc_rover->owner)
 		*sc_rover->owner = NULL;
-	
+
 	while (new->size < size)
 	{
 	// free another
@@ -150,7 +146,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 			Sys_Error ("D_SCAlloc: hit the end of memory");
 		if (sc_rover->owner)
 			*sc_rover->owner = NULL;
-			
+
 		new->size += sc_rover->size;
 		new->next = sc_rover->next;
 	}
@@ -168,7 +164,7 @@ surfcache_t     *D_SCAlloc (int width, int size)
 	}
 	else
 		sc_rover = new->next;
-	
+
 	new->width = width;
 // DEBUG
 	if (width > 0)
@@ -182,14 +178,13 @@ surfcache_t     *D_SCAlloc (int width, int size)
 			r_cache_thrash = true;
 	}
 	else if (wrapped_this_time)
-	{       
+	{
 		d_roverwrapped = true;
 	}
 
 D_CheckCacheGuard ();   // DEBUG
 	return new;
 }
-
 
 /*
 =================
@@ -228,9 +223,9 @@ int     MaskForNum (int num)
 int D_log2 (int num)
 {
 	int     c;
-	
+
 	c = 0;
-	
+
 	while (num>>=1)
 		c++;
 	return c;
@@ -255,7 +250,7 @@ surfcache_t *D_CacheSurface (msurface_t *surface, int miplevel)
 	r_drawsurf.lightadj[1] = d_lightstylevalue[surface->styles[1]];
 	r_drawsurf.lightadj[2] = d_lightstylevalue[surface->styles[2]];
 	r_drawsurf.lightadj[3] = d_lightstylevalue[surface->styles[3]];
-	
+
 //
 // see if the cache holds apropriate data
 //
@@ -277,7 +272,7 @@ surfcache_t *D_CacheSurface (msurface_t *surface, int miplevel)
 	r_drawsurf.surfwidth = surface->extents[0] >> miplevel;
 	r_drawsurf.rowbytes = r_drawsurf.surfwidth;
 	r_drawsurf.surfheight = surface->extents[1] >> miplevel;
-	
+
 //
 // allocate memory if needed
 //
@@ -289,14 +284,14 @@ surfcache_t *D_CacheSurface (msurface_t *surface, int miplevel)
 		cache->owner = &surface->cachespots[miplevel];
 		cache->mipscale = surfscale;
 	}
-	
+
 	if (surface->dlightframe == r_framecount)
 		cache->dlight = 1;
 	else
 		cache->dlight = 0;
 
 	r_drawsurf.surfdat = (pixel_t *)cache->data;
-	
+
 	cache->texture = r_drawsurf.texture;
 	cache->lightadj[0] = r_drawsurf.lightadj[0];
 	cache->lightadj[1] = r_drawsurf.lightadj[1];
@@ -313,5 +308,4 @@ surfcache_t *D_CacheSurface (msurface_t *surface, int miplevel)
 
 	return surface->cachespots[miplevel];
 }
-
 

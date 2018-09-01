@@ -21,7 +21,6 @@
 #define	U_EFFECTS	(1<<13)
 #define	U_LONGENTITY	(1<<14)
 
-
 #define	SU_VIEWHEIGHT	(1<<0)
 #define	SU_IDEALPITCH	(1<<1)
 #define	SU_PUNCH1		(1<<2)
@@ -43,10 +42,8 @@
 #define	SND_ATTENUATION	(1<<1)		// a byte
 #define	SND_LOOPING		(1<<2)		// a long
 
-
 // defaults for clientinfo messages
 #define	DEFAULT_VIEWHEIGHT	22
-
 
 // game types sent by serverinfo
 // these determine which intermission screen plays
@@ -73,7 +70,7 @@
 #define	svc_stufftext		9	// [string] stuffed into client's console buffer
 								// the string should be \n terminated
 #define	svc_setangle		10	// [angle3] set the view angle to this absolute value
-	
+
 #define	svc_serverinfo		11	// [long] version
 						// [string] signon string
 						// [string]..[0]model cache
@@ -86,11 +83,11 @@
 #define	svc_updatecolors	17	// [byte] [byte]
 #define	svc_particle		18	// [vec3] <variable>
 #define	svc_damage			19
-	
+
 #define	svc_spawnstatic		20
 //	svc_spawnbinary		21
 #define	svc_spawnbaseline	22
-	
+
 #define	svc_temp_entity		23
 
 #define	svc_setpause		24	// [byte] on / off
@@ -120,7 +117,6 @@
 #define	clc_move		3			// [usercmd_t]
 #define	clc_stringcmd	4		// [string] message
 
-
 //
 // temp entity events
 //
@@ -138,6 +134,6 @@
 #define	TE_TELEPORT			11
 #define TE_EXPLOSION2		12
 
-// PGM 01/21/97 
+// PGM 01/21/97
 #define TE_BEAM				13
-// PGM 01/21/97 
+// PGM 01/21/97

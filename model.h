@@ -19,7 +19,6 @@ BRUSH MODELS
 ==============================================================================
 */
 
-
 //
 // in memory representation
 //
@@ -32,7 +31,6 @@ typedef struct
 #define	SIDE_FRONT	0
 #define	SIDE_BACK	1
 #define	SIDE_ON		2
-
 
 // plane_t structure
 typedef struct mplane_s
@@ -54,7 +52,6 @@ typedef struct texture_s
 	struct texture_s *alternate_anims;	// bmodels in frmae 1 use these
 	unsigned	offsets[MIPLEVELS];		// four mip maps stored
 } texture_t;
-
 
 #define	SURF_PLANEBACK		2
 #define	SURF_DRAWSKY		4
@@ -90,7 +87,7 @@ typedef struct msurface_s
 
 	int			firstedge;	// look up in model->surfedges[], negative numbers
 	int			numedges;	// are backwards edges
-	
+
 // surface generation data
 	struct surfcache_s	*cachespots[MIPLEVELS];
 
@@ -98,7 +95,7 @@ typedef struct msurface_s
 	short		extents[2];
 
 	mtexinfo_t	*texinfo;
-	
+
 // lighting info
 	byte		styles[MAXLIGHTMAPS];
 	byte		*samples;		// [numstyles*surfsize]
@@ -109,20 +106,18 @@ typedef struct mnode_s
 // common with leaf
 	int			contents;		// 0, to differentiate from leafs
 	int			visframe;		// node needs to be traversed if current
-	
+
 	short		minmaxs[6];		// for bounding box culling
 
 	struct mnode_s	*parent;
 
 // node specific
 	mplane_t	*plane;
-	struct mnode_s	*children[2];	
+	struct mnode_s	*children[2];
 
 	unsigned short		firstsurface;
 	unsigned short		numsurfaces;
 } mnode_t;
-
-
 
 typedef struct mleaf_s
 {
@@ -162,7 +157,6 @@ SPRITE MODELS
 ==============================================================================
 */
 
-
 // FIXME: shorten these?
 typedef struct mspriteframe_s
 {
@@ -196,7 +190,6 @@ typedef struct
 	void				*cachespot;		// remove?
 	mspriteframedesc_t	frames[1];
 } msprite_t;
-
 
 /*
 ==============================================================================
@@ -283,12 +276,12 @@ typedef struct model_s
 	modtype_t	type;
 	int			numframes;
 	synctype_t	synctype;
-	
+
 	int			flags;
 
 //
 // volume occupied by the model
-//		
+//
 	vec3_t		mins, maxs;
 	float		radius;
 

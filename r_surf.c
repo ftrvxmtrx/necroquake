@@ -31,8 +31,6 @@ static void	(*surfmiptable[4])(void) = {
 	R_DrawSurfaceBlock8_mip3
 };
 
-
-
 unsigned		blocklights[18*18];
 
 /*
@@ -82,7 +80,7 @@ void R_AddDynamicLights (void)
 
 		local[0] -= surf->texturemins[0];
 		local[1] -= surf->texturemins[1];
-		
+
 		for (t = 0 ; t<tmax ; t++)
 		{
 			td = local[1] - t*16;
@@ -139,13 +137,12 @@ void R_BuildLightMap (void)
 	for (i=0 ; i<size ; i++)
 		blocklights[i] = r_refdef.ambientlight<<8;
 
-
 // add all the lightmaps
 	if (lightmap)
 		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
-			scale = r_drawsurf.lightadj[maps];	// 8.8 fraction		
+			scale = r_drawsurf.lightadj[maps];	// 8.8 fraction
 			for (i=0 ; i<size ; i++)
 				blocklights[i] += lightmap[i] * scale;
 			lightmap += size;	// skip to next lightmap
@@ -167,7 +164,6 @@ void R_BuildLightMap (void)
 	}
 }
 
-
 /*
 ===============
 R_TextureAnimation
@@ -185,13 +181,13 @@ texture_t *R_TextureAnimation (texture_t *base)
 		if (base->alternate_anims)
 			base = base->alternate_anims;
 	}
-	
+
 	if (!base->anim_total)
 		return base;
 
 	reletive = (int)(cl.time*10) % base->anim_total;
 
-	count = 0;	
+	count = 0;
 	while (base->anim_min > reletive || base->anim_max <= reletive)
 	{
 		base = base->anim_next;
@@ -203,7 +199,6 @@ texture_t *R_TextureAnimation (texture_t *base)
 
 	return base;
 }
-
 
 /*
 ===============
@@ -223,22 +218,22 @@ void R_DrawSurface (void)
 
 // calculate the lightings
 	R_BuildLightMap ();
-	
+
 	surfrowbytes = r_drawsurf.rowbytes;
 
 	mt = r_drawsurf.texture;
-	
+
 	r_source = (byte *)mt + mt->offsets[r_drawsurf.surfmip];
-	
+
 // the fractional light values should range from 0 to (VID_GRADES - 1) << 16
 // from a source range of 0 - 255
-	
+
 	texwidth = mt->width >> r_drawsurf.surfmip;
 
 	blocksize = 16 >> r_drawsurf.surfmip;
 	blockdivshift = 4 - r_drawsurf.surfmip;
 	blockdivmask = (1 << blockdivshift) - 1;
-	
+
 	r_lightwidth = (r_drawsurf.surf->extents[0]>>4)+1;
 
 	r_numhblocks = r_drawsurf.surfwidth >> blockdivshift;
@@ -272,7 +267,7 @@ void R_DrawSurface (void)
 
 // << 16 components are to guarantee positive values for %
 	soffset = ((soffset >> r_drawsurf.surfmip) + (smax << 16)) % smax;
-	basetptr = &r_source[((((basetoffset >> r_drawsurf.surfmip) 
+	basetptr = &r_source[((((basetoffset >> r_drawsurf.surfmip)
 		+ (tmax << 16)) % tmax) * twidth)];
 
 	pcolumndest = r_drawsurf.surfdat;
@@ -332,7 +327,7 @@ void R_DrawSurfaceBlock8_mip0 (void)
 						[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
-	
+
 			psource += sourcetstep;
 			lightright += lightrightstep;
 			lightleft += lightleftstep;
@@ -343,7 +338,6 @@ void R_DrawSurfaceBlock8_mip0 (void)
 			psource -= r_stepback;
 	}
 }
-
 
 /*
 ================
@@ -382,7 +376,7 @@ void R_DrawSurfaceBlock8_mip1 (void)
 						[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
-	
+
 			psource += sourcetstep;
 			lightright += lightrightstep;
 			lightleft += lightleftstep;
@@ -393,7 +387,6 @@ void R_DrawSurfaceBlock8_mip1 (void)
 			psource -= r_stepback;
 	}
 }
-
 
 /*
 ================
@@ -432,7 +425,7 @@ void R_DrawSurfaceBlock8_mip2 (void)
 						[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
-	
+
 			psource += sourcetstep;
 			lightright += lightrightstep;
 			lightleft += lightleftstep;
@@ -443,7 +436,6 @@ void R_DrawSurfaceBlock8_mip2 (void)
 			psource -= r_stepback;
 	}
 }
-
 
 /*
 ================
@@ -482,7 +474,7 @@ void R_DrawSurfaceBlock8_mip3 (void)
 						[(light & 0xFF00) + pix];
 				light += lightstep;
 			}
-	
+
 			psource += sourcetstep;
 			lightright += lightrightstep;
 			lightleft += lightleftstep;
@@ -493,7 +485,6 @@ void R_DrawSurfaceBlock8_mip3 (void)
 			psource -= r_stepback;
 	}
 }
-
 
 /*
 ================
@@ -552,21 +543,20 @@ void R_GenTurbTile (pixel_t *pbasetex, void *pdest)
 	int		*turb;
 	int		i, j, s, t;
 	byte	*pd;
-	
+
 	turb = sintable + ((int)(cl.time*SPEED)&(CYCLE-1));
 	pd = (byte *)pdest;
 
 	for (i=0 ; i<TILE_SIZE ; i++)
 	{
 		for (j=0 ; j<TILE_SIZE ; j++)
-		{	
+		{
 			s = (((j << 16) + turb[i & (CYCLE-1)]) >> 16) & 63;
 			t = (((i << 16) + turb[j & (CYCLE-1)]) >> 16) & 63;
 			*pd++ = *(pbasetex + (t<<6) + s);
 		}
 	}
 }
-
 
 /*
 ================
@@ -585,14 +575,13 @@ void R_GenTurbTile16 (pixel_t *pbasetex, void *pdest)
 	for (i=0 ; i<TILE_SIZE ; i++)
 	{
 		for (j=0 ; j<TILE_SIZE ; j++)
-		{	
+		{
 			s = (((j << 16) + turb[i & (CYCLE-1)]) >> 16) & 63;
 			t = (((i << 16) + turb[j & (CYCLE-1)]) >> 16) & 63;
 			*pd++ = d_8to16table[*(pbasetex + (t<<6) + s)];
 		}
 	}
 }
-
 
 /*
 ================

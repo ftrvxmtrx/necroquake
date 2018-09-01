@@ -17,8 +17,6 @@ zpointdesc_t	r_zpointdesc;
 
 polydesc_t		r_polydesc;
 
-
-
 clipplane_t	*entity_clipplanes;
 clipplane_t	view_clipplanes[4];
 clipplane_t	world_clipplanes[16];
@@ -74,16 +72,16 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 	else
 	{
 		world = &pv0->position[0];
-	
+
 	// transform and project
 		VectorSubtract (world, modelorg, local);
 		TransformVector (local, transformed);
-	
+
 		if (transformed[2] < NEAR_CLIP)
 			transformed[2] = NEAR_CLIP;
-	
+
 		lzi0 = 1.0 / transformed[2];
-	
+
 	// FIXME: build x/yscale into transform?
 		scale = xscale * lzi0;
 		u0 = (xcenter + scale*transformed[0]);
@@ -91,14 +89,14 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 			u0 = r_refdef.fvrectx_adj;
 		if (u0 > r_refdef.fvrectright_adj)
 			u0 = r_refdef.fvrectright_adj;
-	
+
 		scale = yscale * lzi0;
 		v0 = (ycenter - scale*transformed[1]);
 		if (v0 < r_refdef.fvrecty_adj)
 			v0 = r_refdef.fvrecty_adj;
 		if (v0 > r_refdef.fvrectbottom_adj)
 			v0 = r_refdef.fvrectbottom_adj;
-	
+
 		ceilv0 = (int) ceil(v0);
 	}
 
@@ -140,7 +138,6 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 	r_emitted = 1;
 
 	r_ceilv1 = (int) ceil(r_v1);
-
 
 // create the edge
 	if (ceilv0 == r_ceilv1)
@@ -225,7 +222,6 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 	edge->nextremove = removeedges[v2];
 	removeedges[v2] = edge;
 }
-
 
 /*
 ================
@@ -349,7 +345,6 @@ void R_EmitCachedEdge (void)
 
 	r_emitted = 1;
 }
-
 
 /*
 ================
@@ -548,7 +543,6 @@ void R_RenderFace (msurface_t *fa, int clipflags)
 	surface_p++;
 }
 
-
 /*
 ================
 R_RenderBmodelFace
@@ -662,7 +656,6 @@ void R_RenderBmodelFace (bedge_t *pedges, msurface_t *psurf)
 //JDC	VectorCopy (r_worldmodelorg, surface_p->modelorg);
 	surface_p++;
 }
-
 
 /*
 ================
@@ -845,7 +838,6 @@ void R_RenderPoly (msurface_t *fa, int clipflags)
 // draw the polygon
 	D_DrawPoly ();
 }
-
 
 /*
 ================

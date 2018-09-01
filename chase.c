@@ -13,7 +13,6 @@ vec3_t	chase_angles;
 vec3_t	chase_dest;
 vec3_t	chase_dest_angles;
 
-
 void Chase_Init (void)
 {
 	Cvar_RegisterVariable (&chase_back);
@@ -45,13 +44,12 @@ void Chase_Update (void)
 	vec3_t	forward, up, right;
 	vec3_t	dest, stop;
 
-
 	// if can't see player, reset
 	AngleVectors (cl.viewangles, forward, right, up);
 
 	// calc exact destination
 	for (i=0 ; i<3 ; i++)
-		chase_dest[i] = r_refdef.vieworg[i] 
+		chase_dest[i] = r_refdef.vieworg[i]
 		- forward[i]*chase_back.value
 		- right[i]*chase_right.value;
 	chase_dest[2] = r_refdef.vieworg[2] + chase_up.value;

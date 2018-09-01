@@ -6,7 +6,6 @@ struct qsockaddr
 	unsigned char sa_data[14];
 };
 
-
 #define	NET_NAMELEN			64
 
 #define NET_MAXMESSAGE		8192
@@ -21,7 +20,6 @@ struct qsockaddr
 #define NETFLAG_EOM			0x00080000
 #define NETFLAG_UNRELIABLE	0x00100000
 #define NETFLAG_CTL			0x80000000
-
 
 #define NET_PROTOCOL_VERSION	3
 
@@ -107,7 +105,7 @@ typedef struct qsocket_s
 	qboolean		disconnected;
 	qboolean		canSend;
 	qboolean		sendNext;
-	
+
 	int				driver;
 	int				landriver;
 	int				socket;
@@ -201,7 +199,6 @@ qsocket_t *NET_NewQSocket (void);
 void NET_FreeQSocket(qsocket_t *);
 double SetNetTime(void);
 
-
 #define HOSTCACHESIZE	8
 
 typedef struct
@@ -259,7 +256,6 @@ int			NET_SendUnreliableMessage (struct qsocket_s *sock, sizebuf_t *data);
 int			NET_SendToAll(sizebuf_t *data, int blocktime);
 // This is a reliable *blocking* send to all attached clients.
 
-
 void		NET_Close (struct qsocket_s *sock);
 // if a dead connection is returned by a get or send function, this function
 // should be called when it is convenient
@@ -270,7 +266,6 @@ void		NET_Close (struct qsocket_s *sock);
 // A netcon_t number will not be reused until this function is called for it
 
 void NET_Poll(void);
-
 
 typedef struct _PollProcedure
 {

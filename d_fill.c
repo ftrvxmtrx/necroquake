@@ -2,7 +2,6 @@
 
 #include "quakedef.h"
 
-
 /*
 ================
 D_FillRect
@@ -33,7 +32,7 @@ void D_FillRect (vrect_t *rect, int color)
 		rwidth = vid.width - rx;
 	if (ry+rheight > vid.height)
 		rheight = vid.height - rx;
-		
+
 	if (rwidth < 1 || rheight < 1)
 		return;
 

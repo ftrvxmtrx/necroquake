@@ -14,7 +14,6 @@ int				r_turb_spancount;
 
 void D_DrawTurbulent8Span (void);
 
-
 /*
 =============
 D_WarpScreen
@@ -71,7 +70,6 @@ void D_WarpScreen (void)
 	}
 }
 
-
 /*
 =============
 D_DrawTurbulent8Span
@@ -102,7 +100,7 @@ void Turbulent8 (espan_t *pspan)
 	fixed16_t		snext, tnext;
 	float			sdivz, tdivz, zi, z, du, dv, spancountminus1;
 	float			sdivz16stepu, tdivz16stepu, zi16stepu;
-	
+
 	r_turb_turb = sintable + ((int)(cl.time*SPEED)&(CYCLE-1));
 
 	r_turb_sstep = 0;	// keep compiler happy

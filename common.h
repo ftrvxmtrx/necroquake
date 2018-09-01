@@ -35,7 +35,6 @@ typedef struct link_s
 	struct link_s	*prev, *next;
 } link_t;
 
-
 void ClearLink (link_t *l);
 void RemoveLink (link_t *l);
 void InsertLinkBefore (link_t *l, link_t *before);
@@ -124,7 +123,6 @@ extern	qboolean	com_eof;
 
 char *COM_Parse (char *data);
 
-
 extern	int		com_argc;
 extern	char	**com_argv;
 
@@ -139,7 +137,6 @@ void COM_DefaultExtension (char *path, char *extension);
 
 char	*va(char *format, ...);
 // does a varargs printf into a temp buffer
-
 
 //============================================================================
 
@@ -157,7 +154,6 @@ byte *COM_LoadStackFile (char *path, void *buffer, int bufsize);
 byte *COM_LoadTempFile (char *path);
 byte *COM_LoadHunkFile (char *path);
 void COM_LoadCacheFile (char *path, struct cache_user_s *cu);
-
 
 extern	struct cvar_s	registered;
 

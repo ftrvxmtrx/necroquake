@@ -123,7 +123,6 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 
 /*-----------------------------------------------------------------*/
 
-
 float	anglemod(float a)
 {
 #if 0
@@ -172,7 +171,7 @@ int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 		return 3;
 	}
 #endif
-	
+
 // general case
 	switch (p->signbits)
 	{
@@ -259,7 +258,7 @@ void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
 	float		angle;
 	float		sr, sp, sy, cr, cp, cy;
-	
+
 	angle = angles[YAW] * (M_PI*2 / 360);
 	sy = sin(angle);
 	cy = cos(angle);
@@ -284,11 +283,11 @@ void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 int VectorCompare (vec3_t v1, vec3_t v2)
 {
 	int		i;
-	
+
 	for (i=0 ; i<3 ; i++)
 		if (v1[i] != v2[i])
 			return 0;
-			
+
 	return 1;
 }
 
@@ -298,7 +297,6 @@ void VectorMA (vec3_t veca, float scale, vec3_t vecb, vec3_t vecc)
 	vecc[1] = veca[1] + scale*vecb[1];
 	vecc[2] = veca[2] + scale*vecb[2];
 }
-
 
 vec_t _DotProduct (vec3_t v1, vec3_t v2)
 {
@@ -339,7 +337,7 @@ vec_t Length(vec3_t v)
 {
 	int		i;
 	float	length;
-	
+
 	length = 0;
 	for (i=0 ; i< 3 ; i++)
 		length += v[i]*v[i];
@@ -362,7 +360,7 @@ float VectorNormalize (vec3_t v)
 		v[1] *= ilength;
 		v[2] *= ilength;
 	}
-		
+
 	return length;
 
 }
@@ -381,7 +379,6 @@ void VectorScale (vec3_t in, vec_t scale, vec3_t out)
 	out[2] = in[2]*scale;
 }
 
-
 int Q_log2(int val)
 {
 	int answer=0;
@@ -389,7 +386,6 @@ int Q_log2(int val)
 		answer++;
 	return answer;
 }
-
 
 /*
 ================
@@ -417,7 +413,6 @@ void R_ConcatRotations (float in1[3][3], float in2[3][3], float out[3][3])
 	out[2][2] = in1[2][0] * in2[0][2] + in1[2][1] * in2[1][2] +
 				in1[2][2] * in2[2][2];
 }
-
 
 /*
 ================
@@ -451,7 +446,6 @@ void R_ConcatTransforms (float in1[3][4], float in2[3][4], float out[3][4])
 	out[2][3] = in1[2][0] * in2[0][3] + in1[2][1] * in2[1][3] +
 				in1[2][2] * in2[2][3] + in1[2][3];
 }
-
 
 /*
 ===================
@@ -503,7 +497,6 @@ void FloorDivMod (double numer, double denom, int *quotient,
 	*quotient = q;
 	*rem = r;
 }
-
 
 /*
 ===================

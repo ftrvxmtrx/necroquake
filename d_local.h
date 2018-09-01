@@ -48,7 +48,6 @@ extern float	d_sdivzorigin, d_tdivzorigin, d_ziorigin;
 fixed16_t	sadjust, tadjust;
 fixed16_t	bbextents, bbextentt;
 
-
 void D_DrawSpans8 (espan_t *pspans);
 void D_DrawSpans16 (espan_t *pspans);
 void D_DrawZSpans (espan_t *pspans);

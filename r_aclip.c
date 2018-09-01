@@ -18,7 +18,6 @@ void R_Alias_clip_left (finalvert_t *pfv0, finalvert_t *pfv1,
 void R_Alias_clip_right (finalvert_t *pfv0, finalvert_t *pfv1,
 	finalvert_t *out);
 
-
 /*
 ================
 R_Alias_clip_z
@@ -38,11 +37,11 @@ void R_Alias_clip_z (finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 	{
 		scale = (ALIAS_Z_CLIP_PLANE - pav0->fv[2]) /
 				(pav1->fv[2] - pav0->fv[2]);
-	
+
 		avout.fv[0] = pav0->fv[0] + (pav1->fv[0] - pav0->fv[0]) * scale;
 		avout.fv[1] = pav0->fv[1] + (pav1->fv[1] - pav0->fv[1]) * scale;
 		avout.fv[2] = ALIAS_Z_CLIP_PLANE;
-	
+
 		out->v[2] =	pfv0->v[2] + (pfv1->v[2] - pfv0->v[2]) * scale;
 		out->v[3] =	pfv0->v[3] + (pfv1->v[3] - pfv0->v[3]) * scale;
 		out->v[4] =	pfv0->v[4] + (pfv1->v[4] - pfv0->v[4]) * scale;
@@ -51,11 +50,11 @@ void R_Alias_clip_z (finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 	{
 		scale = (ALIAS_Z_CLIP_PLANE - pav1->fv[2]) /
 				(pav0->fv[2] - pav1->fv[2]);
-	
+
 		avout.fv[0] = pav1->fv[0] + (pav0->fv[0] - pav1->fv[0]) * scale;
 		avout.fv[1] = pav1->fv[1] + (pav0->fv[1] - pav1->fv[1]) * scale;
 		avout.fv[2] = ALIAS_Z_CLIP_PLANE;
-	
+
 		out->v[2] =	pfv1->v[2] + (pfv0->v[2] - pfv1->v[2]) * scale;
 		out->v[3] =	pfv1->v[3] + (pfv0->v[3] - pfv1->v[3]) * scale;
 		out->v[4] =	pfv1->v[4] + (pfv0->v[4] - pfv1->v[4]) * scale;
@@ -70,7 +69,7 @@ void R_Alias_clip_z (finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
 	if (out->v[0] > r_refdef.aliasvrectright)
 		out->flags |= ALIAS_RIGHT_CLIP;
 	if (out->v[1] > r_refdef.aliasvrectbottom)
-		out->flags |= ALIAS_BOTTOM_CLIP;	
+		out->flags |= ALIAS_BOTTOM_CLIP;
 }
 
 void R_Alias_clip_left (finalvert_t *pfv0, finalvert_t *pfv1, finalvert_t *out)
@@ -166,7 +165,7 @@ int R_AliasClip (finalvert_t *in, finalvert_t *out, int flag, int count,
 {
 	int			i,j,k;
 	int			flags, oldflags;
-	
+
 	j = count-1;
 	k = 0;
 	for (i=0 ; i<count ; j = i, i++)
@@ -187,7 +186,7 @@ int R_AliasClip (finalvert_t *in, finalvert_t *out, int flag, int count,
 			if (out[k].v[0] > r_refdef.aliasvrectright)
 				out[k].flags |= ALIAS_RIGHT_CLIP;
 			if (out[k].v[1] > r_refdef.aliasvrectbottom)
-				out[k].flags |= ALIAS_BOTTOM_CLIP;	
+				out[k].flags |= ALIAS_BOTTOM_CLIP;
 			k++;
 		}
 		if (!flags)
@@ -196,10 +195,9 @@ int R_AliasClip (finalvert_t *in, finalvert_t *out, int flag, int count,
 			k++;
 		}
 	}
-	
+
 	return k;
 }
-
 
 /*
 ================
@@ -224,7 +222,7 @@ void R_AliasClipTriangle (mtriangle_t *ptri)
 		for (i=0 ; i<3 ; i++)
 		{
 			fv[0][i] = pfinalverts[ptri->vertindex[i]];
-	
+
 			if (!ptri->facesfront && (fv[0][i].flags & ALIAS_ONSEAM) )
 				fv[0][i].v[2] += r_affinetridesc.seamfixupX16;
 		}

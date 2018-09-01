@@ -32,7 +32,6 @@ static mvertex_t	*pfrontenter, *pfrontexit;
 
 static qboolean		makeclippededge;
 
-
 //===========================================================================
 
 /*
@@ -50,7 +49,6 @@ void R_EntityRotate (vec3_t vec)
 	vec[2] = DotProduct (entity_rotation[2], tvec);
 }
 
-
 /*
 ================
 R_RotateBmodel
@@ -66,7 +64,7 @@ void R_RotateBmodel (void)
 // TODO: share work with R_SetUpAliasTransform
 
 // yaw
-	angle = currententity->angles[YAW];		
+	angle = currententity->angles[YAW];
 	angle = angle * M_PI*2 / 360;
 	s = sin(angle);
 	c = cos(angle);
@@ -81,9 +79,8 @@ void R_RotateBmodel (void)
 	temp1[2][1] = 0;
 	temp1[2][2] = 1;
 
-
 // pitch
-	angle = currententity->angles[PITCH];		
+	angle = currententity->angles[PITCH];
 	angle = angle * M_PI*2 / 360;
 	s = sin(angle);
 	c = cos(angle);
@@ -101,7 +98,7 @@ void R_RotateBmodel (void)
 	R_ConcatRotations (temp2, temp1, temp3);
 
 // roll
-	angle = currententity->angles[ROLL];		
+	angle = currententity->angles[ROLL];
 	angle = angle * M_PI*2 / 360;
 	s = sin(angle);
 	c = cos(angle);
@@ -128,7 +125,6 @@ void R_RotateBmodel (void)
 
 	R_TransformFrustum ();
 }
-
 
 /*
 ================
@@ -299,7 +295,6 @@ void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 	}
 }
 
-
 /*
 ================
 R_DrawSolidClippedSubmodelPolygons
@@ -381,7 +376,6 @@ void R_DrawSolidClippedSubmodelPolygons (model_t *pmodel)
 	}
 }
 
-
 /*
 ================
 R_DrawSubmodelPolygons
@@ -418,7 +412,6 @@ void R_DrawSubmodelPolygons (model_t *pmodel, int clipflags)
 		}
 	}
 }
-
 
 /*
 ================
@@ -459,7 +452,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 			rejectpt[0] = (float)node->minmaxs[pindex[0]];
 			rejectpt[1] = (float)node->minmaxs[pindex[1]];
 			rejectpt[2] = (float)node->minmaxs[pindex[2]];
-			
+
 			d = DotProduct (rejectpt, view_clipplanes[i].normal);
 			d -= view_clipplanes[i].dist;
 
@@ -477,7 +470,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 				clipflags &= ~(1<<i);	// node is entirely on screen
 		}
 	}
-	
+
 // if a leaf node, draw stuff
 	if (node->contents < 0)
 	{
@@ -526,7 +519,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 			dot = DotProduct (modelorg, plane->normal) - plane->dist;
 			break;
 		}
-	
+
 		if (dot >= 0)
 			side = 0;
 		else
@@ -618,8 +611,6 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 	}
 }
 
-
-
 /*
 ================
 R_RenderWorld
@@ -650,5 +641,4 @@ void R_RenderWorld (void)
 		}
 	}
 }
-
 

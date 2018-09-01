@@ -41,13 +41,13 @@ void CL_ParseBeam (model_t *m)
 	vec3_t	start, end;
 	beam_t	*b;
 	int		i;
-	
+
 	ent = MSG_ReadShort ();
-	
+
 	start[0] = MSG_ReadCoord ();
 	start[1] = MSG_ReadCoord ();
 	start[2] = MSG_ReadCoord ();
-	
+
 	end[0] = MSG_ReadCoord ();
 	end[1] = MSG_ReadCoord ();
 	end[2] = MSG_ReadCoord ();
@@ -77,7 +77,7 @@ void CL_ParseBeam (model_t *m)
 			return;
 		}
 	}
-	Con_Printf ("beam list overflow!\n");	
+	Con_Printf ("beam list overflow!\n");
 }
 
 /*
@@ -103,7 +103,7 @@ void CL_ParseTEnt (void)
 		R_RunParticleEffect (pos, vec3_origin, 20, 30);
 		S_StartSound (-1, 0, cl_sfx_wizhit, pos, 1, 1);
 		break;
-		
+
 	case TE_KNIGHTSPIKE:			// spike hitting wall
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
@@ -111,7 +111,7 @@ void CL_ParseTEnt (void)
 		R_RunParticleEffect (pos, vec3_origin, 226, 20);
 		S_StartSound (-1, 0, cl_sfx_knighthit, pos, 1, 1);
 		break;
-		
+
 	case TE_SPIKE:			// spike hitting wall
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
@@ -149,14 +149,14 @@ void CL_ParseTEnt (void)
 				S_StartSound (-1, 0, cl_sfx_ric3, pos, 1, 1);
 		}
 		break;
-		
+
 	case TE_GUNSHOT:			// bullet hitting wall
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
 		pos[2] = MSG_ReadCoord ();
 		R_RunParticleEffect (pos, vec3_origin, 0, 20);
 		break;
-		
+
 	case TE_EXPLOSION:			// rocket explosion
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
@@ -169,7 +169,7 @@ void CL_ParseTEnt (void)
 		dl->decay = 300;
 		S_StartSound (-1, 0, cl_sfx_r_exp3, pos, 1, 1);
 		break;
-		
+
 	case TE_TAREXPLOSION:			// tarbaby explosion
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
@@ -182,35 +182,35 @@ void CL_ParseTEnt (void)
 	case TE_LIGHTNING1:				// lightning bolts
 		CL_ParseBeam (Mod_ForName("progs/bolt.mdl", true));
 		break;
-	
+
 	case TE_LIGHTNING2:				// lightning bolts
 		CL_ParseBeam (Mod_ForName("progs/bolt2.mdl", true));
 		break;
-	
+
 	case TE_LIGHTNING3:				// lightning bolts
 		CL_ParseBeam (Mod_ForName("progs/bolt3.mdl", true));
 		break;
-	
-// PGM 01/21/97 
+
+// PGM 01/21/97
 	case TE_BEAM:				// grappling hook beam
 		CL_ParseBeam (Mod_ForName("progs/beam.mdl", true));
 		break;
 // PGM 01/21/97
 
-	case TE_LAVASPLASH:	
+	case TE_LAVASPLASH:
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
 		pos[2] = MSG_ReadCoord ();
 		R_LavaSplash (pos);
 		break;
-	
+
 	case TE_TELEPORT:
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
 		pos[2] = MSG_ReadCoord ();
 		R_TeleportSplash (pos);
 		break;
-		
+
 	case TE_EXPLOSION2:				// color mapped explosion
 		pos[0] = MSG_ReadCoord ();
 		pos[1] = MSG_ReadCoord ();
@@ -230,7 +230,6 @@ void CL_ParseTEnt (void)
 		Sys_Error ("CL_ParseTEnt: bad type");
 	}
 }
-
 
 /*
 =================
@@ -254,7 +253,6 @@ entity_t *CL_NewTempEntity (void)
 	ent->colormap = vid.colormap;
 	return ent;
 }
-
 
 /*
 =================
@@ -301,7 +299,7 @@ void CL_UpdateTEnts (void)
 			yaw = (int) (atan2(dist[1], dist[0]) * 180 / M_PI);
 			if (yaw < 0)
 				yaw += 360;
-	
+
 			forward = sqrt (dist[0]*dist[0] + dist[1]*dist[1]);
 			pitch = (int) (atan2(dist[2], forward) * 180 / M_PI);
 			if (pitch < 0)
@@ -327,7 +325,6 @@ void CL_UpdateTEnts (void)
 			d -= 30;
 		}
 	}
-	
-}
 
+}
 

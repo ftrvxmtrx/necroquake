@@ -2,7 +2,6 @@
 
 #include "quakedef.h"
 
-
 int			sb_updates;		// if >= vid.numpages, no update needed
 
 #define STAT_MINUS		10	// num frame for '-' stats digit
@@ -228,7 +227,6 @@ void Sbar_Init (void)
 	}
 }
 
-
 //=============================================================================
 
 // drawing routines are relative to the status bar location
@@ -321,7 +319,6 @@ int Sbar_itoa (int num, char *buf)
 
 	return str-buf;
 }
-
 
 /*
 =============
@@ -427,8 +424,6 @@ void Sbar_UpdateScoreboard (void)
 		scoreboardbottom[i] = Sbar_ColorForMap (bottom);
 	}
 }
-
-
 
 /*
 ===============
@@ -800,7 +795,6 @@ void Sbar_DrawFrags (void)
 
 //=============================================================================
 
-
 /*
 ===============
 Sbar_DrawFace
@@ -821,7 +815,7 @@ void Sbar_DrawFace (void)
 		int				xofs;
 		char			num[12];
 		scoreboard_t	*s;
-		
+
 		s = &cl.scores[cl.viewentity - 1];
 		// draw background
 		top = s->colors & 0xf0;
@@ -857,7 +851,7 @@ void Sbar_DrawFace (void)
 			Sbar_DrawCharacter ( 116, 3, num[1]);
 			Sbar_DrawCharacter ( 123, 3, num[2]);
 		}
-		
+
 		return;
 	}
 // PGM 01/19/97 - team color drawing
@@ -916,7 +910,7 @@ void Sbar_Draw (void)
 
 	sb_updates++;
 
-	if (sb_lines && vid.width > 320) 
+	if (sb_lines && vid.width > 320)
 		Draw_TileClear (0, vid.height - sb_lines, vid.width, sb_lines);
 
 	if (sb_lines > 24)
@@ -1285,7 +1279,6 @@ void Sbar_IntermissionOverlay (void)
 	Sbar_IntermissionNumber (240, 144, cl.stats[STAT_TOTALMONSTERS], 3, 0);
 
 }
-
 
 /*
 ==================

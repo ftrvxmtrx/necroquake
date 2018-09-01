@@ -41,12 +41,12 @@ void Sys_Printf (char *fmt, ...)
 {
 	va_list		argptr;
 	char		text[1024];
-	
+
 	va_start (argptr,fmt);
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 	fprintf(stderr, "%s", text);
-	
+
 	//Con_Print (text);
 }
 
@@ -61,7 +61,7 @@ void Sys_Init(void)
 }
 
 void Sys_Error (char *error, ...)
-{ 
+{
     va_list     argptr;
     char        string[1024];
 
@@ -73,18 +73,18 @@ void Sys_Error (char *error, ...)
 	Host_Shutdown ();
 	exit (1);
 
-} 
+}
 
 void Sys_Warn (char *warning, ...)
-{ 
+{
     va_list     argptr;
     char        string[1024];
-    
+
     va_start (argptr,warning);
     vsprintf (string,warning,argptr);
     va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
-} 
+}
 
 /*
 ===============================================================================
@@ -100,7 +100,7 @@ FILE	*sys_handles[MAX_HANDLES];
 int		findhandle (void)
 {
 	int		i;
-	
+
 	for (i=1 ; i<MAX_HANDLES ; i++)
 		if (!sys_handles[i])
 			return i;
@@ -130,7 +130,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 {
 	FILE	*f;
 	int		i;
-	
+
 	i = findhandle ();
 
 	f = fopen(path, "rb");
@@ -141,7 +141,7 @@ int Sys_FileOpenRead (char *path, int *hndl)
 	}
 	sys_handles[i] = f;
 	*hndl = i;
-	
+
 	return Qfilelength(f);
 }
 
@@ -149,14 +149,14 @@ int Sys_FileOpenWrite (char *path)
 {
 	FILE	*f;
 	int		i;
-	
+
 	i = findhandle ();
 
 	f = fopen(path, "wb");
 	if (!f)
 		Sys_Error ("Error opening %s: %s", path,strerror(errno));
 	sys_handles[i] = f;
-	
+
 	return i;
 }
 
@@ -194,7 +194,7 @@ int Sys_FileRead (int handle, void *dst, int count)
 		}
 	}
 	return size;
-		
+
 }
 
 int Sys_FileWrite (int handle, void *src, int count)
@@ -221,14 +221,14 @@ int Sys_FileWrite (int handle, void *src, int count)
 int	Sys_FileTime (char *path)
 {
 	FILE	*f;
-	
+
 	f = fopen(path, "rb");
 	if (f)
 	{
 		fclose(f);
 		return 1;
 	}
-	
+
 	return -1;
 }
 
@@ -239,10 +239,10 @@ void Sys_mkdir (char *path)
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
-    va_list argptr; 
+    va_list argptr;
     static char data[1024];
     FILE *fp;
-    
+
     va_start(argptr, fmt);
     vsprintf(data, fmt, argptr);
     va_end(argptr);
@@ -254,10 +254,10 @@ void Sys_DebugLog(char *file, char *fmt, ...)
 double Sys_FloatTime (void)
 {
     struct timeval tp;
-    struct timezone tzp; 
-    static int      secbase; 
-    
-    gettimeofday(&tp, &tzp);  
+    struct timezone tzp;
+    static int      secbase;
+
+    gettimeofday(&tp, &tzp);
 
     if (!secbase)
     {
@@ -379,7 +379,6 @@ int main (int c, char **v)
     }
 
 }
-
 
 /*
 ================

@@ -5,7 +5,6 @@ typedef int	string_t;
 
 typedef enum {ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_pointer} etype_t;
 
-
 #define	OFS_NULL		0
 #define	OFS_RETURN		1
 #define	OFS_PARM0		4		// leave 3 ofs for each parm to hold vectors
@@ -18,7 +17,6 @@ typedef enum {ev_void, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_f
 #define	OFS_PARM7		25
 #define	RESERVED_OFS	28
 
-
 enum {
 	OP_DONE,
 	OP_MUL_F,
@@ -30,19 +28,19 @@ enum {
 	OP_ADD_V,
 	OP_SUB_F,
 	OP_SUB_V,
-	
+
 	OP_EQ_F,
 	OP_EQ_V,
 	OP_EQ_S,
 	OP_EQ_E,
 	OP_EQ_FNC,
-	
+
 	OP_NE_F,
 	OP_NE_V,
 	OP_NE_S,
 	OP_NE_E,
 	OP_NE_FNC,
-	
+
 	OP_LE,
 	OP_GE,
 	OP_LT,
@@ -92,11 +90,10 @@ enum {
 	OP_GOTO,
 	OP_AND,
 	OP_OR,
-	
+
 	OP_BITAND,
 	OP_BITOR
 };
-
 
 typedef struct statement_s
 {
@@ -120,41 +117,40 @@ typedef struct
 	int		first_statement;	// negative numbers are builtins
 	int		parm_start;
 	int		locals;				// total ints of parms + locals
-	
+
 	int		profile;		// runtime
-	
+
 	int		s_name;
 	int		s_file;			// source file defined in
-	
+
 	int		numparms;
 	byte	parm_size[MAX_PARMS];
 } dfunction_t;
-
 
 #define	PROG_VERSION	6
 typedef struct
 {
 	int		version;
 	int		crc;			// check of header file
-	
+
 	int		ofs_statements;
 	int		numstatements;	// statement 0 is an error
 
 	int		ofs_globaldefs;
 	int		numglobaldefs;
-	
+
 	int		ofs_fielddefs;
 	int		numfielddefs;
-	
+
 	int		ofs_functions;
 	int		numfunctions;	// function 0 is an empty
-	
+
 	int		ofs_strings;
 	int		numstrings;		// first string is a null string
 
 	int		ofs_globals;
 	int		numglobals;
-	
+
 	int		entityfields;
 } dprograms_t;
 

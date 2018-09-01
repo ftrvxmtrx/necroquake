@@ -72,7 +72,7 @@ typedef struct {
 typedef struct
 {
 	int			nump;
-	emitpoint_t	*pverts;	// there's room for an extra element at [nump], 
+	emitpoint_t	*pverts;	// there's room for an extra element at [nump],
 							//  if the driver wants to duplicate element [0] at
 							//  element [nump] to avoid dealing with wrapping
 	mspriteframe_t	*pspriteframe;
@@ -102,7 +102,7 @@ extern qboolean	r_recursiveaffinetriangles;	// true if a driver wants to use
 											//  recursive triangular subdivison
 											//  and vertex drawing via
 											//  D_PolysetDrawFinalVerts() past
-											//  a certain distance (normally 
+											//  a certain distance (normally
 											//  only used by the software
 											//  driver)
 extern float	r_aliasuvscale;		// scale-up factor for screen u and v
@@ -121,7 +121,6 @@ extern int		d_con_indirect;	// if 0, Quake will draw console directly
 								//  defined by driver
 
 extern vec3_t	r_pright, r_pup, r_ppn;
-
 
 void D_Aff8Patch (void *pcolormap);
 void D_BeginDirectRect (int x, int y, byte *pbitmap, int width, int height);
@@ -186,7 +185,6 @@ extern drawsurf_t	r_drawsurf;
 
 void R_DrawSurface (void);
 void R_GenTile (msurface_t *psurf, void *pdest);
-
 
 // !!! if this is changed, it must be changed in d_ifacea.h too !!!
 #define TURB_TEX_SIZE	64		// base turbulent texture size

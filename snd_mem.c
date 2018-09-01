@@ -19,7 +19,7 @@ void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, byte *data)
 	int		i;
 	int		sample, samplefrac, fracstep;
 	sfxcache_t	*sc;
-	
+
 	sc = Cache_Check (&sfx->cache);
 	if (!sc)
 		return;
@@ -112,7 +112,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 		return NULL;
 	}
 
-	stepscale = (float)info.rate / shm->speed;	
+	stepscale = (float)info.rate / shm->speed;
 	len = info.samples / stepscale;
 
 	len = len * info.width * info.channels;
@@ -120,7 +120,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	sc = Cache_Alloc ( &s->cache, len + sizeof(sfxcache_t), s->name);
 	if (!sc)
 		return NULL;
-	
+
 	sc->length = info.samples;
 	sc->loopstart = info.loopstart;
 	sc->speed = info.rate;
@@ -132,8 +132,6 @@ sfxcache_t *S_LoadSound (sfx_t *s)
 	return sc;
 }
 
-
-
 /*
 ===============================================================================
 
@@ -142,13 +140,11 @@ WAV loading
 ===============================================================================
 */
 
-
 byte	*data_p;
 byte 	*iff_end;
 byte 	*last_chunk;
 byte 	*iff_data;
 int 	iff_chunk_len;
-
 
 short GetLittleShort(void)
 {
@@ -181,7 +177,7 @@ void FindNextChunk(char *name)
 			data_p = NULL;
 			return;
 		}
-		
+
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
 		if (iff_chunk_len < 0)
@@ -204,11 +200,10 @@ void FindChunk(char *name)
 	FindNextChunk (name);
 }
 
-
 void DumpChunks(void)
 {
 	char	str[5];
-	
+
 	str[4] = 0;
 	data_p=iff_data;
 	do
@@ -237,7 +232,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 
 	if (!wav)
 		return info;
-		
+
 	iff_data = wav;
 	iff_end = wav + wavlength;
 
@@ -316,7 +311,7 @@ wavinfo_t GetWavinfo (char *name, byte *wav, int wavlength)
 		info.samples = samples;
 
 	info.dataofs = data_p - wav;
-	
+
 	return info;
 }
 

@@ -21,7 +21,6 @@ extern int			d_aflatcolor;
 
 void (*d_drawspans) (espan_t *pspan);
 
-
 /*
 ===============
 D_Init

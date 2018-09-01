@@ -229,7 +229,6 @@ void D_SpriteScanLeftEdge (void)
 	} while (i != lmaxindex);
 }
 
-
 /*
 =====================
 D_SpriteScanRightEdge
@@ -308,9 +307,8 @@ void D_SpriteScanRightEdge (void)
 
 	} while (i != maxindex);
 
-	pspan->count = DS_SPAN_LIST_END;	// mark the end of the span list 
+	pspan->count = DS_SPAN_LIST_END;	// mark the end of the span list
 }
-
 
 /*
 =====================
@@ -356,7 +354,6 @@ void D_SpriteCalculateGradients (void)
 	bbextents = (cachewidth << 16) - 1;
 	bbextentt = (sprite_height << 16) - 1;
 }
-
 
 /*
 =====================

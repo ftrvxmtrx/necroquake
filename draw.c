@@ -30,7 +30,6 @@ typedef struct cachepic_s
 cachepic_t	menu_cachepics[MAX_CACHED_PICS];
 int			menu_numcachepics;
 
-
 qpic_t	*Draw_PicFromWad (char *name)
 {
 	return W_GetLumpName (name);
@@ -46,7 +45,7 @@ qpic_t	*Draw_CachePic (char *path)
 	cachepic_t	*pic;
 	int			i;
 	qpic_t		*dat;
-	
+
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
 		if (!strcmp (path, pic->name))
 			break;
@@ -68,7 +67,7 @@ qpic_t	*Draw_CachePic (char *path)
 // load the pic from disk
 //
 	COM_LoadCacheFile (path, &pic->cache);
-	
+
 	dat = (qpic_t *)pic->cache.data;
 	if (!dat)
 	{
@@ -79,8 +78,6 @@ qpic_t	*Draw_CachePic (char *path)
 
 	return dat;
 }
-
-
 
 /*
 ===============
@@ -101,8 +98,6 @@ void Draw_Init (void)
 	r_rectdesc.rowbytes = draw_backtile->width;
 }
 
-
-
 /*
 ================
 Draw_Character
@@ -117,11 +112,11 @@ void Draw_Character (int x, int y, int num)
 	byte			*dest;
 	byte			*source;
 	unsigned short	*pusdest;
-	int				drawline;	
+	int				drawline;
 	int				row, col;
 
 	num &= 255;
-	
+
 	if (y <= -8)
 		return;			// totally off screen
 
@@ -145,11 +140,10 @@ void Draw_Character (int x, int y, int num)
 	else
 		drawline = 8;
 
-
 	if (r_pixbytes == 1)
 	{
 		dest = vid.conbuffer + y*vid.conrowbytes + x;
-	
+
 		while (drawline--)
 		{
 			if (source[0])
@@ -231,7 +225,7 @@ void Draw_DebugChar (char num)
 {
 	byte			*dest;
 	byte			*source;
-	int				drawline;	
+	int				drawline;
 	extern byte		*draw_chars;
 	int				row, col;
 
@@ -311,7 +305,6 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 	}
 }
 
-
 /*
 =============
 Draw_TransPic
@@ -328,7 +321,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
-		
+
 	source = pic->data;
 
 	if (r_pixbytes == 1)
@@ -342,7 +335,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 				for (u=0 ; u<pic->width ; u++)
 					if ( (tbyte=source[u]) != TRANSPARENT_COLOR)
 						dest[u] = tbyte;
-	
+
 				dest += vid.rowbytes;
 				source += pic->width;
 			}
@@ -398,7 +391,6 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 	}
 }
 
-
 /*
 =============
 Draw_TransPicTranslate
@@ -415,7 +407,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
-		
+
 	source = pic->data;
 
 	if (r_pixbytes == 1)
@@ -485,7 +477,6 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, byte *translation)
 	}
 }
 
-
 void Draw_CharToConback (int num, byte *dest)
 {
 	int		row, col;
@@ -533,7 +524,7 @@ void Draw_ConsoleBackground (int lines)
 
 	for (x=0 ; x<strlen(ver) ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
-	
+
 // draw the pic
 	if (r_pixbytes == 1)
 	{
@@ -590,7 +581,6 @@ void Draw_ConsoleBackground (int lines)
 	}
 }
 
-
 /*
 ==============
 R_DrawRect8
@@ -638,7 +628,6 @@ void R_DrawRect8 (vrect_t *prect, int rowbytes, byte *psrc,
 		}
 	}
 }
-
 
 /*
 ==============
@@ -696,7 +685,6 @@ void R_DrawRect16 (vrect_t *prect, int rowbytes, byte *psrc,
 		}
 	}
 }
-
 
 /*
 =============
@@ -769,7 +757,6 @@ void Draw_TileClear (int x, int y, int w, int h)
 		tileoffsety = 0;		// only the top tile can be top-clipped
 	}
 }
-
 
 /*
 =============
@@ -849,7 +836,6 @@ void Draw_BeginDisc (void)
 
 	D_BeginDirectRect (vid.width - 24, 0, draw_disc->data, 24, 24);
 }
-
 
 /*
 ================

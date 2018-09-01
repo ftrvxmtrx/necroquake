@@ -31,7 +31,6 @@
 
 //=============================================================================
 
-
 #define BSPVERSION	29
 #define	TOOLVERSION	2
 
@@ -69,7 +68,7 @@ typedef struct
 
 typedef struct
 {
-	int			version;	
+	int			version;
 	lump_t		lumps[HEADER_LUMPS];
 } dheader_t;
 
@@ -87,12 +86,10 @@ typedef struct miptex_s
 	unsigned	offsets[MIPLEVELS];		// four mip maps stored
 } miptex_t;
 
-
 typedef struct
 {
 	float	point[3];
 } dvertex_t;
-
 
 // 0-2 are axial planes
 #define	PLANE_X			0
@@ -110,8 +107,6 @@ typedef struct
 	float	dist;
 	int		type;		// PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
 } dplane_t;
-
-
 
 #define	CONTENTS_EMPTY		-1
 #define	CONTENTS_SOLID		-2
@@ -145,7 +140,6 @@ typedef struct
 	short		children[2];	// negative numbers are contents
 } dclipnode_t;
 
-
 typedef struct texinfo_s
 {
 	float		vecs[2][4];		// [s/t][xyz offset]
@@ -168,15 +162,13 @@ typedef struct
 	short		side;
 
 	int			firstedge;		// we must support > 64k edges
-	short		numedges;	
+	short		numedges;
 	short		texinfo;
 
 // lighting info
 	byte		styles[MAXLIGHTMAPS];
 	int			lightofs;		// start of [numstyles*surfsize] samples
 } dface_t;
-
-
 
 #define	AMBIENT_WATER	0
 #define	AMBIENT_SKY		1
@@ -201,14 +193,12 @@ typedef struct
 	byte		ambient_level[NUM_AMBIENTS];
 } dleaf_t;
 
-
 //============================================================================
 
 #ifndef QUAKE_GAME
 
 #define	ANGLE_UP	-1
 #define	ANGLE_DOWN	-2
-
 
 // the utilities get to be lazy and just use large static arrays
 
@@ -257,7 +247,6 @@ extern	unsigned short	dmarksurfaces[MAX_MAP_MARKSURFACES];
 extern	int			numsurfedges;
 extern	int			dsurfedges[MAX_MAP_SURFEDGES];
 
-
 void DecompressVis (byte *in, byte *decompressed);
 int CompressVis (byte *vis, byte *dest);
 
@@ -266,7 +255,6 @@ void	WriteBSPFile (char *filename);
 void	PrintBSPFileSizes (void);
 
 //===============
-
 
 typedef struct epair_s
 {

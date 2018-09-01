@@ -13,7 +13,6 @@ this breaks spans at every edge, even hidden ones (bad)
 have a sentinal at both ends?
 #endif
 
-
 edge_t	*auxedges;
 edge_t	*r_edges, *edge_p, *edge_max;
 
@@ -52,9 +51,7 @@ void R_LeadingEdge (edge_t *edge);
 void R_LeadingEdgeBackwards (edge_t *edge);
 void R_TrailingEdge (surf_t *surf, edge_t *edge);
 
-
 //=============================================================================
-
 
 /*
 ==============
@@ -97,7 +94,6 @@ void R_DrawCulledPolys (void)
 		}
 	}
 }
-
 
 /*
 ==============
@@ -209,29 +205,29 @@ nextedge:
 		if (pedge->u < pedge->prev->u)
 			goto pushback;
 		pedge = pedge->next;
-			
+
 		pedge->u += pedge->u_step;
 		if (pedge->u < pedge->prev->u)
 			goto pushback;
 		pedge = pedge->next;
-			
+
 		pedge->u += pedge->u_step;
 		if (pedge->u < pedge->prev->u)
 			goto pushback;
 		pedge = pedge->next;
-			
+
 		pedge->u += pedge->u_step;
 		if (pedge->u < pedge->prev->u)
 			goto pushback;
 		pedge = pedge->next;
-			
-		goto nextedge;		
-		
+
+		goto nextedge;
+
 pushback:
 		if (pedge == &edge_aftertail)
 			return;
-			
-	// push it back to keep it sorted		
+
+	// push it back to keep it sorted
 		pnext_edge = pedge->next;
 
 	// pull the edge out of the edge list
@@ -360,7 +356,7 @@ newtop:
 
 		// set last_u on the new span
 		surf->last_u = iu;
-				
+
 gotposition:
 	// insert before surf2
 		surf->next = surf2;
@@ -369,7 +365,6 @@ gotposition:
 		surf2->prev = surf;
 	}
 }
-
 
 /*
 ==============
@@ -528,7 +523,7 @@ newtop:
 
 			// set last_u on the new span
 			surf->last_u = iu;
-				
+
 gotposition:
 		// insert before surf2
 			surf->next = surf2;
@@ -538,7 +533,6 @@ gotposition:
 		}
 	}
 }
-
 
 /*
 ==============
@@ -558,7 +552,7 @@ void R_GenerateSpans (void)
 
 // generate spans
 	for (edge=edge_head.next ; edge != &edge_tail; edge=edge->next)
-	{			
+	{
 		if (edge->surfs[0])
 		{
 		// it has a left surface, so a surface is going away for this span
@@ -593,7 +587,7 @@ void R_GenerateSpansBackward (void)
 
 // generate spans
 	for (edge=edge_head.next ; edge != &edge_tail; edge=edge->next)
-	{			
+	{
 		if (edge->surfs[0])
 			R_TrailingEdge (&surfaces[edge->surfs[0]], edge);
 
@@ -604,12 +598,11 @@ void R_GenerateSpansBackward (void)
 	R_CleanupSpan ();
 }
 
-
 /*
 ==============
 R_ScanEdges
 
-Input: 
+Input:
 newedges[] array
 	this has links to edges, which have links to surfaces
 
@@ -639,7 +632,7 @@ void R_ScanEdges (void)
 	edge_head.next = &edge_tail;
 	edge_head.surfs[0] = 0;
 	edge_head.surfs[1] = 1;
-	
+
 	edge_tail.u = (r_refdef.vrectright << 20) + 0xFFFFF;
 	edge_tail_u_shift20 = edge_tail.u >> 20;
 	edge_tail.u_step = 0;
@@ -647,7 +640,7 @@ void R_ScanEdges (void)
 	edge_tail.next = &edge_aftertail;
 	edge_tail.surfs[0] = 1;
 	edge_tail.surfs[1] = 0;
-	
+
 	edge_aftertail.u = -1;		// force a move
 	edge_aftertail.u_step = 0;
 	edge_aftertail.next = &edge_sentinel;
@@ -657,7 +650,7 @@ void R_ScanEdges (void)
 	edge_sentinel.u = 2000 << 24;		// make sure nothing sorts past this
 	edge_sentinel.prev = &edge_aftertail;
 
-//	
+//
 // process all scan lines
 //
 	bottom = r_refdef.vrectbottom - 1;
@@ -682,7 +675,7 @@ void R_ScanEdges (void)
 		if (span_p >= max_span_p)
 		{
 			S_ExtraUpdate ();	// don't let sound get messed up if going slow
-		
+
 			if (r_drawculledpolys)
 			{
 				R_DrawCulledPolys ();
@@ -725,5 +718,4 @@ void R_ScanEdges (void)
 	else
 		D_DrawSurfaces ();
 }
-
 

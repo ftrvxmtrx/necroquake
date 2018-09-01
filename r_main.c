@@ -131,16 +131,16 @@ void	R_InitTextures (void)
 {
 	int		x,y, m;
 	byte	*dest;
-	
+
 // create a simple checkerboard texture for the default
 	r_notexture_mip = Hunk_AllocName (sizeof(texture_t) + 16*16+8*8+4*4+2*2, "notexture");
-	
+
 	r_notexture_mip->width = r_notexture_mip->height = 16;
 	r_notexture_mip->offsets[0] = sizeof(texture_t);
 	r_notexture_mip->offsets[1] = r_notexture_mip->offsets[0] + 16*16;
 	r_notexture_mip->offsets[2] = r_notexture_mip->offsets[1] + 8*8;
 	r_notexture_mip->offsets[3] = r_notexture_mip->offsets[2] + 4*4;
-	
+
 	for (m=0 ; m<4 ; m++)
 	{
 		dest = (byte *)r_notexture_mip + r_notexture_mip->offsets[m];
@@ -152,7 +152,7 @@ void	R_InitTextures (void)
 				else
 					*dest++ = 0xff;
 			}
-	}	
+	}
 }
 
 /*
@@ -163,14 +163,14 @@ R_Init
 void R_Init (void)
 {
 	int		dummy;
-	
+
 // get stack position so we can guess if we are going to overflow
 	r_stack_start = (byte *)&dummy;
-	
+
 	R_InitTurb ();
-	
-	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);	
-	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);	
+
+	Cmd_AddCommand ("timerefresh", R_TimeRefresh_f);
+	Cmd_AddCommand ("pointfile", R_ReadPointFile_f);
 
 	Cvar_RegisterVariable (&r_draworder);
 	Cvar_RegisterVariable (&r_speeds);
@@ -219,12 +219,12 @@ R_NewMap
 void R_NewMap (void)
 {
 	int		i;
-	
+
 // clear out efrags in case the level hasn't been reloaded
 // FIXME: is this one short?
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
 		cl.worldmodel->leafs[i].efrags = NULL;
-		 	
+
 	r_viewleaf = NULL;
 	R_ClearParticles ();
 
@@ -273,7 +273,6 @@ CreatePassages ();
 #endif
 }
 
-
 /*
 ===============
 R_SetVrect
@@ -317,7 +316,6 @@ void R_SetVrect (vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 		}
 	}
 }
-
 
 /*
 ===============
@@ -363,7 +361,7 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	pixelAspect = aspect;
 	xOrigin = r_refdef.xOrigin;
 	yOrigin = r_refdef.yOrigin;
-	
+
 	screenAspect = r_refdef.vrect.width*pixelAspect /
 			r_refdef.vrect.height;
 // 320*200 1.0 pixelAspect = 1.6 screenAspect
@@ -399,26 +397,26 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	screenedge[0].normal[1] = 0;
 	screenedge[0].normal[2] = 1;
 	screenedge[0].type = PLANE_ANYZ;
-	
+
 // right side clip
 	screenedge[1].normal[0] =
 			1.0 / ((1.0-xOrigin)*r_refdef.horizontalFieldOfView);
 	screenedge[1].normal[1] = 0;
 	screenedge[1].normal[2] = 1;
 	screenedge[1].type = PLANE_ANYZ;
-	
+
 // top side clip
 	screenedge[2].normal[0] = 0;
 	screenedge[2].normal[1] = -1.0 / (yOrigin*verticalFieldOfView);
 	screenedge[2].normal[2] = 1;
 	screenedge[2].type = PLANE_ANYZ;
-	
+
 // bottom side clip
 	screenedge[3].normal[0] = 0;
 	screenedge[3].normal[1] = 1.0 / ((1.0-yOrigin)*verticalFieldOfView);
-	screenedge[3].normal[2] = 1;	
+	screenedge[3].normal[2] = 1;
 	screenedge[3].type = PLANE_ANYZ;
-	
+
 	for (i=0 ; i<4 ; i++)
 		VectorNormalize (screenedge[i].normal);
 
@@ -436,7 +434,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	D_ViewChanged ();
 }
 
-
 /*
 ===============
 R_MarkLeaves
@@ -450,12 +447,12 @@ void R_MarkLeaves (void)
 
 	if (r_oldviewleaf == r_viewleaf)
 		return;
-	
+
 	r_visframecount++;
 	r_oldviewleaf = r_viewleaf;
 
 	vis = Mod_LeafPVS (r_viewleaf, cl.worldmodel);
-		
+
 	for (i=0 ; i<cl.worldmodel->numleafs ; i++)
 	{
 		if (vis[i>>3] & (1<<(i&7)))
@@ -471,7 +468,6 @@ void R_MarkLeaves (void)
 		}
 	}
 }
-
 
 /*
 =============
@@ -515,7 +511,7 @@ void R_DrawEntitiesOnList (void)
 			if (R_AliasCheckBBox ())
 			{
 				j = R_LightPoint (currententity->origin);
-	
+
 				lighting.ambientlight = j;
 				lighting.shadelight = j;
 
@@ -529,12 +525,12 @@ void R_DrawEntitiesOnList (void)
 										cl_dlights[lnum].origin,
 										dist);
 						add = cl_dlights[lnum].radius - Length(dist);
-	
+
 						if (add > 0)
 							lighting.ambientlight += add;
 					}
 				}
-	
+
 			// clamp lighting so it doesn't overbright as much
 				if (lighting.ambientlight > 128)
 					lighting.ambientlight = 128;
@@ -566,7 +562,7 @@ void R_DrawViewModel (void)
 	vec3_t		dist;
 	float		add;
 	dlight_t	*dl;
-	
+
 	if (!r_drawviewmodel.value || r_fov_greater_than_90)
 		return;
 
@@ -593,7 +589,7 @@ void R_DrawViewModel (void)
 	r_viewlighting.ambientlight = j;
 	r_viewlighting.shadelight = j;
 
-// add dynamic lights		
+// add dynamic lights
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
 		dl = &cl_dlights[lnum];
@@ -620,7 +616,6 @@ void R_DrawViewModel (void)
 
 	R_AliasDrawModel (&r_viewlighting);
 }
-
 
 /*
 =============
@@ -663,7 +658,7 @@ int R_BmodelCheckBBox (model_t *clmodel, float *minmaxs)
 			rejectpt[0] = minmaxs[pindex[0]];
 			rejectpt[1] = minmaxs[pindex[1]];
 			rejectpt[2] = minmaxs[pindex[2]];
-			
+
 			d = DotProduct (rejectpt, view_clipplanes[i].normal);
 			d -= view_clipplanes[i].dist;
 
@@ -684,7 +679,6 @@ int R_BmodelCheckBBox (model_t *clmodel, float *minmaxs)
 
 	return clipflags;
 }
-
 
 /*
 =============
@@ -733,9 +727,9 @@ void R_DrawBEntitiesOnList (void)
 				VectorSubtract (r_origin, r_entorigin, modelorg);
 			// FIXME: is this needed?
 				VectorCopy (modelorg, r_worldmodelorg);
-		
+
 				r_pcurrentvertbase = clmodel->vertexes;
-		
+
 			// FIXME: stop transforming twice
 				R_RotateBmodel ();
 
@@ -778,7 +772,7 @@ void R_DrawBEntitiesOnList (void)
 					if (r_pefragtopnode)
 					{
 						currententity->topnode = r_pefragtopnode;
-	
+
 						if (r_pefragtopnode->contents >= 0)
 						{
 						// not a leaf; has to be clipped to the world BSP
@@ -792,12 +786,12 @@ void R_DrawBEntitiesOnList (void)
 						// drawing order
 							R_DrawSubmodelPolygons (clmodel, clipflags);
 						}
-	
+
 						currententity->topnode = NULL;
 					}
 				}
 
-			// put back world rotation and frustum clipping		
+			// put back world rotation and frustum clipping
 			// FIXME: R_RotateBmodel should just work off base_vxx
 				VectorCopy (base_vpn, vpn);
 				VectorCopy (base_vup, vup);
@@ -816,7 +810,6 @@ void R_DrawBEntitiesOnList (void)
 
 	insubmodel = false;
 }
-
 
 /*
 ================
@@ -878,11 +871,10 @@ void R_EdgeDrawing (void)
 
 	if (!r_dspeeds.value)
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
-	
+
 	if (!(r_drawpolys | r_drawculledpolys))
 		R_ScanEdges ();
 }
-
 
 /*
 ================
@@ -910,15 +902,15 @@ SetVisibilityByPassages ();
 
 	if (!cl_entities[0].model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
-		
+
 	if (!r_dspeeds.value)
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
-	
+
 	R_EdgeDrawing ();
 
 	if (!r_dspeeds.value)
 		S_ExtraUpdate ();	// don't let sound get messed up if going slow
-	
+
 	if (r_dspeeds.value)
 	{
 		se_time2 = Sys_FloatTime ();
@@ -956,7 +948,7 @@ SetVisibilityByPassages ();
 
 	if (r_aliasstats.value)
 		R_PrintAliasStats ();
-		
+
 	if (r_speeds.value)
 		R_PrintTimes ();
 
@@ -974,7 +966,7 @@ void R_RenderView (void)
 {
 	int		dummy;
 	int		delta;
-	
+
 	delta = (byte *)&dummy - r_stack_start;
 	if (delta < -10000 || delta > 10000)
 		Sys_Error ("R_RenderView: called without enough stack");
@@ -999,7 +991,7 @@ R_InitTurb
 void R_InitTurb (void)
 {
 	int		i;
-	
+
 	for (i=0 ; i<(SIN_BUFFER_SIZE) ; i++)
 	{
 		sintable[i] = AMP + sin(i*3.14159*2/CYCLE)*AMP;

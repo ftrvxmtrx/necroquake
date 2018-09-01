@@ -22,7 +22,7 @@ void D_DrawParticle (particle_t *pparticle)
 
 	transformed[0] = DotProduct(local, r_pright);
 	transformed[1] = DotProduct(local, r_pup);
-	transformed[2] = DotProduct(local, r_ppn);		
+	transformed[2] = DotProduct(local, r_ppn);
 
 	if (transformed[2] < PARTICLE_Z_CLIP)
 		return;
@@ -33,7 +33,7 @@ void D_DrawParticle (particle_t *pparticle)
 	u = (int)(xcenter + zi * transformed[0] + 0.5);
 	v = (int)(ycenter - zi * transformed[1] + 0.5);
 
-	if ((v > d_vrectbottom_particle) || 
+	if ((v > d_vrectbottom_particle) ||
 		(u > d_vrectright_particle) ||
 		(v < d_vrecty) ||
 		(u < d_vrectx))

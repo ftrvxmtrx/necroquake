@@ -6,7 +6,7 @@
 #include "d_local.h"
 
 // TODO: put in span spilling to shrink list size
-#define DPS_MAXSPANS			MAXHEIGHT+1	
+#define DPS_MAXSPANS			MAXHEIGHT+1
 									// 1 extra for spanpackage that marks end
 
 typedef struct {
@@ -118,7 +118,6 @@ void D_PolysetDraw (void)
 	}
 }
 
-
 /*
 ================
 D_PolysetDrawFinalVerts
@@ -141,7 +140,7 @@ void D_PolysetDrawFinalVerts (finalvert_t *fv, int numverts)
 			if (z >= *zbuf)
 			{
 				int		pix;
-				
+
 				*zbuf = z;
 				pix = skintable[fv->v[3]>>16][fv->v[2]>>16];
 				pix = ((byte *)acolormap)[pix + (fv->v[4] & 0xFF00) ];
@@ -150,7 +149,6 @@ void D_PolysetDrawFinalVerts (finalvert_t *fv, int numverts)
 		}
 	}
 }
-
 
 /*
 ================
@@ -176,7 +174,7 @@ void D_DrawSubdiv (void)
 
 		if (((index0->v[1]-index1->v[1]) *
 			 (index0->v[0]-index2->v[0]) -
-			 (index0->v[0]-index1->v[0]) * 
+			 (index0->v[0]-index1->v[0]) *
 			 (index0->v[1]-index2->v[1])) >= 0)
 		{
 			continue;
@@ -211,7 +209,6 @@ void D_DrawSubdiv (void)
 		}
 	}
 }
-
 
 /*
 ================
@@ -280,7 +277,6 @@ void D_DrawNonSubdiv (void)
 	}
 }
 
-
 /*
 ================
 D_PolysetRecursiveTriangle
@@ -345,13 +341,12 @@ split:
 	if ((lp2[1] == lp1[1]) && (lp2[0] < lp1[0]))
 		goto nodraw;
 
-
 	z = new[5]>>16;
 	zbuf = zspantable[new[1]] + new[0];
 	if (z >= *zbuf)
 	{
 		int		pix;
-		
+
 		*zbuf = z;
 		pix = d_pcolormap[skintable[new[3]>>16][new[2]>>16]];
 		d_viewbuffer[d_scantable[new[1]] + new[0]] = pix;
@@ -372,7 +367,7 @@ void D_PolysetUpdateTables (void)
 {
 	int		i;
 	byte	*s;
-	
+
 	if (r_affinetridesc.skinwidth != skinwidth ||
 		r_affinetridesc.pskin != skinstart)
 	{
@@ -871,7 +866,6 @@ void D_RasterizeAliasPolySmooth (void)
 	}
 }
 
-
 /*
 ================
 D_PolysetSetEdgeTable
@@ -933,7 +927,6 @@ void D_PolysetSetEdgeTable (void)
 	pedgetable = &edgetables[edgetableindex];
 }
 
-
 #if 0
 
 void D_PolysetRecursiveDrawLine (int *lp1, int *lp2)
@@ -941,7 +934,7 @@ void D_PolysetRecursiveDrawLine (int *lp1, int *lp2)
 	int		d;
 	int		new[6];
 	int 	ofs;
-	
+
 	d = lp2[0] - lp1[0];
 	if (d < -1 || d > 1)
 		goto split;
@@ -965,7 +958,7 @@ split:
 	if (new[5] > d_pzbuffer[ofs])
 	{
 		int		pix;
-		
+
 		d_pzbuffer[ofs] = new[5];
 		pix = skintable[new[3]>>16][new[2]>>16];
 //		pix = ((byte *)acolormap)[pix + (new[4] & 0xFF00)];
@@ -981,7 +974,7 @@ void D_PolysetRecursiveTriangle2 (int *lp1, int *lp2, int *lp3)
 {
 	int		d;
 	int		new[4];
-	
+
 	d = lp2[0] - lp1[0];
 	if (d < -1 || d > 1)
 		goto split;

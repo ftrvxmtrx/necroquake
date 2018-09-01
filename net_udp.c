@@ -38,7 +38,7 @@ int UDP_Init (void)
 	char	buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
 	char *colon;
-	
+
 	if (COM_CheckParm ("-noudp"))
 		return -1;
 
@@ -139,7 +139,6 @@ int UDP_CloseSocket (int socket)
 	return close (socket);
 }
 
-
 //=============================================================================
 /*
 ============
@@ -158,7 +157,7 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 	int mask;
 	int run;
 	int port;
-	
+
 	buff[0] = '.';
 	b = buff;
 	strcpy(buff+1, in);
@@ -185,16 +184,16 @@ static int PartialIPAddress (char *in, struct qsockaddr *hostaddr)
 		mask<<=8;
 		addr = (addr<<8) + num;
 	}
-	
+
 	if (*b++ == ':')
 		port = Q_atoi(b);
 	else
 		port = net_hostport;
 
 	hostaddr->sa_family = AF_INET;
-	((struct sockaddr_in *)hostaddr)->sin_port = htons((short)port);	
+	((struct sockaddr_in *)hostaddr)->sin_port = htons((short)port);
 	((struct sockaddr_in *)hostaddr)->sin_addr.s_addr = (myAddr & htonl(mask)) | htonl(addr);
-	
+
 	return 0;
 }
 //=============================================================================
@@ -349,13 +348,13 @@ int UDP_GetAddrFromName(char *name, struct qsockaddr *addr)
 
 	if (name[0] >= '0' && name[0] <= '9')
 		return PartialIPAddress (name, addr);
-	
+
 	hostentry = gethostbyname (name);
 	if (!hostentry)
 		return -1;
 
 	addr->sa_family = AF_INET;
-	((struct sockaddr_in *)addr)->sin_port = htons(net_hostport);	
+	((struct sockaddr_in *)addr)->sin_port = htons(net_hostport);
 	((struct sockaddr_in *)addr)->sin_addr.s_addr = *(int *)hostentry->h_addr_list[0];
 
 	return 0;
@@ -383,7 +382,6 @@ int UDP_GetSocketPort (struct qsockaddr *addr)
 {
 	return ntohs(((struct sockaddr_in *)addr)->sin_port);
 }
-
 
 int UDP_SetSocketPort (struct qsockaddr *addr, int port)
 {

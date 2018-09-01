@@ -33,7 +33,6 @@ static void Slist_Poll(void);
 PollProcedure	slistSendProcedure = {NULL, 0.0, Slist_Send};
 PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
-
 sizebuf_t		net_message;
 int				net_activeconnections = 0;
 
@@ -64,7 +63,6 @@ qboolean recording = false;
 
 int	net_driverlevel;
 
-
 double			net_time;
 
 double SetNetTime(void)
@@ -72,7 +70,6 @@ double SetNetTime(void)
 	net_time = Sys_FloatTime();
 	return net_time;
 }
-
 
 /*
 ===================
@@ -120,7 +117,6 @@ qsocket_t *NET_NewQSocket (void)
 	return sock;
 }
 
-
 void NET_FreeQSocket(qsocket_t *sock)
 {
 	qsocket_t	*s;
@@ -146,7 +142,6 @@ void NET_FreeQSocket(qsocket_t *sock)
 	sock->disconnected = true;
 }
 
-
 static void NET_Listen_f (void)
 {
 	if (Cmd_Argc () != 2)
@@ -164,7 +159,6 @@ static void NET_Listen_f (void)
 		dfunc.Listen (listening);
 	}
 }
-
 
 static void MaxPlayers_f (void)
 {
@@ -204,7 +198,6 @@ static void MaxPlayers_f (void)
 		Cvar_Set ("deathmatch", "1");
 }
 
-
 static void NET_Port_f (void)
 {
 	int 	n;
@@ -233,14 +226,12 @@ static void NET_Port_f (void)
 	}
 }
 
-
 static void PrintSlistHeader(void)
 {
 	Con_Printf("Server          Map             Users\n");
 	Con_Printf("--------------- --------------- -----\n");
 	slistLastShown = 0;
 }
-
 
 static void PrintSlist(void)
 {
@@ -256,7 +247,6 @@ static void PrintSlist(void)
 	slistLastShown = n;
 }
 
-
 static void PrintSlistTrailer(void)
 {
 	if (hostCacheCount)
@@ -264,7 +254,6 @@ static void PrintSlistTrailer(void)
 	else
 		Con_Printf("No Quake servers found.\n\n");
 }
-
 
 void NET_Slist_f (void)
 {
@@ -286,7 +275,6 @@ void NET_Slist_f (void)
 	hostCacheCount = 0;
 }
 
-
 static void Slist_Send(void)
 {
 	for (net_driverlevel=0; net_driverlevel < net_numdrivers; net_driverlevel++)
@@ -301,7 +289,6 @@ static void Slist_Send(void)
 	if ((Sys_FloatTime() - slistStartTime) < 0.5)
 		SchedulePollProcedure(&slistSendProcedure, 0.75);
 }
-
 
 static void Slist_Poll(void)
 {
@@ -329,7 +316,6 @@ static void Slist_Poll(void)
 	slistSilent = false;
 	slistLocal = true;
 }
-
 
 /*
 ===================
@@ -411,10 +397,9 @@ JustDoIt:
 		PrintSlist();
 		PrintSlistTrailer();
 	}
-	
+
 	return NULL;
 }
-
 
 /*
 ===================
@@ -455,7 +440,7 @@ qsocket_t *NET_CheckNewConnections (void)
 			return ret;
 		}
 	}
-	
+
 	if (recording)
 	{
 		vcrConnect.time = host_time;
@@ -487,7 +472,6 @@ void NET_Close (qsocket_t *sock)
 
 	NET_FreeQSocket(sock);
 }
-
 
 /*
 =================
@@ -539,7 +523,6 @@ int	NET_GetMessage (qsocket_t *sock)
 		}
 	}
 
-
 	if (ret > 0)
 	{
 		if (sock->driver)
@@ -577,7 +560,6 @@ int	NET_GetMessage (qsocket_t *sock)
 	return ret;
 }
 
-
 /*
 ==================
 NET_SendMessage
@@ -600,7 +582,7 @@ struct
 int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
 	int		r;
-	
+
 	if (!sock)
 		return -1;
 
@@ -623,15 +605,14 @@ int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 		vcrSendMessage.r = r;
 		Sys_FileWrite (vcrFile, &vcrSendMessage, 20);
 	}
-	
+
 	return r;
 }
-
 
 int NET_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 {
 	int		r;
-	
+
 	if (!sock)
 		return -1;
 
@@ -654,10 +635,9 @@ int NET_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 		vcrSendMessage.r = r;
 		Sys_FileWrite (vcrFile, &vcrSendMessage, 20);
 	}
-	
+
 	return r;
 }
-
 
 /*
 ==================
@@ -670,7 +650,7 @@ message to be transmitted.
 qboolean NET_CanSendMessage (qsocket_t *sock)
 {
 	int		r;
-	
+
 	if (!sock)
 		return false;
 
@@ -680,7 +660,7 @@ qboolean NET_CanSendMessage (qsocket_t *sock)
 	SetNetTime();
 
 	r = sfunc.CanSendMessage(sock);
-	
+
 	if (recording)
 	{
 		vcrSendMessage.time = host_time;
@@ -689,10 +669,9 @@ qboolean NET_CanSendMessage (qsocket_t *sock)
 		vcrSendMessage.r = r;
 		Sys_FileWrite (vcrFile, &vcrSendMessage, 20);
 	}
-	
+
 	return r;
 }
-
 
 int NET_SendToAll(sizebuf_t *data, int blocktime)
 {
@@ -766,7 +745,6 @@ int NET_SendToAll(sizebuf_t *data, int blocktime)
 	}
 	return count;
 }
-
 
 //=============================================================================
 
@@ -893,7 +871,6 @@ void		NET_Shutdown (void)
 	}
 }
 
-
 static PollProcedure *pollProcedureList = NULL;
 
 void NET_Poll(void)
@@ -925,7 +902,6 @@ void NET_Poll(void)
 		pp->procedure(pp->arg);
 	}
 }
-
 
 void SchedulePollProcedure(PollProcedure *proc, double timeOffset)
 {

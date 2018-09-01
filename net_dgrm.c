@@ -31,7 +31,6 @@ extern int m_state;
 extern qboolean m_return_onerror;
 extern char m_return_reason[32];
 
-
 #ifdef DEBUG
 char *StrAddr (struct qsockaddr *addr)
 {
@@ -44,7 +43,6 @@ char *StrAddr (struct qsockaddr *addr)
 	return buf;
 }
 #endif
-
 
 unsigned long banAddr = 0x00000000;
 unsigned long banMask = 0xffffffff;
@@ -149,7 +147,6 @@ int Datagram_SendMessage (qsocket_t *sock, sizebuf_t *data)
 	return 1;
 }
 
-
 int SendMessageNext (qsocket_t *sock)
 {
 	unsigned int	packetLen;
@@ -181,7 +178,6 @@ int SendMessageNext (qsocket_t *sock)
 	packetsSent++;
 	return 1;
 }
-
 
 int ReSendMessage (qsocket_t *sock)
 {
@@ -215,7 +211,6 @@ int ReSendMessage (qsocket_t *sock)
 	return 1;
 }
 
-
 qboolean Datagram_CanSendMessage (qsocket_t *sock)
 {
 	if (sock->sendNext)
@@ -224,12 +219,10 @@ qboolean Datagram_CanSendMessage (qsocket_t *sock)
 	return sock->canSend;
 }
 
-
 qboolean Datagram_CanSendUnreliableMessage (qsocket_t *sock)
 {
 	return true;
 }
-
 
 int Datagram_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 {
@@ -256,7 +249,6 @@ int Datagram_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 	return 1;
 }
 
-
 int	Datagram_GetMessage (qsocket_t *sock)
 {
 	unsigned int	length;
@@ -271,7 +263,7 @@ int	Datagram_GetMessage (qsocket_t *sock)
 			ReSendMessage (sock);
 
 	while(1)
-	{	
+	{
 		length = sfunc.Read (sock->socket, (byte *)&packetBuffer, NET_DATAGRAMSIZE, &readaddr);
 
 //	if ((rand() & 255) > 220)
@@ -407,7 +399,6 @@ int	Datagram_GetMessage (qsocket_t *sock)
 	return ret;
 }
 
-
 void PrintStats(qsocket_t *s)
 {
 	Con_Printf("canSend = %4u   \n", s->canSend);
@@ -454,7 +445,6 @@ void NET_Stats_f (void)
 		PrintStats(s);
 	}
 }
-
 
 static qboolean testInProgress = false;
 static int		testPollCount;
@@ -584,7 +574,6 @@ JustDoIt:
 	SchedulePollProcedure(&testPollProcedure, 0.1);
 }
 
-
 static qboolean test2InProgress = false;
 static int		test2Driver;
 static int		test2Socket;
@@ -707,7 +696,6 @@ JustDoIt:
 	SchedulePollProcedure(&test2PollProcedure, 0.05);
 }
 
-
 int Datagram_Init (void)
 {
 	int i;
@@ -735,7 +723,6 @@ int Datagram_Init (void)
 	return 0;
 }
 
-
 void Datagram_Shutdown (void)
 {
 	int i;
@@ -753,12 +740,10 @@ void Datagram_Shutdown (void)
 	}
 }
 
-
 void Datagram_Close (qsocket_t *sock)
 {
 	sfunc.CloseSocket(sock->socket);
 }
-
 
 void Datagram_Listen (qboolean state)
 {
@@ -768,7 +753,6 @@ void Datagram_Listen (qboolean state)
 		if (net_landrivers[i].initialized)
 			net_landrivers[i].Listen (state);
 }
-
 
 static qsocket_t *_Datagram_CheckNewConnections (void)
 {
@@ -833,7 +817,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		int			activeNumber;
 		int			clientNumber;
 		client_t	*client;
-		
+
 		playerNumber = MSG_ReadByte();
 		activeNumber = -1;
 		for (clientNumber = 0, client = svs.clients; clientNumber < svs.maxclients; clientNumber++, client++)
@@ -1008,7 +992,7 @@ static qsocket_t *_Datagram_CheckNewConnections (void)
 		return NULL;
 	}
 
-	// everything is allocated, just fill in the details	
+	// everything is allocated, just fill in the details
 	sock->socket = newsock;
 	sock->landriver = net_landriverlevel;
 	sock->addr = clientaddr;
@@ -1039,7 +1023,6 @@ qsocket_t *Datagram_CheckNewConnections (void)
 				break;
 	return ret;
 }
-
 
 static void _Datagram_SearchForHosts (qboolean xmit)
 {
@@ -1150,7 +1133,6 @@ void Datagram_SearchForHosts (qboolean xmit)
 			_Datagram_SearchForHosts (xmit);
 	}
 }
-
 
 static qsocket_t *_Datagram_Connect (char *host)
 {

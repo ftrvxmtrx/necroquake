@@ -37,7 +37,6 @@
 // fall over
 #define	ROLL	2
 
-
 #define	MAX_QPATH		64			// max length of a quake game pathname
 #define	MAX_OSPATH		128			// max length of a filesystem pathname
 
@@ -168,7 +167,6 @@ typedef struct
 	int		effects;
 } entity_state_t;
 
-
 #include "wad.h"
 #include "draw.h"
 #include "cvar.h"
@@ -211,13 +209,9 @@ typedef struct
 	int		memsize;
 } quakeparms_t;
 
-
 //=============================================================================
 
-
-
 extern qboolean noclip_anglehack;
-
 
 //
 // host

@@ -1,7 +1,6 @@
 /*
  memory allocation
 
-
 H_??? The hunk manages the entire memory block given to quake.  It must be
 contiguous.  Memory can be allocated from either the low or high end in a
 stack fashion.  The only way memory is released is by resetting one of the
@@ -15,7 +14,6 @@ Hunk allocations are guaranteed to be 16 byte aligned.
 The video buffers are allocated high to avoid leaving a hole underneath
 server allocations when changing to a higher video mode.
 
-
 Z_??? Zone memory functions used for small, dynamic allocations like text
 strings from command input.  There is only about 48K for it, allocated at
 the very bottom of the hunk.
@@ -26,11 +24,9 @@ fluctuates from level to level.
 
 To allocate a cachable object
 
-
 Temp_??? Temp memory is used for file loading and surface caching.  The size
 of the cache memory is adjusted so that there is a minimum of 512k remaining
 for temp memory.
-
 
 ------ Top of Memory -------
 
@@ -59,8 +55,6 @@ startup hunk allocations
 Zone block
 
 ----- Bottom of Memory -----
-
-
 
 */
 
@@ -107,6 +101,4 @@ void *Cache_Alloc (cache_user_t *c, int size, char *name);
 // wasn't enough room.
 
 void Cache_Report (void);
-
-
 

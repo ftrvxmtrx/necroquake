@@ -30,7 +30,7 @@ void CDAudio_Play(byte track, qboolean looping)
 {
 	CDstatus cd_stat;
 	if(!cd_id || !enabled) return;
-	
+
 	if(!cdValid)
 	{
 		if(!CD_INDRIVE(cd_stat=SDL_CDStatus(cd_id)) ||(!cd_id->numtracks)) return;
@@ -58,7 +58,6 @@ void CDAudio_Play(byte track, qboolean looping)
 	playLooping = looping;
 }
 
-
 void CDAudio_Stop()
 {
 	int cdstate;
@@ -78,7 +77,6 @@ void CDAudio_Pause()
 	if(SDL_CDPause(cd_id))
 		Con_DPrintf("CDAudio_Pause: Failed to pause track.\n");
 }
-
 
 void CDAudio_Resume()
 {
@@ -116,7 +114,7 @@ int CDAudio_Init()
 {
 	if((cls.state == ca_dedicated) || COM_CheckParm("-nocdaudio"))
 		return -1;
-		
+
 	cd_id = SDL_CDOpen(0);
 	if(!cd_id)
 	{
@@ -124,11 +122,11 @@ int CDAudio_Init()
 			SDL_GetError());
 		return -1;
 	}
-	
+
 	initialized = true;
 	enabled = true;
 	cdValid = true;
-	
+
 	if(!CD_INDRIVE(SDL_CDStatus(cd_id)))
 	{
 		Con_Printf("CDAudio_Init: No CD in drive.\n");
@@ -143,7 +141,6 @@ int CDAudio_Init()
 	Con_Printf("CD Audio Initialized.\n");
 	return 0;
 }
-
 
 void CDAudio_Shutdown()
 {

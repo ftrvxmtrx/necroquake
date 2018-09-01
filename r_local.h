@@ -96,7 +96,6 @@ extern	int		r_visframecount;
 
 extern int	vstartscan;
 
-
 void R_ClearPolyList (void);
 void R_DrawPolyList (void);
 
@@ -105,7 +104,6 @@ void R_DrawPolyList (void);
 //
 extern	qboolean		insubmodel;
 extern	vec3_t			r_worldmodelorg;
-
 
 void R_DrawSprite (void);
 void R_RenderFace (msurface_t *fa, int clipflags);

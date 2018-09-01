@@ -21,8 +21,6 @@ typedef struct
 	byte		data[4];			// variably sized
 } qpic_t;
 
-
-
 typedef struct
 {
 	char		identification[4];		// should be WAD2 or 2DAW
