@@ -40,8 +40,7 @@ void PF_error (void)
 	edict_t	*ed;
 
 	s = PF_VarString(0);
-	Con_Printf ("======SERVER ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	Con_Printf ("======SERVER ERROR in %s:\n%s\n", PR_GetString(pr_xfunction->s_name), s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 
@@ -64,8 +63,7 @@ void PF_objerror (void)
 	edict_t	*ed;
 
 	s = PF_VarString(0);
-	Con_Printf ("======OBJECT ERROR in %s:\n%s\n"
-	,pr_strings + pr_xfunction->s_name,s);
+	Con_Printf ("======OBJECT ERROR in %s:\n%s\n", PR_GetString(pr_xfunction->s_name), s);
 	ed = PROG_TO_EDICT(pr_global_struct->self);
 	ED_Print (ed);
 	ED_Free (ed);
@@ -225,7 +223,7 @@ void PF_setmodel (void)
 	if (!*check)
 		PR_RunError ("no precache: %s\n", m);
 
-	e->v.model = m - pr_strings;
+	e->v.model = PR_AsString(m);
 	e->v.modelindex = i; //SV_ModelIndex (m);
 
 	mod = sv.models[ (int)e->v.modelindex];  // Mod_ForName (m, true);
@@ -869,7 +867,7 @@ void PF_ftos (void)
 		sprintf (pr_string_temp, "%d",(int)v);
 	else
 		sprintf (pr_string_temp, "%5.1f",v);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_AsString(pr_string_temp);
 }
 
 void PF_fabs (void)
@@ -882,7 +880,7 @@ void PF_fabs (void)
 void PF_vtos (void)
 {
 	sprintf (pr_string_temp, "'%5.1f %5.1f %5.1f'", G_VECTOR(OFS_PARM0)[0], G_VECTOR(OFS_PARM0)[1], G_VECTOR(OFS_PARM0)[2]);
-	G_INT(OFS_RETURN) = pr_string_temp - pr_strings;
+	G_INT(OFS_RETURN) = PR_AsString(pr_string_temp);
 }
 
 void PF_Spawn (void)
@@ -1420,7 +1418,7 @@ void PF_makestatic (void)
 
 	MSG_WriteByte (&sv.signon,svc_spawnstatic);
 
-	MSG_WriteByte (&sv.signon, SV_ModelIndex(pr_strings + ent->v.model));
+	MSG_WriteByte (&sv.signon, SV_ModelIndex(PR_GetString(ent->v.model)));
 
 	MSG_WriteByte (&sv.signon, ent->v.frame);
 	MSG_WriteByte (&sv.signon, ent->v.colormap);
@@ -1513,30 +1511,30 @@ PF_sprint,	// void(entity client, string s) sprint = #24;
 PF_dprint,	// void(string s) dprint				= #25;
 PF_ftos,	// void(string s) ftos				= #26;
 PF_vtos,	// void(string s) vtos				= #27;
-PF_coredump,
-PF_traceon,
-PF_traceoff,
-PF_eprint,	// void(entity e) debug print an entire entity
-PF_walkmove, // float(float yaw, float dist) walkmove
-PF_Fixme, // float(float yaw, float dist) walkmove
-PF_droptofloor,
-PF_lightstyle,
-PF_rint,
-PF_floor,
-PF_ceil,
-PF_Fixme,
-PF_checkbottom,
-PF_pointcontents,
-PF_Fixme,
-PF_fabs,
-PF_aim,
-PF_cvar,
-PF_localcmd,
-PF_nextent,
-PF_particle,
-PF_changeyaw,
-PF_Fixme,
-PF_vectoangles,
+PF_coredump, // #28
+PF_traceon, // #29
+PF_traceoff, // #30
+PF_eprint,	// void(entity e) debug print an entire entity // #31
+PF_walkmove, // float(float yaw, float dist) walkmove // #32
+PF_Fixme, // float(float yaw, float dist) walkmove // #33
+PF_droptofloor, // #34
+PF_lightstyle, // #35
+PF_rint, // #36
+PF_floor, // #37
+PF_ceil, // #38
+PF_Fixme, // #39
+PF_checkbottom, // #40
+PF_pointcontents, // #41
+PF_Fixme, // #42
+PF_fabs, // #43
+PF_aim, // #44
+PF_cvar, // #45
+PF_localcmd, // #46
+PF_nextent, // #47
+PF_particle, // #48
+PF_changeyaw, // #49
+PF_Fixme, // #50
+PF_vectoangles, // #51
 
 PF_WriteByte,
 PF_WriteChar,
@@ -1545,7 +1543,15 @@ PF_WriteLong,
 PF_WriteCoord,
 PF_WriteAngle,
 PF_WriteString,
-PF_WriteEntity,
+PF_WriteEntity, // #59
+
+PF_Fixme,
+PF_Fixme,
+PF_Fixme,
+PF_Fixme,
+PF_Fixme,
+PF_Fixme,
+PF_Fixme,
 
 SV_MoveToGoal,
 PF_precache_file,
@@ -1567,5 +1573,5 @@ PF_setspawnparms
 };
 
 builtin_t *pr_builtins = pr_builtin;
-int pr_numbuiltins = sizeof(pr_builtin)/sizeof(pr_builtin[0]);
+int pr_numbuiltins = nelem(pr_builtin);
 

@@ -320,14 +320,17 @@ Con_DebugLog
 void Con_DebugLog(char *file, char *fmt, ...)
 {
     va_list argptr;
-    static char data[1024];
-    int fd;
+    char data[1024];
+    int fd, n, r, sz;
 
     va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
+    sz = vsprintf(data, fmt, argptr);
+    sz = MAX(sz, nelem(data)-1);
     va_end(argptr);
     fd = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-    write(fd, data, strlen(data));
+    for (n = 0; n < sz; n += r)
+		if ((r = write(fd, data+n, sz-n)) <= 0)
+			break;
     close(fd);
 }
 
@@ -442,7 +445,6 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		y;
 	int		i;
 	char	*text;
 
@@ -463,8 +465,6 @@ void Con_DrawInput (void)
 		text += 1 + key_linepos - con_linewidth;
 
 // draw it
-	y = con_vislines-16;
-
 	for (i=0 ; i<con_linewidth ; i++)
 		Draw_Character ( (i+1)<<3, con_vislines - 16, text[i]);
 

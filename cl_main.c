@@ -1,6 +1,7 @@
 // cl_main.c  -- client main loop
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "quakedef.h"
 
 // we need to declare some mouse variables here, because the menu system

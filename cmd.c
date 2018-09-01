@@ -429,7 +429,7 @@ Cmd_Argv
 */
 char	*Cmd_Argv (int arg)
 {
-	if ( (unsigned)arg >= cmd_argc )
+	if (arg >= cmd_argc || arg < 0)
 		return cmd_null_string;
 	return cmd_argv[arg];
 }

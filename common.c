@@ -377,7 +377,7 @@ float MSG_ReadFloat (void)
 char *MSG_ReadString (void)
 {
 	static char     string[2048];
-	int             l,c;
+	int             l, c;
 
 	l = 0;
 	do
@@ -387,7 +387,7 @@ char *MSG_ReadString (void)
 			break;
 		string[l] = c;
 		l++;
-	} while (l < sizeof(string)-1);
+	} while (l < (int)sizeof(string)-1);
 
 	string[l] = 0;
 
@@ -791,6 +791,8 @@ void COM_Init (char *basedir)
 {
 	uint8_t    swaptest[2] = {1,0};
 
+	USED(basedir);
+
 	if ( *(short *)swaptest == 1)
 	{
 		bigendien = false;
@@ -1000,7 +1002,7 @@ void COM_CopyFile (char *netpath, char *cachepath)
 
 	while (remaining)
 	{
-		if (remaining < sizeof(buf))
+		if (remaining < (int)sizeof(buf))
 			count = remaining;
 		else
 			count = sizeof(buf);
@@ -1024,8 +1026,8 @@ Sets com_filesize and one of handle or file
 int COM_FindFile (char *filename, int *handle, FILE **file)
 {
 	searchpath_t    *search;
-	char            netpath[MAX_OSPATH];
-	char            cachepath[MAX_OSPATH];
+	char            netpath[MAX_OSPATH+1];
+	char            cachepath[MAX_OSPATH+1];
 	pack_t          *pak;
 	int                     i;
 	int                     findtime, cachetime;
@@ -1080,7 +1082,7 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 					continue;
 			}
 
-			sprintf (netpath, "%s/%s",search->filename, filename);
+			snprintf(netpath, sizeof(netpath), "%s/%s", search->filename, filename);
 
 			findtime = Sys_FileTime (netpath);
 			if (findtime == -1)
@@ -1091,12 +1093,12 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 				strcpy (cachepath, netpath);
 			else
 			{
-				sprintf (cachepath,"%s/%s", com_cachedir, netpath);
+				snprintf(cachepath, sizeof(cachepath), "%s/%s", com_cachedir, netpath);
 				cachetime = Sys_FileTime (cachepath);
 
 				if (cachetime < findtime)
 					COM_CopyFile (netpath, cachepath);
-				strcpy (netpath, cachepath);
+				strcpy(netpath, cachepath);
 			}
 
 			Sys_Printf ("FindFile: %s\n",netpath);

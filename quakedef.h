@@ -6,6 +6,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#define nelem(x) (int)(sizeof(x)/sizeof((x)[0]))
+#define USED(x) (void)x
+#define MAX(a, b) ((a) < (b) ? (b) : (a))
+
 #define	QUAKE_GAME			// as opposed to utilities
 
 #undef VERSION

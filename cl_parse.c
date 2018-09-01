@@ -1,6 +1,7 @@
 // cl_parse.c  -- parse a message received from the server
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "quakedef.h"
 
 char *svc_strings[] =
@@ -314,7 +315,6 @@ void CL_ParseUpdate (int bits)
 	bool	forcelink;
 	entity_t	*ent;
 	int			num;
-	int			skin;
 
 	if (cls.signon == SIGNONS - 1)
 	{	// first update is the final signon stage
@@ -335,9 +335,9 @@ void CL_ParseUpdate (int bits)
 
 	ent = CL_EntityNum (num);
 
-for (i=0 ; i<16 ; i++)
-if (bits&(1<<i))
-	bitcounts[i]++;
+	for (i=0 ; i<16 ; i++)
+		if (bits&(1<<i))
+			bitcounts[i]++;
 
 	if (ent->msgtime != cl.mtime[1])
 		forcelink = true;	// no previous frame to lerp from
@@ -744,6 +744,7 @@ void CL_ParseServerMessage (void)
 
 		case svc_disconnect:
 			Host_EndGame ("Server disconnected\n");
+			break;
 
 		case svc_print:
 			Con_Printf ("%s", MSG_ReadString ());

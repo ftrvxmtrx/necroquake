@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "quakedef.h"
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -98,15 +99,10 @@ int UDP_OpenSocket (int port)
 {
 	int newsocket;
 	struct sockaddr_in address;
-	bool _true = true;
 
 	if ((newsocket = socket (PF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
 		return -1;
 
-#if 0
-	if (ioctl (newsocket, FIONBIO, (char *)&_true) == -1)
-		goto ErrorReturn;
-#endif
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(port);

@@ -1,5 +1,6 @@
 // cl.input.c  -- builds an intended movement command to send to the server
 #include <stdio.h>
+#include <stdlib.h>
 #include "quakedef.h"
 
 /*
@@ -154,27 +155,30 @@ float CL_KeyState (kbutton_t *key)
 	down = key->state & 1;
 	val = 0;
 
-	if (impulsedown && !impulseup)
+	if (impulsedown && !impulseup) {
 		if (down)
 			val = 0.5;	// pressed and held this frame
 		else
 			val = 0;	//	I_Error ();
-	if (impulseup && !impulsedown)
+	}
+	if (impulseup && !impulsedown) {
 		if (down)
 			val = 0;	//	I_Error ();
 		else
 			val = 0;	// released this frame
-	if (!impulsedown && !impulseup)
+	}
+	if (!impulsedown && !impulseup) {
 		if (down)
 			val = 1.0;	// held the entire frame
 		else
 			val = 0;	// up the entire frame
-	if (impulsedown && impulseup)
+	}
+	if (impulsedown && impulseup) {
 		if (down)
 			val = 0.75;	// released and re-pressed this frame
 		else
 			val = 0.25;	// pressed and released this frame
-
+	}
 	key->state &= 1;		// clear impulses
 
 	return val;

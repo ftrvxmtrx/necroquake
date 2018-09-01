@@ -28,12 +28,13 @@ static void CDAudio_Eject()
 
 void CDAudio_Play(int track, bool looping)
 {
-	CDstatus cd_stat;
+	CDstatus cdstate;
 	if(!cd_id || !enabled) return;
 
 	if(!cdValid)
 	{
-		if(!CD_INDRIVE(cd_stat=SDL_CDStatus(cd_id)) ||(!cd_id->numtracks)) return;
+		if (!CD_INDRIVE(cdstate = SDL_CDStatus(cd_id)) || cd_id->numtracks < 1)
+			return;
 		cdValid = true;
 	}
 
@@ -43,7 +44,8 @@ void CDAudio_Play(int track, bool looping)
 		return;
 	}
 	track--; /* Convert track from person to SDL value */
-	if(cd_stat == CD_PLAYING)
+	cdstate = SDL_CDStatus(cd_id);
+	if(cdstate == CD_PLAYING)
 	{
 		if(cd_id->cur_track == track) return;
 		CDAudio_Stop();

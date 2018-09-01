@@ -86,8 +86,6 @@ Draw_Init
 */
 void Draw_Init (void)
 {
-	int		i;
-
 	draw_chars = W_GetLumpName ("conchars");
 	draw_disc = W_GetLumpName ("disc");
 	draw_backtile = W_GetLumpName ("backtile");
@@ -316,8 +314,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 	unsigned short	*pusdest;
 	int				v, u;
 
-	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
-		 (unsigned)(y + pic->height) > vid.height)
+	if (x < 0 || (x + pic->width) > vid.width || y < 0 || (y + pic->height) > vid.height)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
@@ -402,8 +399,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 	unsigned short	*pusdest;
 	int				v, u;
 
-	if (x < 0 || (unsigned)(x + pic->width) > vid.width || y < 0 ||
-		 (unsigned)(y + pic->height) > vid.height)
+	if (x < 0 || (x + pic->width) > vid.width || y < 0 || (y + pic->height) > vid.height)
 	{
 		Sys_Error ("Draw_TransPic: bad coordinates");
 	}
@@ -509,7 +505,7 @@ Draw_ConsoleBackground
 */
 void Draw_ConsoleBackground (int lines)
 {
-	int				x, y, v;
+	int				x, y, v, n;
 	uint8_t			*src, *dest;
 	unsigned short	*pusdest;
 	int				f, fstep;
@@ -520,9 +516,9 @@ void Draw_ConsoleBackground (int lines)
 
 // hack the version number directly into the pic
 	dest = conback->data + 320 - 43 + 320*186;
-	sprintf (ver, "%4.2f", VERSION);
+	n = sprintf (ver, "%4.2f", VERSION);
 
-	for (x=0 ; x<strlen(ver) ; x++)
+	for (x=0 ; x < n ; x++)
 		Draw_CharToConback (ver[x], dest+(x<<3));
 
 // draw the pic

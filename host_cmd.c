@@ -530,7 +530,12 @@ void Host_Loadgame_f (void)
 		return;
 	}
 
-	fscanf (f, "%i\n", &version);
+	if (fscanf(f, "%i\n", &version) != 1)
+	{
+		fclose(f);
+		Con_Printf ("Couldn't read savegame version\n");
+		return;
+	}
 	if (version != SAVEGAME_VERSION)
 	{
 		fclose (f);
@@ -572,7 +577,7 @@ void Host_Loadgame_f (void)
 	entnum = -1;		// -1 is the globals
 	while (!feof(f))
 	{
-		for (i=0 ; i<sizeof(str)-1 ; i++)
+		for (i=0 ; i<nelem(str)-1 ; i++)
 		{
 			r = fgetc (f);
 			if (r == EOF || !r)
@@ -665,7 +670,7 @@ void Host_Name_f (void)
 		if (strcmp(host_client->name, newName) != 0)
 			Con_Printf ("%s renamed to %s\n", host_client->name, newName);
 	strcpy (host_client->name, newName);
-	host_client->edict->v.netname = host_client->name - pr_strings;
+	host_client->edict->v.netname = PR_AsString(host_client->name);
 
 // send notification to all clients
 
@@ -686,7 +691,7 @@ void Host_Say(bool teamonly)
 	client_t *save;
 	int		j;
 	char	*p;
-	unsigned char	text[64];
+	char	text[64];
 	bool	fromServer = false;
 
 	if (cmd_source == src_command)
@@ -718,12 +723,12 @@ void Host_Say(bool teamonly)
 
 // turn on color set 1
 	if (!fromServer)
-		sprintf (text, "%c%s: ", 1, save->name);
+		snprintf (text, sizeof(text), "%c%s: ", 1, save->name);
 	else
-		sprintf (text, "%c<%s> ", 1, hostname.string);
+		snprintf (text, sizeof(text), "%c<%s> ", 1, hostname.string);
 
 	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
-	if (strlen(p) > j)
+	if ((int)strlen(p) > j)
 		p[j] = 0;
 
 	strcat (text, p);
@@ -784,7 +789,7 @@ void Host_Tell_f(void)
 
 // check length & truncate if necessary
 	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
-	if (strlen(p) > j)
+	if ((int)strlen(p) > j)
 		p[j] = 0;
 
 	strcat (text, p);
@@ -900,11 +905,11 @@ void Host_Pause_f (void)
 
 		if (sv.paused)
 		{
-			SV_BroadcastPrintf ("%s paused the game\n", pr_strings + sv_player->v.netname);
+			SV_BroadcastPrintf ("%s paused the game\n", PR_GetString(sv_player->v.netname));
 		}
 		else
 		{
-			SV_BroadcastPrintf ("%s unpaused the game\n",pr_strings + sv_player->v.netname);
+			SV_BroadcastPrintf ("%s unpaused the game\n", PR_GetString(sv_player->v.netname));
 		}
 
 	// send notification to all clients
@@ -977,7 +982,7 @@ void Host_Spawn_f (void)
 		memset (&ent->v, 0, progs->entityfields * 4);
 		ent->v.colormap = NUM_FOR_EDICT(ent);
 		ent->v.team = (host_client->colors & 15) + 1;
-		ent->v.netname = host_client->name - pr_strings;
+		ent->v.netname = PR_AsString(host_client->name);
 
 		// copy spawn parms out of the client_t
 
@@ -1182,7 +1187,7 @@ Host_Give_f
 void Host_Give_f (void)
 {
 	char	*t;
-	int		v, w;
+	int		v;
 	eval_t	*val;
 
 	if (cmd_source == src_command)
@@ -1341,7 +1346,7 @@ edict_t	*FindViewthing (void)
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
 		e = EDICT_NUM(i);
-		if ( !strcmp (pr_strings + e->v.classname, "viewthing") )
+		if ( !strcmp (PR_GetString(e->v.classname), "viewthing") )
 			return e;
 	}
 	Con_Printf ("No viewthing on map\n");

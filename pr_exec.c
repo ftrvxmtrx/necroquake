@@ -146,11 +146,11 @@ void PR_PrintStatement (dstatement_t *s)
 	else
 	{
 		if (s->a)
-			Con_Printf ("%s",PR_GlobalString(s->a));
+			Con_Printf ("a=%s",PR_GlobalString(s->a));
 		if (s->b)
-			Con_Printf ("%s",PR_GlobalString(s->b));
+			Con_Printf ("b=%s",PR_GlobalString(s->b));
 		if (s->c)
-			Con_Printf ("%s", PR_GlobalStringNoContents(s->c));
+			Con_Printf ("c=%s", PR_GlobalStringNoContents(s->c));
 	}
 	Con_Printf ("\n");
 }
@@ -181,7 +181,7 @@ void PR_StackTrace (void)
 			Con_Printf ("<NO FUNCTION>\n");
 		}
 		else
-			Con_Printf ("%12s : %s\n", pr_strings + f->s_file, pr_strings + f->s_name);
+			Con_Printf ("%12s : %s\n", PR_GetString(f->s_file), PR_GetString(f->s_name));
 	}
 }
 
@@ -215,7 +215,7 @@ void PR_Profile_f (void)
 		if (best)
 		{
 			if (num < 10)
-				Con_Printf ("%7i %s\n", best->profile, pr_strings+best->s_name);
+				Con_Printf ("%7i %s\n", best->profile, PR_GetString(best->s_name));
 			num++;
 			best->profile = 0;
 		}
@@ -452,7 +452,7 @@ while (1)
 		c->_float = !a->vector[0] && !a->vector[1] && !a->vector[2];
 		break;
 	case OP_NOT_S:
-		c->_float = !a->string || !pr_strings[a->string];
+		c->_float = !a->string || !PR_GetString(a->string)[0];
 		break;
 	case OP_NOT_FNC:
 		c->_float = !a->function;
@@ -470,7 +470,7 @@ while (1)
 					(a->vector[2] == b->vector[2]);
 		break;
 	case OP_EQ_S:
-		c->_float = !strcmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = !strcmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_EQ_E:
 		c->_float = a->_int == b->_int;
@@ -488,7 +488,7 @@ while (1)
 					(a->vector[2] != b->vector[2]);
 		break;
 	case OP_NE_S:
-		c->_float = strcmp(pr_strings+a->string,pr_strings+b->string);
+		c->_float = strcmp(PR_GetString(a->string), PR_GetString(b->string));
 		break;
 	case OP_NE_E:
 		c->_float = a->_int != b->_int;
@@ -595,8 +595,9 @@ while (1)
 		{	// negative statements are built in functions
 			i = -newf->first_statement;
 			if (i >= pr_numbuiltins)
-				PR_RunError ("Bad builtin call number");
-			pr_builtins[i] ();
+				printf("No builtin %d, max %d\n", i, pr_numbuiltins);
+			else
+				pr_builtins[i] ();
 			break;
 		}
 

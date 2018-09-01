@@ -1,6 +1,7 @@
 // cl_tent.c -- client side temporary entities
 
 #include <math.h>
+#include <stdlib.h>
 #include "quakedef.h"
 
 int			num_temp_entities;
