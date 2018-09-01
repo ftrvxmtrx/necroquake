@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include "quakedef.h"
 
-extern cvar_t	pausable;
+extern cvar_t pausable;
 
-int	current_skill;
+int current_skill;
 
 void Mod_Print (void);
 
@@ -35,12 +35,12 @@ Host_Status_f
 */
 void Host_Status_f (void)
 {
-	client_t	*client;
-	int			seconds;
-	int			minutes;
-	int			hours = 0;
-	int			j;
-	void		(*print) (char *fmt, ...);
+	client_t *client;
+	int seconds;
+	int minutes;
+	int hours = 0;
+	int j;
+	void (*print) (char *fmt, ...);
 
 	if (cmd_source == src_command)
 	{
@@ -54,13 +54,13 @@ void Host_Status_f (void)
 	else
 		print = SV_ClientPrintf;
 
-	print ("host:    %s\n", Cvar_VariableString ("hostname"));
+	print ("host: %s\n", Cvar_VariableString ("hostname"));
 	print ("version: %4.2f\n", VERSION);
 	if (tcpipAvailable)
-		print ("tcp/ip:  %s\n", my_tcpip_address);
+		print ("tcp/ip: %s\n", my_tcpip_address);
 	if (ipxAvailable)
-		print ("ipx:     %s\n", my_ipx_address);
-	print ("map:     %s\n", sv.name);
+		print ("ipx: %s\n", my_ipx_address);
+	print ("map: %s\n", sv.name);
 	print ("players: %i active (%i max)\n\n", net_activeconnections, svs.maxclients);
 	for (j=0, client = svs.clients ; j<svs.maxclients ; j++, client++)
 	{
@@ -77,8 +77,8 @@ void Host_Status_f (void)
 		}
 		else
 			hours = 0;
-		print ("#%-2u %-16.16s  %3i  %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
-		print ("   %s\n", client->netconnection->address);
+		print ("#%-2u %-16.16s %3i %2i:%02i:%02i\n", j+1, client->name, (int)client->edict->v.frags, hours, minutes, seconds);
+		print (" %s\n", client->netconnection->address);
 	}
 }
 
@@ -190,9 +190,9 @@ Host_Ping_f
 */
 void Host_Ping_f (void)
 {
-	int		i, j;
-	float	total;
-	client_t	*client;
+	int i, j;
+	float total;
+	client_t *client;
 
 	if (cmd_source == src_command)
 	{
@@ -227,23 +227,23 @@ Host_Map_f
 
 handle a
 map <servername>
-command from the console.  Active clients are kicked off.
+command from the console. Active clients are kicked off.
 ======================
 */
 void Host_Map_f (void)
 {
-	int		i;
-	char	name[MAX_QPATH];
+	int i;
+	char name[MAX_QPATH];
 
 	if (cmd_source != src_command)
 		return;
 
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.demonum = -1; // stop demo loop in case this fails
 
 	CL_Disconnect ();
 	Host_ShutdownServer(false);
 
-	key_dest = key_game;			// remove console or menu
+	key_dest = key_game; // remove console or menu
 	SCR_BeginLoadingPlaque ();
 
 	cls.mapstring[0] = 0;
@@ -254,7 +254,7 @@ void Host_Map_f (void)
 	}
 	strcat (cls.mapstring, "\n");
 
-	svs.serverflags = 0;			// haven't completed an episode yet
+	svs.serverflags = 0; // haven't completed an episode yet
 	strcpy (name, Cmd_Argv(1));
 	SV_SpawnServer (name);
 
@@ -284,7 +284,7 @@ Goes to a new map, taking all clients along
 */
 void Host_Changelevel_f (void)
 {
-	char	level[MAX_QPATH];
+	char level[MAX_QPATH];
 
 	if (Cmd_Argc() != 2)
 	{
@@ -310,14 +310,14 @@ Restarts the current server for a dead player
 */
 void Host_Restart_f (void)
 {
-	char	mapname[MAX_QPATH];
+	char mapname[MAX_QPATH];
 
 	if (cls.demoplayback || !sv.active)
 		return;
 
 	if (cmd_source != src_command)
 		return;
-	strcpy (mapname, sv.name);	// must copy out, because it gets cleared
+	strcpy (mapname, sv.name); // must copy out, because it gets cleared
 								// in sv_spawnserver
 	SV_SpawnServer (mapname);
 }
@@ -333,7 +333,7 @@ This is sent just before a server changes levels
 void Host_Reconnect_f (void)
 {
 	SCR_BeginLoadingPlaque ();
-	cls.signon = 0;		// need new connection messages
+	cls.signon = 0; // need new connection messages
 }
 
 /*
@@ -345,9 +345,9 @@ User command to connect to server
 */
 void Host_Connect_f (void)
 {
-	char	name[MAX_QPATH];
+	char name[MAX_QPATH];
 
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.demonum = -1; // stop demo loop in case this fails
 	if (cls.demoplayback)
 	{
 		CL_StopPlayback ();
@@ -366,7 +366,7 @@ LOAD / SAVE GAME
 ===============================================================================
 */
 
-#define	SAVEGAME_VERSION	5
+#define SAVEGAME_VERSION 5
 
 /*
 ===============
@@ -377,14 +377,14 @@ Writes a SAVEGAME_COMMENT_LENGTH character comment describing the current
 */
 void Host_SavegameComment (char *text)
 {
-	int		i;
-	char	kills[20];
+	int i;
+	char kills[20];
 
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		text[i] = ' ';
-	memcpy (text, cl.levelname, strlen(cl.levelname));
+	memmove (text, cl.levelname, strlen(cl.levelname));
 	sprintf (kills,"kills:%3i/%3i", cl.stats[STAT_MONSTERS], cl.stats[STAT_TOTALMONSTERS]);
-	memcpy (text+22, kills, strlen(kills));
+	memmove (text+22, kills, strlen(kills));
 // convert space to _ to make stdio happy
 	for (i=0 ; i<SAVEGAME_COMMENT_LENGTH ; i++)
 		if (text[i] == ' ')
@@ -399,10 +399,10 @@ Host_Savegame_f
 */
 void Host_Savegame_f (void)
 {
-	char	name[256];
-	FILE	*f;
-	int		i;
-	char	comment[SAVEGAME_COMMENT_LENGTH+1];
+	char name[256];
+	FILE *f;
+	int i;
+	char comment[SAVEGAME_COMMENT_LENGTH+1];
 
 	if (cmd_source != src_command)
 		return;
@@ -493,16 +493,16 @@ Host_Loadgame_f
 */
 void Host_Loadgame_f (void)
 {
-	char	name[MAX_OSPATH];
-	FILE	*f;
-	char	mapname[MAX_QPATH];
-	float	time, tfloat;
-	char	str[32768], *start;
-	int		i, r;
-	edict_t	*ent;
-	int		entnum;
-	int		version;
-	float			spawn_parms[NUM_SPAWN_PARMS];
+	char name[MAX_OSPATH];
+	FILE *f;
+	char mapname[MAX_QPATH];
+	float time, tfloat;
+	char str[32768], *start;
+	int i, r;
+	edict_t *ent;
+	int entnum;
+	int version;
+	float spawn_parms[NUM_SPAWN_PARMS];
 
 	if (cmd_source != src_command)
 		return;
@@ -513,14 +513,14 @@ void Host_Loadgame_f (void)
 		return;
 	}
 
-	cls.demonum = -1;		// stop demo loop in case this fails
+	cls.demonum = -1; // stop demo loop in case this fails
 
 	sprintf (name, "%s/%s", com_gamedir, Cmd_Argv(1));
 	COM_DefaultExtension (name, ".sav");
 
 // we can't call SCR_BeginLoadingPlaque, because too much stack space has
-// been used.  The menu calls it before stuffing loadgame command
-//	SCR_BeginLoadingPlaque ();
+// been used. The menu calls it before stuffing loadgame command
+// SCR_BeginLoadingPlaque ();
 
 	Con_Printf ("Loading game from %s...\n", name);
 	f = fopen (name, "r");
@@ -561,7 +561,7 @@ void Host_Loadgame_f (void)
 		Con_Printf ("Couldn't load map\n");
 		return;
 	}
-	sv.paused = true;		// pause until all clients connect
+	sv.paused = true; // pause until all clients connect
 	sv.loadgame = true;
 
 // load the light styles
@@ -574,7 +574,7 @@ void Host_Loadgame_f (void)
 	}
 
 // load the edicts out of the savegame file
-	entnum = -1;		// -1 is the globals
+	entnum = -1; // -1 is the globals
 	while (!feof(f))
 	{
 		for (i=0 ; i<nelem(str)-1 ; i++)
@@ -595,16 +595,16 @@ void Host_Loadgame_f (void)
 		start = str;
 		start = COM_Parse(str);
 		if (!com_token[0])
-			break;		// end of file
+			break; // end of file
 		if (strcmp(com_token,"{"))
 			Sys_Error ("First token isn't a brace");
 
 		if (entnum == -1)
-		{	// parse the global vars
+		{ // parse the global vars
 			ED_ParseGlobals (start);
 		}
 		else
-		{	// parse an edict
+		{ // parse an edict
 
 			ent = EDICT_NUM(entnum);
 			memset (&ent->v, 0, progs->entityfields * 4);
@@ -643,7 +643,7 @@ Host_Name_f
 */
 void Host_Name_f (void)
 {
-	char	*newName;
+	char *newName;
 
 	if (Cmd_Argc () == 1)
 	{
@@ -689,10 +689,10 @@ void Host_Say(bool teamonly)
 {
 	client_t *client;
 	client_t *save;
-	int		j;
-	char	*p;
-	char	text[64];
-	bool	fromServer = false;
+	int j;
+	char *p;
+	char text[64];
+	bool fromServer = false;
 
 	if (cmd_source == src_command)
 	{
@@ -727,7 +727,7 @@ void Host_Say(bool teamonly)
 	else
 		snprintf (text, sizeof(text), "%c<%s> ", 1, hostname.string);
 
-	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+	j = sizeof(text) - 2 - strlen(text); // -2 for /n and null terminator
 	if ((int)strlen(p) > j)
 		p[j] = 0;
 
@@ -762,9 +762,9 @@ void Host_Tell_f(void)
 {
 	client_t *client;
 	client_t *save;
-	int		j;
-	char	*p;
-	char	text[64];
+	int j;
+	char *p;
+	char text[64];
 
 	if (cmd_source == src_command)
 	{
@@ -788,7 +788,7 @@ void Host_Tell_f(void)
 	}
 
 // check length & truncate if necessary
-	j = sizeof(text) - 2 - strlen(text);  // -2 for /n and null terminator
+	j = sizeof(text) - 2 - strlen(text); // -2 for /n and null terminator
 	if ((int)strlen(p) > j)
 		p[j] = 0;
 
@@ -816,8 +816,8 @@ Host_Color_f
 */
 void Host_Color_f(void)
 {
-	int		top, bottom;
-	int		playercolor;
+	int top, bottom;
+	int playercolor;
 
 	if (Cmd_Argc() == 1)
 	{
@@ -952,9 +952,9 @@ Host_Spawn_f
 */
 void Host_Spawn_f (void)
 {
-	int		i;
-	client_t	*client;
-	edict_t	*ent;
+	int i;
+	client_t *client;
+	edict_t *ent;
 
 	if (cmd_source == src_command)
 	{
@@ -970,7 +970,7 @@ void Host_Spawn_f (void)
 
 // run the entrance script
 	if (sv.loadgame)
-	{	// loaded games are fully inited allready
+	{ // loaded games are fully inited allready
 		// if this is the last client to be connected, unpause
 		sv.paused = false;
 	}
@@ -1094,11 +1094,11 @@ Kicks a user off of the server
 */
 void Host_Kick_f (void)
 {
-	char		*who;
-	char		*message = NULL;
-	client_t	*save;
-	int			i;
-	bool	byNumber = false;
+	char *who;
+	char *message = NULL;
+	client_t *save;
+	int i;
+	bool byNumber = false;
 
 	if (cmd_source == src_command)
 	{
@@ -1153,10 +1153,10 @@ void Host_Kick_f (void)
 			message = COM_Parse(Cmd_Args());
 			if (byNumber)
 			{
-				message++;							// skip the #
-				while (*message == ' ')				// skip white space
+				message++; // skip the #
+				while (*message == ' ') // skip white space
 					message++;
-				message += strlen(Cmd_Argv(2));	// skip the number
+				message += strlen(Cmd_Argv(2)); // skip the number
 			}
 			while (*message && *message == ' ')
 				message++;
@@ -1186,9 +1186,9 @@ Host_Give_f
 */
 void Host_Give_f (void)
 {
-	char	*t;
-	int		v;
-	eval_t	*val;
+	char *t;
+	int v;
+	eval_t *val;
 
 	if (cmd_source == src_command)
 	{
@@ -1338,10 +1338,10 @@ void Host_Give_f (void)
     }
 }
 
-edict_t	*FindViewthing (void)
+edict_t *FindViewthing (void)
 {
-	int		i;
-	edict_t	*e;
+	int i;
+	edict_t *e;
 
 	for (i=0 ; i<sv.num_edicts ; i++)
 	{
@@ -1360,8 +1360,8 @@ Host_Viewmodel_f
 */
 void Host_Viewmodel_f (void)
 {
-	edict_t	*e;
-	model_t	*m;
+	edict_t *e;
+	model_t *m;
 
 	e = FindViewthing ();
 	if (!e)
@@ -1385,9 +1385,9 @@ Host_Viewframe_f
 */
 void Host_Viewframe_f (void)
 {
-	edict_t	*e;
-	int		f;
-	model_t	*m;
+	edict_t *e;
+	int f;
+	model_t *m;
 
 	e = FindViewthing ();
 	if (!e)
@@ -1403,8 +1403,8 @@ void Host_Viewframe_f (void)
 
 void PrintFrameName (model_t *m, int frame)
 {
-	aliashdr_t 			*hdr;
-	maliasframedesc_t	*pframedesc;
+	aliashdr_t *hdr;
+	maliasframedesc_t *pframedesc;
 
 	hdr = (aliashdr_t *)Mod_Extradata (m);
 	if (!hdr)
@@ -1421,8 +1421,8 @@ Host_Viewnext_f
 */
 void Host_Viewnext_f (void)
 {
-	edict_t	*e;
-	model_t	*m;
+	edict_t *e;
+	model_t *m;
 
 	e = FindViewthing ();
 	if (!e)
@@ -1443,8 +1443,8 @@ Host_Viewprev_f
 */
 void Host_Viewprev_f (void)
 {
-	edict_t	*e;
-	model_t	*m;
+	edict_t *e;
+	model_t *m;
 
 	e = FindViewthing ();
 	if (!e)
@@ -1474,7 +1474,7 @@ Host_Startdemos_f
 */
 void Host_Startdemos_f (void)
 {
-	int		i, c;
+	int i, c;
 
 	if (cls.state == ca_dedicated)
 	{

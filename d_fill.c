@@ -9,9 +9,9 @@ D_FillRect
 */
 void D_FillRect (vrect_t *rect, int color)
 {
-	int				rx, ry, rwidth, rheight;
-	unsigned char	*dest;
-	unsigned		*ldest;
+	int rx, ry, rwidth, rheight;
+	unsigned char *dest;
+	unsigned *ldest;
 
 	rx = rect->x;
 	ry = rect->y;

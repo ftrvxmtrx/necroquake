@@ -2,7 +2,7 @@
 #include "r_shared.h"
 #include "r_local.h"
 
-mnode_t	*r_pefragtopnode;
+mnode_t *r_pefragtopnode;
 
 //===========================================================================
 
@@ -14,11 +14,11 @@ mnode_t	*r_pefragtopnode;
 ===============================================================================
 */
 
-efrag_t		**lastlink;
+efrag_t **lastlink;
 
-vec3_t		r_emins, r_emaxs;
+vec3_t r_emins, r_emaxs;
 
-entity_t	*r_addent;
+entity_t *r_addent;
 
 /*
 ================
@@ -29,7 +29,7 @@ Call when removing an object from the world or moving it to another position
 */
 void R_RemoveEfrags (entity_t *ent)
 {
-	efrag_t		*ef, *old, *walk, **prev;
+	efrag_t *ef, *old, *walk, **prev;
 
 	ef = ent->efrag;
 
@@ -42,7 +42,7 @@ void R_RemoveEfrags (entity_t *ent)
 			if (!walk)
 				break;
 			if (walk == ef)
-			{	// remove this fragment
+			{ // remove this fragment
 				*prev = ef->leafnext;
 				break;
 			}
@@ -68,10 +68,10 @@ R_SplitEntityOnNode
 */
 void R_SplitEntityOnNode (mnode_t *node)
 {
-	efrag_t		*ef;
-	mplane_t	*splitplane;
-	mleaf_t		*leaf;
-	int			sides;
+	efrag_t *ef;
+	mplane_t *splitplane;
+	mleaf_t *leaf;
+	int sides;
 
 	if (node->contents == CONTENTS_SOLID)
 	{
@@ -92,7 +92,7 @@ void R_SplitEntityOnNode (mnode_t *node)
 		if (!ef)
 		{
 			Con_Printf ("Too many efrags!\n");
-			return;		// no free fragments...
+			return; // no free fragments...
 		}
 		cl.free_efrags = cl.free_efrags->entnext;
 
@@ -139,8 +139,8 @@ R_SplitEntityOnNode2
 */
 void R_SplitEntityOnNode2 (mnode_t *node)
 {
-	mplane_t	*splitplane;
-	int			sides;
+	mplane_t *splitplane;
+	int sides;
 
 	if (node->visframe != r_visframecount)
 		return;
@@ -149,7 +149,7 @@ void R_SplitEntityOnNode2 (mnode_t *node)
 	{
 		if (node->contents != CONTENTS_SOLID)
 			r_pefragtopnode = node; // we've reached a non-solid leaf, so it's
-									//  visible and not BSP clipped
+									// visible and not BSP clipped
 		return;
 	}
 
@@ -177,14 +177,14 @@ R_AddEfrags
 */
 void R_AddEfrags (entity_t *ent)
 {
-	model_t		*entmodel;
-	int			i;
+	model_t *entmodel;
+	int i;
 
 	if (!ent->model)
 		return;
 
 	if (ent == cl_entities)
-		return;		// never add the world
+		return; // never add the world
 
 	r_addent = ent;
 
@@ -213,9 +213,9 @@ R_StoreEfrags
 */
 void R_StoreEfrags (efrag_t **ppefrag)
 {
-	entity_t	*pent;
-	model_t		*clmodel;
-	efrag_t		*pefrag;
+	entity_t *pent;
+	model_t *clmodel;
+	efrag_t *pefrag;
 
 	while ((pefrag = *ppefrag) != NULL)
 	{

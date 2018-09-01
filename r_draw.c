@@ -2,50 +2,50 @@
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
-#include "d_local.h"	// FIXME: shouldn't need to include this
+#include "d_local.h" // FIXME: shouldn't need to include this
 
-#define MAXLEFTCLIPEDGES		100
+#define MAXLEFTCLIPEDGES 100
 
 // !!! if these are changed, they must be changed in asm_draw.h too !!!
-#define FULLY_CLIPPED_CACHED	0x80000000
-#define FRAMECOUNT_MASK			0x7FFFFFFF
+#define FULLY_CLIPPED_CACHED 0x80000000
+#define FRAMECOUNT_MASK 0x7FFFFFFF
 
-unsigned int	cacheoffset;
+unsigned int cacheoffset;
 
-int			c_faceclip;					// number of faces clipped
+int c_faceclip; // number of faces clipped
 
-zpointdesc_t	r_zpointdesc;
+zpointdesc_t r_zpointdesc;
 
-polydesc_t		r_polydesc;
+polydesc_t r_polydesc;
 
-clipplane_t	*entity_clipplanes;
-clipplane_t	view_clipplanes[4];
-clipplane_t	world_clipplanes[16];
+clipplane_t *entity_clipplanes;
+clipplane_t view_clipplanes[4];
+clipplane_t world_clipplanes[16];
 
-medge_t			*r_pedge;
+medge_t *r_pedge;
 
-bool		r_leftclipped, r_rightclipped;
-static bool	makeleftedge, makerightedge;
-bool		r_nearzionly;
+bool r_leftclipped, r_rightclipped;
+static bool makeleftedge, makerightedge;
+bool r_nearzionly;
 
-int		sintable[SIN_BUFFER_SIZE];
-int		intsintable[SIN_BUFFER_SIZE];
+int sintable[SIN_BUFFER_SIZE];
+int intsintable[SIN_BUFFER_SIZE];
 
-mvertex_t	r_leftenter, r_leftexit;
-mvertex_t	r_rightenter, r_rightexit;
+mvertex_t r_leftenter, r_leftexit;
+mvertex_t r_rightenter, r_rightexit;
 
 typedef struct
 {
-	float	u,v;
-	int		ceilv;
+	float u,v;
+	int ceilv;
 } evert_t;
 
-int				r_emitted;
-float			r_nearzi;
-float			r_u1, r_v1, r_lzi1;
-int				r_ceilv1;
+int r_emitted;
+float r_nearzi;
+float r_u1, r_v1, r_lzi1;
+int r_ceilv1;
 
-bool	r_lastvertvalid;
+bool r_lastvertvalid;
 
 /*
 ================
@@ -54,14 +54,14 @@ R_EmitEdge
 */
 void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 {
-	edge_t	*edge, *pcheck;
-	int		u_check;
-	float	u, u_step;
-	vec3_t	local, transformed;
-	float	*world;
-	int		v, v2, ceilv0;
-	float	scale, lzi0, u0, v0;
-	int		side;
+	edge_t *edge, *pcheck;
+	int u_check;
+	float u, u_step;
+	vec3_t local, transformed;
+	float *world;
+	int v, v2, ceilv0;
+	float scale, lzi0, u0, v0;
+	int side;
 
 	if (r_lastvertvalid)
 	{
@@ -129,7 +129,7 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 	if (r_lzi1 > lzi0)
 		lzi0 = r_lzi1;
 
-	if (lzi0 > r_nearzi)	// for mipmap finding
+	if (lzi0 > r_nearzi) // for mipmap finding
 		r_nearzi = lzi0;
 
 // for right edges, all we want is the effect on 1/z
@@ -150,7 +150,7 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 					(r_framecount & FRAMECOUNT_MASK);
 		}
 
-		return;		// horizontal edge
+		return; // horizontal edge
 	}
 
 	side = ceilv0 > r_ceilv1;
@@ -204,7 +204,7 @@ void R_EmitEdge (mvertex_t *pv0, mvertex_t *pv1)
 //
 	u_check = edge->u;
 	if (edge->surfs[0])
-		u_check++;	// sort trailers after leaders
+		u_check++; // sort trailers after leaders
 
 	if (!newedges[v] || newedges[v]->u >= u_check)
 	{
@@ -231,8 +231,8 @@ R_ClipEdge
 */
 void R_ClipEdge (mvertex_t *pv0, mvertex_t *pv1, clipplane_t *clip)
 {
-	float		d0, d1, f;
-	mvertex_t	clipvert;
+	float d0, d1, f;
+	mvertex_t clipvert;
 
 	if (clip)
 	{
@@ -332,7 +332,7 @@ R_EmitCachedEdge
 */
 void R_EmitCachedEdge (void)
 {
-	edge_t		*pedge_t;
+	edge_t *pedge_t;
 
 	pedge_t = (edge_t *)((unsigned long)r_edges + r_pedge->cachededgeoffset);
 
@@ -341,7 +341,7 @@ void R_EmitCachedEdge (void)
 	else
 		pedge_t->surfs[1] = surface_p - surfaces;
 
-	if (pedge_t->nearzi > r_nearzi)	// for mipmap finding
+	if (pedge_t->nearzi > r_nearzi) // for mipmap finding
 		r_nearzi = pedge_t->nearzi;
 
 	r_emitted = 1;
@@ -354,13 +354,13 @@ R_RenderFace
 */
 void R_RenderFace (msurface_t *fa, int clipflags)
 {
-	int			i, lindex;
-	unsigned	mask;
-	mplane_t	*pplane;
-	float		distinv;
-	vec3_t		p_normal;
-	medge_t		*pedges, tedge;
-	clipplane_t	*pclip;
+	int i, lindex;
+	unsigned mask;
+	mplane_t *pplane;
+	float distinv;
+	vec3_t p_normal;
+	medge_t *pedges, tedge;
+	clipplane_t *pclip;
 
 // skip out if no more surfs
 	if ((surface_p) >= surf_max)
@@ -540,7 +540,7 @@ void R_RenderFace (msurface_t *fa, int clipflags)
 			xcenter * surface_p->d_zistepu -
 			ycenter * surface_p->d_zistepv;
 
-//JDC	VectorCopy (r_worldmodelorg, surface_p->modelorg);
+//JDC VectorCopy (r_worldmodelorg, surface_p->modelorg);
 	surface_p++;
 }
 
@@ -551,13 +551,13 @@ R_RenderBmodelFace
 */
 void R_RenderBmodelFace (bedge_t *pedges, msurface_t *psurf)
 {
-	int			i;
-	unsigned	mask;
-	mplane_t	*pplane;
-	float		distinv;
-	vec3_t		p_normal;
-	medge_t		tedge;
-	clipplane_t	*pclip;
+	int i;
+	unsigned mask;
+	mplane_t *pplane;
+	float distinv;
+	vec3_t p_normal;
+	medge_t tedge;
+	clipplane_t *pclip;
 
 // skip out if no more surfs
 	if (surface_p >= surf_max)
@@ -654,7 +654,7 @@ void R_RenderBmodelFace (bedge_t *pedges, msurface_t *psurf)
 			xcenter * surface_p->d_zistepu -
 			ycenter * surface_p->d_zistepv;
 
-//JDC	VectorCopy (r_worldmodelorg, surface_p->modelorg);
+//JDC VectorCopy (r_worldmodelorg, surface_p->modelorg);
 	surface_p++;
 }
 
@@ -665,22 +665,22 @@ R_RenderPoly
 */
 void R_RenderPoly (msurface_t *fa, int clipflags)
 {
-	int			i, lindex, lnumverts, s_axis, t_axis;
-	float		dist, lastdist, lzi, scale, u, v, frac;
-	unsigned	mask;
-	vec3_t		local, transformed;
-	clipplane_t	*pclip;
-	medge_t		*pedges;
-	mplane_t	*pplane;
-	mvertex_t	verts[2][100];	//FIXME: do real number
-	polyvert_t	pverts[100];	//FIXME: do real number, safely
-	int			vertpage, newverts, newpage, lastvert;
-	bool	visible;
+	int i, lindex, lnumverts, s_axis, t_axis;
+	float dist, lastdist, lzi, scale, u, v, frac;
+	unsigned mask;
+	vec3_t local, transformed;
+	clipplane_t *pclip;
+	medge_t *pedges;
+	mplane_t *pplane;
+	mvertex_t verts[2][100]; //FIXME: do real number
+	polyvert_t pverts[100]; //FIXME: do real number, safely
+	int vertpage, newverts, newpage, lastvert;
+	bool visible;
 
 // FIXME: clean this up and make it faster
 // FIXME: guard against running out of vertices
 
-	s_axis = t_axis = 0;	// keep compiler happy
+	s_axis = t_axis = 0; // keep compiler happy
 
 // set up clip planes
 	pclip = NULL;
@@ -804,7 +804,7 @@ void R_RenderPoly (msurface_t *fa, int clipflags)
 
 		lzi = 1.0 / transformed[2];
 
-		if (lzi > r_nearzi)	// for mipmap finding
+		if (lzi > r_nearzi) // for mipmap finding
 			r_nearzi = lzi;
 
 	// FIXME: build x/yscale into transform?
@@ -847,10 +847,10 @@ R_ZDrawSubmodelPolys
 */
 void R_ZDrawSubmodelPolys (model_t *pmodel)
 {
-	int			i, numsurfaces;
-	msurface_t	*psurf;
-	float		dot;
-	mplane_t	*pplane;
+	int i, numsurfaces;
+	msurface_t *psurf;
+	float dot;
+	mplane_t *pplane;
 
 	psurf = &pmodel->surfaces[pmodel->firstmodelsurface];
 	numsurfaces = pmodel->nummodelsurfaces;

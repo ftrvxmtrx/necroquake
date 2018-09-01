@@ -7,47 +7,47 @@
 #include "d_local.h"
 
 // TODO: put in span spilling to shrink list size
-#define DPS_MAXSPANS			MAXHEIGHT+1
+#define DPS_MAXSPANS MAXHEIGHT+1
 									// 1 extra for spanpackage that marks end
 
 typedef struct {
-	void			*pdest;
-	short			*pz;
-	int				count;
-	uint8_t			*ptex;
-	int				sfrac, tfrac, light, zi;
+	void *pdest;
+	short *pz;
+	int count;
+	uint8_t *ptex;
+	int sfrac, tfrac, light, zi;
 } spanpackage_t;
 
 typedef struct {
-	int		isflattop;
-	int		numleftedges;
-	int		*pleftedgevert0;
-	int		*pleftedgevert1;
-	int		*pleftedgevert2;
-	int		numrightedges;
-	int		*prightedgevert0;
-	int		*prightedgevert1;
-	int		*prightedgevert2;
+	int isflattop;
+	int numleftedges;
+	int *pleftedgevert0;
+	int *pleftedgevert1;
+	int *pleftedgevert2;
+	int numrightedges;
+	int *prightedgevert0;
+	int *prightedgevert1;
+	int *prightedgevert2;
 } edgetable;
 
-int	r_p0[6], r_p1[6], r_p2[6];
+int r_p0[6], r_p1[6], r_p2[6];
 
-uint8_t		*d_pcolormap;
+uint8_t *d_pcolormap;
 
-int			d_aflatcolor;
-int			d_xdenom;
+int d_aflatcolor;
+int d_xdenom;
 
-edgetable	*pedgetable;
+edgetable *pedgetable;
 
-edgetable	edgetables[12] = {
+edgetable edgetables[12] = {
 	{0, 1, r_p0, r_p2, NULL, 2, r_p0, r_p1, r_p2 },
-	{0, 2, r_p1, r_p0, r_p2,   1, r_p1, r_p2, NULL},
+	{0, 2, r_p1, r_p0, r_p2, 1, r_p1, r_p2, NULL},
 	{1, 1, r_p0, r_p2, NULL, 1, r_p1, r_p2, NULL},
 	{0, 1, r_p1, r_p0, NULL, 2, r_p1, r_p2, r_p0 },
-	{0, 2, r_p0, r_p2, r_p1,   1, r_p0, r_p1, NULL},
+	{0, 2, r_p0, r_p2, r_p1, 1, r_p0, r_p1, NULL},
 	{0, 1, r_p2, r_p1, NULL, 1, r_p2, r_p0, NULL},
 	{0, 1, r_p2, r_p1, NULL, 2, r_p2, r_p0, r_p1 },
-	{0, 2, r_p2, r_p1, r_p0,   1, r_p2, r_p0, NULL},
+	{0, 2, r_p2, r_p1, r_p0, 1, r_p2, r_p0, NULL},
 	{0, 1, r_p1, r_p0, NULL, 1, r_p1, r_p2, NULL},
 	{1, 1, r_p2, r_p1, NULL, 1, r_p0, r_p1, NULL},
 	{1, 1, r_p1, r_p0, NULL, 1, r_p2, r_p0, NULL},
@@ -55,36 +55,36 @@ edgetable	edgetables[12] = {
 };
 
 // FIXME: some of these can become statics
-int				a_sstepxfrac, a_tstepxfrac, r_lstepx, a_ststepxwhole;
-int				r_sstepx, r_tstepx, r_lstepy, r_sstepy, r_tstepy;
-int				r_zistepx, r_zistepy;
-int				d_aspancount, d_countextrastep;
+int a_sstepxfrac, a_tstepxfrac, r_lstepx, a_ststepxwhole;
+int r_sstepx, r_tstepx, r_lstepy, r_sstepy, r_tstepy;
+int r_zistepx, r_zistepy;
+int d_aspancount, d_countextrastep;
 
-spanpackage_t			*a_spans;
-spanpackage_t			*d_pedgespanpackage;
-static int				ystart;
-uint8_t					*d_pdest, *d_ptex;
-short					*d_pz;
-int						d_sfrac, d_tfrac, d_light, d_zi;
-int						d_ptexextrastep, d_sfracextrastep;
-int						d_tfracextrastep, d_lightextrastep, d_pdestextrastep;
-int						d_lightbasestep, d_pdestbasestep, d_ptexbasestep;
-int						d_sfracbasestep, d_tfracbasestep;
-int						d_ziextrastep, d_zibasestep;
-int						d_pzextrastep, d_pzbasestep;
+spanpackage_t *a_spans;
+spanpackage_t *d_pedgespanpackage;
+static int ystart;
+uint8_t *d_pdest, *d_ptex;
+short *d_pz;
+int d_sfrac, d_tfrac, d_light, d_zi;
+int d_ptexextrastep, d_sfracextrastep;
+int d_tfracextrastep, d_lightextrastep, d_pdestextrastep;
+int d_lightbasestep, d_pdestbasestep, d_ptexbasestep;
+int d_sfracbasestep, d_tfracbasestep;
+int d_ziextrastep, d_zibasestep;
+int d_pzextrastep, d_pzbasestep;
 
 typedef struct {
-	int		quotient;
-	int		remainder;
+	int quotient;
+	int remainder;
 } adivtab_t;
 
-static adivtab_t	adivtab[32*32] = {
+static adivtab_t adivtab[32*32] = {
 #include "adivtab.h"
 };
 
-uint8_t	*skintable[MAX_LBM_HEIGHT];
-int		skinwidth;
-uint8_t	*skinstart;
+uint8_t *skintable[MAX_LBM_HEIGHT];
+int skinwidth;
+uint8_t *skinstart;
 
 void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage);
 void D_PolysetCalcGradients (int skinwidth);
@@ -102,7 +102,7 @@ D_PolysetDraw
 */
 void D_PolysetDraw (void)
 {
-	spanpackage_t	spans[DPS_MAXSPANS + 1 +
+	spanpackage_t spans[DPS_MAXSPANS + 1 +
 			((CACHE_SIZE - 1) / sizeof(spanpackage_t)) + 1];
 						// one extra because of cache line pretouching
 
@@ -126,8 +126,8 @@ D_PolysetDrawFinalVerts
 */
 void D_PolysetDrawFinalVerts (finalvert_t *fv, int numverts)
 {
-	int		i, z;
-	short	*zbuf;
+	int i, z;
+	short *zbuf;
 
 	for (i=0 ; i<numverts ; i++, fv++)
 	{
@@ -140,7 +140,7 @@ void D_PolysetDrawFinalVerts (finalvert_t *fv, int numverts)
 			zbuf = zspantable[fv->v[1]] + fv->v[0];
 			if (z >= *zbuf)
 			{
-				int		pix;
+				int pix;
 
 				*zbuf = z;
 				pix = skintable[fv->v[3]>>16][fv->v[2]>>16];
@@ -158,10 +158,10 @@ D_DrawSubdiv
 */
 void D_DrawSubdiv (void)
 {
-	mtriangle_t		*ptri;
-	finalvert_t		*pfv, *index0, *index1, *index2;
-	int				i;
-	int				lnumtriangles;
+	mtriangle_t *ptri;
+	finalvert_t *pfv, *index0, *index1, *index2;
+	int i;
+	int lnumtriangles;
 
 	pfv = r_affinetridesc.pfinalverts;
 	ptri = r_affinetridesc.ptriangles;
@@ -189,7 +189,7 @@ void D_DrawSubdiv (void)
 		}
 		else
 		{
-			int		s0, s1, s2;
+			int s0, s1, s2;
 
 			s0 = index0->v[2];
 			s1 = index1->v[2];
@@ -218,10 +218,10 @@ D_DrawNonSubdiv
 */
 void D_DrawNonSubdiv (void)
 {
-	mtriangle_t		*ptri;
-	finalvert_t		*pfv, *index0, *index1, *index2;
-	int				i;
-	int				lnumtriangles;
+	mtriangle_t *ptri;
+	finalvert_t *pfv, *index0, *index1, *index2;
+	int i;
+	int lnumtriangles;
 
 	pfv = r_affinetridesc.pfinalverts;
 	ptri = r_affinetridesc.ptriangles;
@@ -242,12 +242,12 @@ void D_DrawNonSubdiv (void)
 			continue;
 		}
 
-		r_p0[0] = index0->v[0];		// u
-		r_p0[1] = index0->v[1];		// v
-		r_p0[2] = index0->v[2];		// s
-		r_p0[3] = index0->v[3];		// t
-		r_p0[4] = index0->v[4];		// light
-		r_p0[5] = index0->v[5];		// iz
+		r_p0[0] = index0->v[0]; // u
+		r_p0[1] = index0->v[1]; // v
+		r_p0[2] = index0->v[2]; // s
+		r_p0[3] = index0->v[3]; // t
+		r_p0[4] = index0->v[4]; // light
+		r_p0[5] = index0->v[5]; // iz
 
 		r_p1[0] = index1->v[0];
 		r_p1[1] = index1->v[1];
@@ -285,11 +285,11 @@ D_PolysetRecursiveTriangle
 */
 void D_PolysetRecursiveTriangle (int *lp1, int *lp2, int *lp3)
 {
-	int		*temp;
-	int		d;
-	int		new[6];
-	int		z;
-	short	*zbuf;
+	int *temp;
+	int d;
+	int new[6];
+	int z;
+	short *zbuf;
 
 	d = lp2[0] - lp1[0];
 	if (d < -1 || d > 1)
@@ -320,7 +320,7 @@ split3:
 		goto split;
 	}
 
-	return;			// entire tri is filled
+	return; // entire tri is filled
 
 split2:
 	temp = lp1;
@@ -346,7 +346,7 @@ split:
 	zbuf = zspantable[new[1]] + new[0];
 	if (z >= *zbuf)
 	{
-		int		pix;
+		int pix;
 
 		*zbuf = z;
 		pix = d_pcolormap[skintable[new[3]>>16][new[2]>>16]];
@@ -366,8 +366,8 @@ D_PolysetUpdateTables
 */
 void D_PolysetUpdateTables (void)
 {
-	int		i;
-	uint8_t	*s;
+	int i;
+	uint8_t *s;
 
 	if (r_affinetridesc.skinwidth != skinwidth ||
 		r_affinetridesc.pskin != skinstart)
@@ -454,9 +454,9 @@ D_PolysetSetUpForLineScan
 void D_PolysetSetUpForLineScan(fixed8_t startvertu, fixed8_t startvertv,
 		fixed8_t endvertu, fixed8_t endvertv)
 {
-	double		dm, dn;
-	int			tm, tn;
-	adivtab_t	*ptemp;
+	double dm, dn;
+	int tm, tn;
+	adivtab_t *ptemp;
 
 // TODO: implement x86 version
 
@@ -491,8 +491,8 @@ D_PolysetCalcGradients
 */
 void D_PolysetCalcGradients (int skinwidth)
 {
-	float	xstepdenominv, ystepdenominv, t0, t1;
-	float	p01_minus_p21, p11_minus_p21, p00_minus_p20, p10_minus_p20;
+	float xstepdenominv, ystepdenominv, t0, t1;
+	float p01_minus_p21, p11_minus_p21, p00_minus_p20, p10_minus_p20;
 
 	p00_minus_p20 = r_p0[0] - r_p2[0];
 	p01_minus_p21 = r_p0[1] - r_p2[1];
@@ -504,7 +504,7 @@ void D_PolysetCalcGradients (int skinwidth)
 	ystepdenominv = -xstepdenominv;
 
 // ceil () for light so positive steps are exaggerated, negative steps
-// diminished,  pushing us away from underflow toward overflow. Underflow is
+// diminished, pushing us away from underflow toward overflow. Underflow is
 // very visible, overflow is very unlikely, because of ambient lighting
 	t0 = r_p0[4] - r_p2[4];
 	t1 = r_p1[4] - r_p2[4];
@@ -546,13 +546,13 @@ D_PolysetDrawSpans8
 */
 void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 {
-	int		lcount;
-	uint8_t	*lpdest;
-	uint8_t	*lptex;
-	int		lsfrac, ltfrac;
-	int		llight;
-	int		lzi;
-	short	*lpz;
+	int lcount;
+	uint8_t *lpdest;
+	uint8_t *lptex;
+	int lsfrac, ltfrac;
+	int llight;
+	int lzi;
+	short *lpz;
 
 	do
 	{
@@ -584,7 +584,7 @@ void D_PolysetDrawSpans8 (spanpackage_t *pspanpackage)
 				if ((lzi >> 16) >= *lpz)
 				{
 					*lpdest = ((uint8_t *)acolormap)[*lptex + (llight & 0xFF00)];
-// gel mapping					*lpdest = gelmap[*lpdest];
+// gel mapping *lpdest = gelmap[*lpdest];
 					*lpz = lzi >> 16;
 				}
 				lpdest++;
@@ -615,7 +615,7 @@ D_PolysetFillSpans8
 */
 void D_PolysetFillSpans8 (spanpackage_t *pspanpackage)
 {
-	int				color;
+	int color;
 
 // FIXME: do z buffering
 
@@ -623,8 +623,8 @@ void D_PolysetFillSpans8 (spanpackage_t *pspanpackage)
 
 	while (1)
 	{
-		int		lcount;
-		uint8_t	*lpdest;
+		int lcount;
+		uint8_t *lpdest;
 
 		lcount = pspanpackage->count;
 
@@ -652,9 +652,9 @@ D_RasterizeAliasPolySmooth
 */
 void D_RasterizeAliasPolySmooth (void)
 {
-	int				initialleftheight, initialrightheight;
-	int				*plefttop, *prighttop, *pleftbottom, *prightbottom;
-	int				working_lstepx, originalcount;
+	int initialleftheight, initialrightheight;
+	int *plefttop, *prighttop, *pleftbottom, *prightbottom;
+	int working_lstepx, originalcount;
 
 	plefttop = pedgetable->pleftedgevert0;
 	prighttop = pedgetable->prightedgevert0;
@@ -755,7 +755,7 @@ void D_RasterizeAliasPolySmooth (void)
 //
 	if (pedgetable->numleftedges == 2)
 	{
-		int		height;
+		int height;
 
 		plefttop = pleftbottom;
 		pleftbottom = pedgetable->pleftedgevert2;
@@ -844,8 +844,8 @@ void D_RasterizeAliasPolySmooth (void)
 // scan out the bottom part of the right edge, if it exists
 	if (pedgetable->numrightedges == 2)
 	{
-		int				height;
-		spanpackage_t	*pstart;
+		int height;
+		spanpackage_t *pstart;
 
 		pstart = a_spans + initialrightheight;
 		pstart->count = originalcount;
@@ -874,10 +874,10 @@ D_PolysetSetEdgeTable
 */
 void D_PolysetSetEdgeTable (void)
 {
-	int			edgetableindex;
+	int edgetableindex;
 
-	edgetableindex = 0;	// assume the vertices are already in
-						//  top to bottom order
+	edgetableindex = 0; // assume the vertices are already in
+						// top to bottom order
 
 //
 // determine which edges are right & left, and the order in which
@@ -932,9 +932,9 @@ void D_PolysetSetEdgeTable (void)
 
 void D_PolysetRecursiveDrawLine (int *lp1, int *lp2)
 {
-	int		d;
-	int		new[6];
-	int 	ofs;
+	int d;
+	int new[6];
+	int ofs;
 
 	d = lp2[0] - lp1[0];
 	if (d < -1 || d > 1)
@@ -943,7 +943,7 @@ void D_PolysetRecursiveDrawLine (int *lp1, int *lp2)
 	if (d < -1 || d > 1)
 		goto split;
 
-	return;	// line is completed
+	return; // line is completed
 
 split:
 // split this edge
@@ -958,11 +958,11 @@ split:
 	ofs = d_scantable[new[1]] + new[0];
 	if (new[5] > d_pzbuffer[ofs])
 	{
-		int		pix;
+		int pix;
 
 		d_pzbuffer[ofs] = new[5];
 		pix = skintable[new[3]>>16][new[2]>>16];
-//		pix = ((uint8_t *)acolormap)[pix + (new[4] & 0xFF00)];
+// pix = ((uint8_t *)acolormap)[pix + (new[4] & 0xFF00)];
 		d_viewbuffer[ofs] = pix;
 	}
 
@@ -973,8 +973,8 @@ split:
 
 void D_PolysetRecursiveTriangle2 (int *lp1, int *lp2, int *lp3)
 {
-	int		d;
-	int		new[4];
+	int d;
+	int new[4];
 
 	d = lp2[0] - lp1[0];
 	if (d < -1 || d > 1)

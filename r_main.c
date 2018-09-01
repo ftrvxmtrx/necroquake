@@ -3,120 +3,120 @@
 #include "r_shared.h"
 #include "r_local.h"
 
-void		*colormap;
-vec3_t		viewlightvec;
-alight_t	r_viewlighting = {128, 192, viewlightvec};
-float		r_time1;
-int			r_numallocatededges;
-bool	r_drawpolys;
-bool	r_drawculledpolys;
-bool	r_worldpolysbacktofront;
-bool	r_recursiveaffinetriangles = true;
-int			r_pixbytes = 1;
-float		r_aliasuvscale = 1.0;
-int			r_outofsurfaces;
-int			r_outofedges;
+void *colormap;
+vec3_t viewlightvec;
+alight_t r_viewlighting = {128, 192, viewlightvec};
+float r_time1;
+int r_numallocatededges;
+bool r_drawpolys;
+bool r_drawculledpolys;
+bool r_worldpolysbacktofront;
+bool r_recursiveaffinetriangles = true;
+int r_pixbytes = 1;
+float r_aliasuvscale = 1.0;
+int r_outofsurfaces;
+int r_outofedges;
 
-bool	r_dowarp, r_dowarpold, r_viewchanged;
+bool r_dowarp, r_dowarpold, r_viewchanged;
 
-int			numbtofpolys;
-btofpoly_t	*pbtofpolys;
-mvertex_t	*r_pcurrentvertbase;
+int numbtofpolys;
+btofpoly_t *pbtofpolys;
+mvertex_t *r_pcurrentvertbase;
 
-int			c_surf;
-int			r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
-bool	r_surfsonstack;
-int			r_clipflags;
+int c_surf;
+int r_maxsurfsseen, r_maxedgesseen, r_cnumsurfs;
+bool r_surfsonstack;
+int r_clipflags;
 
-uint8_t		*r_warpbuffer;
+uint8_t *r_warpbuffer;
 
-uint8_t		*r_stack_start;
+uint8_t *r_stack_start;
 
-bool	r_fov_greater_than_90;
+bool r_fov_greater_than_90;
 
 //
 // view origin
 //
-vec3_t	vup, base_vup;
-vec3_t	vpn, base_vpn;
-vec3_t	vright, base_vright;
-vec3_t	r_origin;
+vec3_t vup, base_vup;
+vec3_t vpn, base_vpn;
+vec3_t vright, base_vright;
+vec3_t r_origin;
 
 //
 // screen size info
 //
-refdef_t	r_refdef;
-float		xcenter, ycenter;
-float		xscale, yscale;
-float		xscaleinv, yscaleinv;
-float		xscaleshrink, yscaleshrink;
-float		aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
+refdef_t r_refdef;
+float xcenter, ycenter;
+float xscale, yscale;
+float xscaleinv, yscaleinv;
+float xscaleshrink, yscaleshrink;
+float aliasxscale, aliasyscale, aliasxcenter, aliasycenter;
 
-int		screenwidth;
+int screenwidth;
 
-float	pixelAspect;
-float	screenAspect;
-float	verticalFieldOfView;
-float	xOrigin, yOrigin;
+float pixelAspect;
+float screenAspect;
+float verticalFieldOfView;
+float xOrigin, yOrigin;
 
-mplane_t	screenedge[4];
+mplane_t screenedge[4];
 
 //
 // refresh flags
 //
-int		r_framecount = 1;	// so frame counts initialized to 0 don't match
-int		r_visframecount;
-int		d_spanpixcount;
-int		r_polycount;
-int		r_drawnpolycount;
-int		r_wholepolycount;
+int r_framecount = 1; // so frame counts initialized to 0 don't match
+int r_visframecount;
+int d_spanpixcount;
+int r_polycount;
+int r_drawnpolycount;
+int r_wholepolycount;
 
-#define		VIEWMODNAME_LENGTH	256
-char		viewmodname[VIEWMODNAME_LENGTH+1];
-int			modcount;
+#define VIEWMODNAME_LENGTH 256
+char viewmodname[VIEWMODNAME_LENGTH+1];
+int modcount;
 
-int			*pfrustum_indexes[4];
-int			r_frustum_indexes[4*6];
+int *pfrustum_indexes[4];
+int r_frustum_indexes[4*6];
 
-int		reinit_surfcache = 1;	// if 1, surface cache is currently empty and
+int reinit_surfcache = 1; // if 1, surface cache is currently empty and
 								// must be reinitialized for current cache size
 
-mleaf_t		*r_viewleaf, *r_oldviewleaf;
+mleaf_t *r_viewleaf, *r_oldviewleaf;
 
-texture_t	*r_notexture_mip;
+texture_t *r_notexture_mip;
 
-float		r_aliastransition, r_resfudge;
+float r_aliastransition, r_resfudge;
 
-int		d_lightstylevalue[256];	// 8.8 fraction of base light value
+int d_lightstylevalue[256]; // 8.8 fraction of base light value
 
-float	dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
-float	se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
+float dp_time1, dp_time2, db_time1, db_time2, rw_time1, rw_time2;
+float se_time1, se_time2, de_time1, de_time2, dv_time1, dv_time2;
 
 void R_MarkLeaves (void);
 
-cvar_t	r_draworder = {"r_draworder","0"};
-cvar_t	r_speeds = {"r_speeds","0"};
-cvar_t	r_timegraph = {"r_timegraph","0"};
-cvar_t	r_graphheight = {"r_graphheight","10"};
-cvar_t	r_clearcolor = {"r_clearcolor","2"};
-cvar_t	r_waterwarp = {"r_waterwarp","1"};
-cvar_t	r_fullbright = {"r_fullbright","0"};
-cvar_t	r_drawentities = {"r_drawentities","1"};
-cvar_t	r_drawviewmodel = {"r_drawviewmodel","1"};
-cvar_t	r_aliasstats = {"r_polymodelstats","0"};
-cvar_t	r_dspeeds = {"r_dspeeds","0"};
-cvar_t	r_drawflat = {"r_drawflat", "0"};
-cvar_t	r_ambient = {"r_ambient", "0"};
-cvar_t	r_reportsurfout = {"r_reportsurfout", "0"};
-cvar_t	r_maxsurfs = {"r_maxsurfs", "0"};
-cvar_t	r_numsurfs = {"r_numsurfs", "0"};
-cvar_t	r_reportedgeout = {"r_reportedgeout", "0"};
-cvar_t	r_maxedges = {"r_maxedges", "0"};
-cvar_t	r_numedges = {"r_numedges", "0"};
-cvar_t	r_aliastransbase = {"r_aliastransbase", "200"};
-cvar_t	r_aliastransadj = {"r_aliastransadj", "100"};
+cvar_t r_draworder = {"r_draworder","0"};
+cvar_t r_speeds = {"r_speeds","0"};
+cvar_t r_timegraph = {"r_timegraph","0"};
+cvar_t r_graphheight = {"r_graphheight","10"};
+cvar_t r_clearcolor = {"r_clearcolor","2"};
+cvar_t r_waterwarp = {"r_waterwarp","1"};
+cvar_t r_fullbright = {"r_fullbright","0"};
+cvar_t r_drawentities = {"r_drawentities","1"};
+cvar_t r_drawviewmodel = {"r_drawviewmodel","1"};
+cvar_t r_aliasstats = {"r_polymodelstats","0"};
+cvar_t r_dspeeds = {"r_dspeeds","0"};
+cvar_t r_drawflat = {"r_drawflat", "0"};
+cvar_t r_ambient = {"r_ambient", "0"};
+cvar_t r_reportsurfout = {"r_reportsurfout", "0"};
+cvar_t r_maxsurfs = {"r_maxsurfs", "0"};
+cvar_t r_numsurfs = {"r_numsurfs", "0"};
+cvar_t r_reportedgeout = {"r_reportedgeout", "0"};
+cvar_t r_maxedges = {"r_maxedges", "0"};
+cvar_t r_numedges = {"r_numedges", "0"};
+cvar_t r_aliastransbase = {"r_aliastransbase", "200"};
+cvar_t r_aliastransadj = {"r_aliastransadj", "100"};
 
-extern cvar_t	scr_fov;
+extern cvar_t scr_fov;
 
 void CreatePassages (void);
 void SetVisibilityByPassages (void);
@@ -126,10 +126,10 @@ void SetVisibilityByPassages (void);
 R_InitTextures
 ==================
 */
-void	R_InitTextures (void)
+void R_InitTextures (void)
 {
-	int		x,y, m;
-	uint8_t	*dest;
+	int x,y, m;
+	uint8_t *dest;
 
 // create a simple checkerboard texture for the default
 	r_notexture_mip = Hunk_AllocName (sizeof(texture_t) + 16*16+8*8+4*4+2*2, "notexture");
@@ -146,7 +146,7 @@ void	R_InitTextures (void)
 		for (y=0 ; y< (16>>m) ; y++)
 			for (x=0 ; x< (16>>m) ; x++)
 			{
-				if (  (y< (8>>m) ) ^ (x< (8>>m) ) )
+				if ( (y< (8>>m) ) ^ (x< (8>>m) ) )
 					*dest++ = 0;
 				else
 					*dest++ = 0xff;
@@ -161,7 +161,7 @@ R_Init
 */
 void R_Init (void)
 {
-	int		dummy;
+	int dummy;
 
 // get stack position so we can guess if we are going to overflow
 	r_stack_start = (uint8_t *)&dummy;
@@ -217,7 +217,7 @@ R_NewMap
 */
 void R_NewMap (void)
 {
-	int		i;
+	int i;
 
 // clear out efrags in case the level hasn't been reloaded
 // FIXME: is this one short?
@@ -276,8 +276,8 @@ R_SetVrect
 */
 void R_SetVrect (vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 {
-	int		h;
-	float	size;
+	int h;
+	float size;
 
 	size = scr_viewsize.value > 100 ? 100 : scr_viewsize.value;
 	if (cl.intermission)
@@ -292,7 +292,7 @@ void R_SetVrect (vrect_t *pvrectin, vrect_t *pvrect, int lineadj)
 	if (pvrect->width < 96)
 	{
 		size = 96.0 / pvrectin->width;
-		pvrect->width = 96;	// min for icons
+		pvrect->width = 96; // min for icons
 	}
 	pvrect->width &= ~7;
 	pvrect->height = pvrectin->height * size;
@@ -323,8 +323,8 @@ Guaranteed to be called before the first refresh
 */
 void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 {
-	int		i;
-	float	res_scale;
+	int i;
+	float res_scale;
 
 	r_viewchanged = true;
 
@@ -437,9 +437,9 @@ R_MarkLeaves
 */
 void R_MarkLeaves (void)
 {
-	uint8_t	*vis;
-	mnode_t	*node;
-	int		i;
+	uint8_t *vis;
+	mnode_t *node;
+	int i;
 
 	if (r_oldviewleaf == r_viewleaf)
 		return;
@@ -472,13 +472,13 @@ R_DrawEntitiesOnList
 */
 void R_DrawEntitiesOnList (void)
 {
-	int			i, j;
-	int			lnum;
-	alight_t	lighting;
+	int i, j;
+	int lnum;
+	alight_t lighting;
 // FIXME: remove and do real lighting
-	float		lightvec[3] = {-1, 0, 0};
-	vec3_t		dist;
-	float		add;
+	float lightvec[3] = {-1, 0, 0};
+	vec3_t dist;
+	float add;
 
 	if (!r_drawentities.value)
 		return;
@@ -488,7 +488,7 @@ void R_DrawEntitiesOnList (void)
 		currententity = cl_visedicts[i];
 
 		if (currententity == &cl_entities[cl.viewentity])
-			continue;	// don't draw the player
+			continue; // don't draw the player
 
 		switch (currententity->model->type)
 		{
@@ -552,12 +552,12 @@ R_DrawViewModel
 void R_DrawViewModel (void)
 {
 // FIXME: remove and do real lighting
-	float		lightvec[3] = {-1, 0, 0};
-	int			j;
-	int			lnum;
-	vec3_t		dist;
-	float		add;
-	dlight_t	*dl;
+	float lightvec[3] = {-1, 0, 0};
+	int j;
+	int lnum;
+	vec3_t dist;
+	float add;
+	dlight_t *dl;
 
 	if (!r_drawviewmodel.value || r_fov_greater_than_90)
 		return;
@@ -581,7 +581,7 @@ void R_DrawViewModel (void)
 	j = R_LightPoint (currententity->origin);
 
 	if (j < 24)
-		j = 24;		// allways give some light on gun
+		j = 24; // allways give some light on gun
 	r_viewlighting.ambientlight = j;
 	r_viewlighting.shadelight = j;
 
@@ -620,9 +620,9 @@ R_BmodelCheckBBox
 */
 int R_BmodelCheckBBox (model_t *clmodel, float *minmaxs)
 {
-	int			i, *pindex, clipflags;
-	vec3_t		acceptpt, rejectpt;
-	double		d;
+	int i, *pindex, clipflags;
+	vec3_t acceptpt, rejectpt;
+	double d;
 
 	clipflags = 0;
 
@@ -683,10 +683,10 @@ R_DrawBEntitiesOnList
 */
 void R_DrawBEntitiesOnList (void)
 {
-	int			i, j, k, clipflags;
-	vec3_t		oldorigin;
-	model_t		*clmodel;
-	float		minmaxs[6];
+	int i, j, k, clipflags;
+	vec3_t oldorigin;
+	model_t *clmodel;
+	float minmaxs[6];
 
 	if (!r_drawentities.value)
 		return;
@@ -814,9 +814,9 @@ R_EdgeDrawing
 */
 void R_EdgeDrawing (void)
 {
-	edge_t	ledges[NUMSTACKEDGES +
+	edge_t ledges[NUMSTACKEDGES +
 				((CACHE_SIZE - 1) / sizeof(edge_t)) + 1];
-	surf_t	lsurfs[NUMSTACKSURFACES +
+	surf_t lsurfs[NUMSTACKSURFACES +
 				((CACHE_SIZE - 1) / sizeof(surf_t)) + 1];
 
 	if (auxedges)
@@ -825,13 +825,13 @@ void R_EdgeDrawing (void)
 	}
 	else
 	{
-		r_edges =  (edge_t *)
+		r_edges = (edge_t *)
 				(((long)&ledges[0] + CACHE_SIZE - 1) & ~(CACHE_SIZE - 1));
 	}
 
 	if (r_surfsonstack)
 	{
-		surfaces =  (surf_t *)
+		surfaces = (surf_t *)
 				(((long)&lsurfs[0] + CACHE_SIZE - 1) & ~(CACHE_SIZE - 1));
 		surf_max = &surfaces[r_cnumsurfs];
 	// surface 0 doesn't really exist; it's just a dummy because index 0
@@ -866,7 +866,7 @@ void R_EdgeDrawing (void)
 	}
 
 	if (!r_dspeeds.value)
-		S_ExtraUpdate ();	// don't let sound get messed up if going slow
+		S_ExtraUpdate (); // don't let sound get messed up if going slow
 
 	if (!(r_drawpolys | r_drawculledpolys))
 		R_ScanEdges ();
@@ -881,7 +881,7 @@ r_refdef must be set before the first call
 */
 void R_RenderView_ (void)
 {
-	uint8_t	warpbuffer[WARP_WIDTH * WARP_HEIGHT];
+	uint8_t warpbuffer[WARP_WIDTH * WARP_HEIGHT];
 
 	r_warpbuffer = warpbuffer;
 
@@ -889,18 +889,18 @@ void R_RenderView_ (void)
 		r_time1 = Sys_FloatTime ();
 
 	R_SetupFrame ();
-	R_MarkLeaves ();	// done here so we know if we're in water
+	R_MarkLeaves (); // done here so we know if we're in water
 
 	if (!cl_entities[0].model || !cl.worldmodel)
 		Sys_Error ("R_RenderView: NULL worldmodel");
 
 	if (!r_dspeeds.value)
-		S_ExtraUpdate ();	// don't let sound get messed up if going slow
+		S_ExtraUpdate (); // don't let sound get messed up if going slow
 
 	R_EdgeDrawing ();
 
 	if (!r_dspeeds.value)
-		S_ExtraUpdate ();	// don't let sound get messed up if going slow
+		S_ExtraUpdate (); // don't let sound get messed up if going slow
 
 	if (r_dspeeds.value)
 	{
@@ -955,8 +955,8 @@ void R_RenderView_ (void)
 
 void R_RenderView (void)
 {
-	int		dummy;
-	int		delta;
+	int dummy;
+	int delta;
 
 	delta = (uint8_t *)&dummy - r_stack_start;
 	if (delta < -10000 || delta > 10000)
@@ -981,12 +981,12 @@ R_InitTurb
 */
 void R_InitTurb (void)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<(SIN_BUFFER_SIZE) ; i++)
 	{
 		sintable[i] = AMP + sin(i*3.14159*2/CYCLE)*AMP;
-		intsintable[i] = AMP2 + sin(i*3.14159*2/CYCLE)*AMP2;	// AMP2, not 20
+		intsintable[i] = AMP2 + sin(i*3.14159*2/CYCLE)*AMP2; // AMP2, not 20
 	}
 }
 

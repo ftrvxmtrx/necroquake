@@ -4,44 +4,44 @@
 #include <stdlib.h>
 #include "quakedef.h"
 
-dprograms_t		*progs;
-dfunction_t		*pr_functions;
-char			*pr_strings;
-ddef_t			*pr_fielddefs;
-ddef_t			*pr_globaldefs;
-dstatement_t	*pr_statements;
-globalvars_t	*pr_global_struct;
-float			*pr_globals;			// same as pr_global_struct
-int				pr_edict_size;	// in bytes
+dprograms_t *progs;
+dfunction_t *pr_functions;
+char *pr_strings;
+ddef_t *pr_fielddefs;
+ddef_t *pr_globaldefs;
+dstatement_t *pr_statements;
+globalvars_t *pr_global_struct;
+float *pr_globals; // same as pr_global_struct
+int pr_edict_size; // in bytes
 
-unsigned short		pr_crc;
+unsigned short pr_crc;
 
-int		type_size[8] = {1,sizeof(string_t)/4,1,3,1,1,sizeof(func_t)/4,sizeof(void *)/4};
+int type_size[8] = {1,sizeof(string_t)/4,1,3,1,1,sizeof(func_t)/4,sizeof(void *)/4};
 
 ddef_t *ED_FieldAtOfs (int ofs);
-bool	ED_ParseEpair (void *base, ddef_t *key, char *s);
+bool ED_ParseEpair (void *base, ddef_t *key, char *s);
 
-cvar_t	nomonsters = {"nomonsters", "0"};
-cvar_t	gamecfg = {"gamecfg", "0"};
-cvar_t	scratch1 = {"scratch1", "0"};
-cvar_t	scratch2 = {"scratch2", "0"};
-cvar_t	scratch3 = {"scratch3", "0"};
-cvar_t	scratch4 = {"scratch4", "0"};
-cvar_t	savedgamecfg = {"savedgamecfg", "0", true};
-cvar_t	saved1 = {"saved1", "0", true};
-cvar_t	saved2 = {"saved2", "0", true};
-cvar_t	saved3 = {"saved3", "0", true};
-cvar_t	saved4 = {"saved4", "0", true};
+cvar_t nomonsters = {"nomonsters", "0"};
+cvar_t gamecfg = {"gamecfg", "0"};
+cvar_t scratch1 = {"scratch1", "0"};
+cvar_t scratch2 = {"scratch2", "0"};
+cvar_t scratch3 = {"scratch3", "0"};
+cvar_t scratch4 = {"scratch4", "0"};
+cvar_t savedgamecfg = {"savedgamecfg", "0", true};
+cvar_t saved1 = {"saved1", "0", true};
+cvar_t saved2 = {"saved2", "0", true};
+cvar_t saved3 = {"saved3", "0", true};
+cvar_t saved4 = {"saved4", "0", true};
 
-#define	MAX_FIELD_LEN	64
-#define GEFV_CACHESIZE	2
+#define MAX_FIELD_LEN 64
+#define GEFV_CACHESIZE 2
 
 typedef struct {
-	ddef_t	*pcache;
-	char	field[MAX_FIELD_LEN];
+	ddef_t *pcache;
+	char field[MAX_FIELD_LEN];
 } gefv_cache;
 
-static gefv_cache	gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
+static gefv_cache gefvCache[GEFV_CACHESIZE] = {{NULL, ""}, {NULL, ""}};
 
 /*
 =================
@@ -69,8 +69,8 @@ angles and bad trails.
 */
 edict_t *ED_Alloc (void)
 {
-	int			i;
-	edict_t		*e;
+	int i;
+	edict_t *e;
 
 	for ( i=svs.maxclients+1 ; i<sv.num_edicts ; i++)
 	{
@@ -104,7 +104,7 @@ FIXME: walk all entities and NULL out references to this entity
 */
 void ED_Free (edict_t *ed)
 {
-	SV_UnlinkEdict (ed);		// unlink from world bsp
+	SV_UnlinkEdict (ed); // unlink from world bsp
 
 	ed->free = true;
 	ed->v.model = 0;
@@ -130,8 +130,8 @@ ED_GlobalAtOfs
 */
 ddef_t *ED_GlobalAtOfs (int ofs)
 {
-	ddef_t		*def;
-	int			i;
+	ddef_t *def;
+	int i;
 
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
@@ -149,8 +149,8 @@ ED_FieldAtOfs
 */
 ddef_t *ED_FieldAtOfs (int ofs)
 {
-	ddef_t		*def;
-	int			i;
+	ddef_t *def;
+	int i;
 
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
@@ -168,8 +168,8 @@ ED_FindField
 */
 ddef_t *ED_FindField (char *name)
 {
-	ddef_t		*def;
-	int			i;
+	ddef_t *def;
+	int i;
 
 	for (i=0 ; i<progs->numfielddefs ; i++)
 	{
@@ -187,8 +187,8 @@ ED_FindGlobal
 */
 ddef_t *ED_FindGlobal (char *name)
 {
-	ddef_t		*def;
-	int			i;
+	ddef_t *def;
+	int i;
 
 	for (i=0 ; i<progs->numglobaldefs ; i++)
 	{
@@ -206,8 +206,8 @@ ED_FindFunction
 */
 dfunction_t *ED_FindFunction (char *name)
 {
-	dfunction_t		*func;
-	int				i;
+	dfunction_t *func;
+	int i;
 
 	for (i=0 ; i<progs->numfunctions ; i++)
 	{
@@ -220,9 +220,9 @@ dfunction_t *ED_FindFunction (char *name)
 
 eval_t *GetEdictFieldValue(edict_t *ed, char *field)
 {
-	ddef_t			*def = NULL;
-	int				i;
-	static int		rep = 0;
+	ddef_t *def = NULL;
+	int i;
+	static int rep = 0;
 
 	for (i=0 ; i<GEFV_CACHESIZE ; i++)
 	{
@@ -258,9 +258,9 @@ Returns a string describing *data in a type specific manner
 */
 char *PR_ValueString (etype_t type, eval_t *val)
 {
-	static char	line[256];
-	ddef_t		*def;
-	dfunction_t	*f;
+	static char line[256];
+	ddef_t *def;
+	dfunction_t *f;
 
 	type &= ~DEF_SAVEGLOBAL;
 
@@ -310,9 +310,9 @@ Easier to parse than PR_ValueString
 */
 char *PR_UglyValueString (etype_t type, eval_t *val)
 {
-	static char	line[256];
-	ddef_t		*def;
-	dfunction_t	*f;
+	static char line[256];
+	ddef_t *def;
+	dfunction_t *f;
 
 	type &= ~DEF_SAVEGLOBAL;
 
@@ -359,11 +359,11 @@ padded to 20 field width
 */
 char *PR_GlobalString (int ofs)
 {
-	char	*s;
-	int		i;
-	ddef_t	*def;
-	void	*val;
-	static char	line[128];
+	char *s;
+	int i;
+	ddef_t *def;
+	void *val;
+	static char line[128];
 
 	val = (void *)&pr_globals[ofs];
 	def = ED_GlobalAtOfs(ofs);
@@ -385,9 +385,9 @@ char *PR_GlobalString (int ofs)
 
 char *PR_GlobalStringNoContents (int ofs)
 {
-	int		i;
-	ddef_t	*def;
-	static char	line[128];
+	int i;
+	ddef_t *def;
+	static char line[128];
 
 	def = ED_GlobalAtOfs(ofs);
 	if (!def)
@@ -412,12 +412,12 @@ For debugging
 */
 void ED_Print (edict_t *ed)
 {
-	int		l;
-	ddef_t	*d;
-	int		*v;
-	int		i, j;
-	char	*name;
-	int		type;
+	int l;
+	ddef_t *d;
+	int *v;
+	int i, j;
+	char *name;
+	int type;
 
 	if (ed->free)
 	{
@@ -431,7 +431,7 @@ void ED_Print (edict_t *ed)
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
 		if (name[strlen(name)-2] == '_')
-			continue;	// skip _x, _y, _z vars
+			continue; // skip _x, _y, _z vars
 
 		v = (int *)((char *)&ed->v + d->ofs*4);
 
@@ -462,11 +462,11 @@ For savegames
 */
 void ED_Write (FILE *f, edict_t *ed)
 {
-	ddef_t	*d;
-	int		*v;
-	int		i, j;
-	char	*name;
-	int		type;
+	ddef_t *d;
+	int *v;
+	int i, j;
+	char *name;
+	int type;
 
 	fprintf (f, "{\n");
 
@@ -481,7 +481,7 @@ void ED_Write (FILE *f, edict_t *ed)
 		d = &pr_fielddefs[i];
 		name = PR_GetString(d->s_name);
 		if (name[strlen(name)-2] == '_')
-			continue;	// skip _x, _y, _z vars
+			continue; // skip _x, _y, _z vars
 
 		v = (int *)((char *)&ed->v + d->ofs*4);
 
@@ -514,7 +514,7 @@ For debugging, prints all the entities in the current server
 */
 void ED_PrintEdicts (void)
 {
-	int		i;
+	int i;
 
 	Con_Printf ("%i entities\n", sv.num_edicts);
 	for (i=0 ; i<sv.num_edicts ; i++)
@@ -530,7 +530,7 @@ For debugging, prints a single edicy
 */
 void ED_PrintEdict_f (void)
 {
-	int		i;
+	int i;
 
 	i = strtol (Cmd_Argv(1), NULL, 0);
 	if (i >= sv.num_edicts)
@@ -550,9 +550,9 @@ For debugging
 */
 void ED_Count (void)
 {
-	int		i;
-	edict_t	*ent;
-	int		active, models, solid, step;
+	int i;
+	edict_t *ent;
+	int active, models, solid, step;
 
 	active = models = solid = step = 0;
 	for (i=0 ; i<sv.num_edicts ; i++)
@@ -570,10 +570,10 @@ void ED_Count (void)
 	}
 
 	Con_Printf ("num_edicts:%3i\n", sv.num_edicts);
-	Con_Printf ("active    :%3i\n", active);
-	Con_Printf ("view      :%3i\n", models);
-	Con_Printf ("touch     :%3i\n", solid);
-	Con_Printf ("step      :%3i\n", step);
+	Con_Printf ("active :%3i\n", active);
+	Con_Printf ("view :%3i\n", models);
+	Con_Printf ("touch :%3i\n", solid);
+	Con_Printf ("step :%3i\n", step);
 
 }
 
@@ -593,10 +593,10 @@ ED_WriteGlobals
 */
 void ED_WriteGlobals (FILE *f)
 {
-	ddef_t		*def;
-	int			i;
-	char		*name;
-	int			type;
+	ddef_t *def;
+	int i;
+	char *name;
+	int type;
 
 	fprintf (f,"{\n");
 	for (i=0 ; i<progs->numglobaldefs ; i++)
@@ -626,8 +626,8 @@ ED_ParseGlobals
 */
 void ED_ParseGlobals (char *data)
 {
-	char	keyname[64];
-	ddef_t	*key;
+	char keyname[64];
+	ddef_t *key;
 
 	while (1)
 	{
@@ -669,8 +669,8 @@ ED_NewString
 */
 char *ED_NewString (char *string)
 {
-	char	*new, *new_p;
-	int		i,l;
+	char *new, *new_p;
+	int i,l;
 
 	l = strlen(string) + 1;
 	new = Hunk_Alloc (l);
@@ -701,14 +701,14 @@ Can parse either fields or globals
 returns false if error
 =============
 */
-bool	ED_ParseEpair (void *base, ddef_t *key, char *s)
+bool ED_ParseEpair (void *base, ddef_t *key, char *s)
 {
-	int		i;
-	char	string[128];
-	ddef_t	*def;
-	char	*v, *w;
-	void	*d;
-	dfunction_t	*func;
+	int i;
+	char string[128];
+	ddef_t *def;
+	char *v, *w;
+	void *d;
+	dfunction_t *func;
 
 	d = (void *)((int *)base + key->ofs);
 
@@ -777,16 +777,16 @@ Used for initial level load and for savegames.
 */
 char *ED_ParseEdict (char *data, edict_t *ent)
 {
-	ddef_t		*key;
-	bool	anglehack;
-	bool	init;
-	char		keyname[256];
-	int			n;
+	ddef_t *key;
+	bool anglehack;
+	bool init;
+	char keyname[256];
+	int n;
 
 	init = false;
 
 // clear it
-	if (ent != sv.edicts)	// hack
+	if (ent != sv.edicts) // hack
 		memset (&ent->v, 0, progs->entityfields * 4);
 
 // go through all the dictionary pairs
@@ -811,7 +811,7 @@ else
 
 // FIXME: change light to _light to get rid of this hack
 if (!strcmp(com_token, "light"))
-	strcpy (com_token, "light_lev");	// hack for single light def
+	strcpy (com_token, "light_lev"); // hack for single light def
 
 		strcpy (keyname, com_token);
 
@@ -847,7 +847,7 @@ if (!strcmp(com_token, "light"))
 
 if (anglehack)
 {
-char	temp[32];
+char temp[32];
 strcpy (temp, com_token);
 sprintf (com_token, "0 %s 0", temp);
 }
@@ -873,15 +873,15 @@ number references out of order.
 Creates a server's entity / program execution context by
 parsing textual entity definitions out of an ent file.
 
-Used for both fresh maps and savegame loads.  A fresh map would also need
+Used for both fresh maps and savegame loads. A fresh map would also need
 to call ED_CallSpawnFunctions () to let the objects initialize themselves.
 ================
 */
 void ED_LoadFromFile (char *data)
 {
-	edict_t		*ent;
-	int			inhibit;
-	dfunction_t	*func;
+	edict_t *ent;
+	int inhibit;
+	dfunction_t *func;
 
 	ent = NULL;
 	inhibit = 0;
@@ -985,7 +985,7 @@ PR_LoadProgs
 */
 void PR_LoadProgs (void)
 {
-	int		i;
+	int i;
 
 	memset(pr_asstr, 0, sizeof(pr_asstr));
 	pr_numasstr = 0;
@@ -1096,7 +1096,7 @@ edict_t *EDICT_NUM(int n)
 
 int NUM_FOR_EDICT(edict_t *e)
 {
-	int		b;
+	int b;
 
 	b = (uint8_t *)e - (uint8_t *)sv.edicts;
 	b = b / pr_edict_size;

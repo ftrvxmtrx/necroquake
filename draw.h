@@ -1,7 +1,7 @@
 // draw.h -- these are the only functions outside the refresh allowed
 // to touch the vid buffer
 
-extern	qpic_t		*draw_disc;	// also used on sbar
+extern qpic_t *draw_disc; // also used on sbar
 
 void Draw_Init (void);
 void Draw_Character (int x, int y, int num);

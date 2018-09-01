@@ -5,34 +5,34 @@
 #include "r_shared.h"
 #include "r_local.h"
 
-drawsurf_t	r_drawsurf;
+drawsurf_t r_drawsurf;
 
-int				lightleft, sourcesstep, blocksize, sourcetstep;
-int				lightdelta, lightdeltastep;
-int				lightright, lightleftstep, lightrightstep, blockdivshift;
-unsigned		blockdivmask;
-void			*prowdestbase;
-unsigned char	*pbasesource;
-int				surfrowbytes;	// used by ASM files
-unsigned		*r_lightptr;
-int				r_stepback;
-int				r_lightwidth;
-int				r_numhblocks, r_numvblocks;
-unsigned char	*r_source, *r_sourcemax;
+int lightleft, sourcesstep, blocksize, sourcetstep;
+int lightdelta, lightdeltastep;
+int lightright, lightleftstep, lightrightstep, blockdivshift;
+unsigned blockdivmask;
+void *prowdestbase;
+unsigned char *pbasesource;
+int surfrowbytes; // used by ASM files
+unsigned *r_lightptr;
+int r_stepback;
+int r_lightwidth;
+int r_numhblocks, r_numvblocks;
+unsigned char *r_source, *r_sourcemax;
 
 void R_DrawSurfaceBlock8_mip0 (void);
 void R_DrawSurfaceBlock8_mip1 (void);
 void R_DrawSurfaceBlock8_mip2 (void);
 void R_DrawSurfaceBlock8_mip3 (void);
 
-static void	(*surfmiptable[4])(void) = {
+static void (*surfmiptable[4])(void) = {
 	R_DrawSurfaceBlock8_mip0,
 	R_DrawSurfaceBlock8_mip1,
 	R_DrawSurfaceBlock8_mip2,
 	R_DrawSurfaceBlock8_mip3
 };
 
-unsigned		blocklights[18*18];
+unsigned blocklights[18*18];
 
 /*
 ===============
@@ -42,14 +42,14 @@ R_AddDynamicLights
 void R_AddDynamicLights (void)
 {
 	msurface_t *surf;
-	int			lnum;
-	int			sd, td;
-	float		dist, rad, minlight;
-	vec3_t		impact, local;
-	int			s, t;
-	int			i;
-	int			smax, tmax;
-	mtexinfo_t	*tex;
+	int lnum;
+	int sd, td;
+	float dist, rad, minlight;
+	vec3_t impact, local;
+	int s, t;
+	int i;
+	int smax, tmax;
+	mtexinfo_t *tex;
 
 	surf = r_drawsurf.surf;
 	smax = (surf->extents[0]>>4)+1;
@@ -59,7 +59,7 @@ void R_AddDynamicLights (void)
 	for (lnum=0 ; lnum<MAX_DLIGHTS ; lnum++)
 	{
 		if ( !(surf->dlightbits & (1<<lnum) ) )
-			continue;		// not lit by this light
+			continue; // not lit by this light
 
 		rad = cl_dlights[lnum].radius;
 		dist = DotProduct (cl_dlights[lnum].origin, surf->plane->normal) -
@@ -112,13 +112,13 @@ Combine and scale multiple lightmaps into the 8.8 format in blocklights
 */
 void R_BuildLightMap (void)
 {
-	int			smax, tmax;
-	int			t;
-	int			i, size;
-	uint8_t		*lightmap;
-	unsigned	scale;
-	int			maps;
-	msurface_t	*surf;
+	int smax, tmax;
+	int t;
+	int i, size;
+	uint8_t *lightmap;
+	unsigned scale;
+	int maps;
+	msurface_t *surf;
 
 	surf = r_drawsurf.surf;
 
@@ -143,10 +143,10 @@ void R_BuildLightMap (void)
 		for (maps = 0 ; maps < MAXLIGHTMAPS && surf->styles[maps] != 255 ;
 			 maps++)
 		{
-			scale = r_drawsurf.lightadj[maps];	// 8.8 fraction
+			scale = r_drawsurf.lightadj[maps]; // 8.8 fraction
 			for (i=0 ; i<size ; i++)
 				blocklights[i] += lightmap[i] * scale;
-			lightmap += size;	// skip to next lightmap
+			lightmap += size; // skip to next lightmap
 		}
 
 // add all the dynamic lights
@@ -174,8 +174,8 @@ Returns the proper texture for a given time and base texture
 */
 texture_t *R_TextureAnimation (texture_t *base)
 {
-	int		reletive;
-	int		count;
+	int reletive;
+	int count;
 
 	if (currententity->frame)
 	{
@@ -208,14 +208,14 @@ R_DrawSurface
 */
 void R_DrawSurface (void)
 {
-	unsigned char	*basetptr;
-	int				smax, tmax, twidth;
-	int				u;
-	int				soffset, basetoffset, texwidth;
-	int				horzblockstep;
-	unsigned char	*pcolumndest;
-	void			(*pblockdrawer)(void);
-	texture_t		*mt;
+	unsigned char *basetptr;
+	int smax, tmax, twidth;
+	int u;
+	int soffset, basetoffset, texwidth;
+	int horzblockstep;
+	unsigned char *pcolumndest;
+	void (*pblockdrawer)(void);
+	texture_t *mt;
 
 // calculate the lightings
 	R_BuildLightMap ();
@@ -298,8 +298,8 @@ R_DrawSurfaceBlock8_mip0
 */
 void R_DrawSurfaceBlock8_mip0 (void)
 {
-	int				v, i, b, lightstep, lighttemp, light;
-	unsigned char	pix, *psource, *prowdest;
+	int v, i, b, lightstep, lighttemp, light;
+	unsigned char pix, *psource, *prowdest;
 
 	psource = pbasesource;
 	prowdest = prowdestbase;
@@ -347,8 +347,8 @@ R_DrawSurfaceBlock8_mip1
 */
 void R_DrawSurfaceBlock8_mip1 (void)
 {
-	int				v, i, b, lightstep, lighttemp, light;
-	unsigned char	pix, *psource, *prowdest;
+	int v, i, b, lightstep, lighttemp, light;
+	unsigned char pix, *psource, *prowdest;
 
 	psource = pbasesource;
 	prowdest = prowdestbase;
@@ -396,8 +396,8 @@ R_DrawSurfaceBlock8_mip2
 */
 void R_DrawSurfaceBlock8_mip2 (void)
 {
-	int				v, i, b, lightstep, lighttemp, light;
-	unsigned char	pix, *psource, *prowdest;
+	int v, i, b, lightstep, lighttemp, light;
+	unsigned char pix, *psource, *prowdest;
 
 	psource = pbasesource;
 	prowdest = prowdestbase;
@@ -445,8 +445,8 @@ R_DrawSurfaceBlock8_mip3
 */
 void R_DrawSurfaceBlock8_mip3 (void)
 {
-	int				v, i, b, lightstep, lighttemp, light;
-	unsigned char	pix, *psource, *prowdest;
+	int v, i, b, lightstep, lighttemp, light;
+	unsigned char pix, *psource, *prowdest;
 
 	psource = pbasesource;
 	prowdest = prowdestbase;
@@ -496,18 +496,18 @@ FIXME: make this work
 */
 void R_DrawSurfaceBlock16 (void)
 {
-	int				k;
-	unsigned char	*psource;
-	int				lighttemp, lightstep, light;
-	unsigned short	*prowdest;
+	int k;
+	unsigned char *psource;
+	int lighttemp, lightstep, light;
+	unsigned short *prowdest;
 
 	prowdest = (unsigned short *)prowdestbase;
 
 	for (k=0 ; k<blocksize ; k++)
 	{
-		unsigned short	*pdest;
-		unsigned char	pix;
-		int				b;
+		unsigned short *pdest;
+		unsigned char pix;
+		int b;
 
 		psource = pbasesource;
 		lighttemp = lightright - lightleft;
@@ -541,9 +541,9 @@ R_GenTurbTile
 */
 void R_GenTurbTile (pixel_t *pbasetex, void *pdest)
 {
-	int		*turb;
-	int		i, j, s, t;
-	uint8_t	*pd;
+	int *turb;
+	int i, j, s, t;
+	uint8_t *pd;
 
 	turb = sintable + ((int)(cl.time*SPEED)&(CYCLE-1));
 	pd = (uint8_t *)pdest;
@@ -566,9 +566,9 @@ R_GenTurbTile16
 */
 void R_GenTurbTile16 (pixel_t *pbasetex, void *pdest)
 {
-	int				*turb;
-	int				i, j, s, t;
-	unsigned short	*pd;
+	int *turb;
+	int i, j, s, t;
+	unsigned short *pd;
 
 	turb = sintable + ((int)(cl.time*SPEED)&(CYCLE-1));
 	pd = (unsigned short *)pdest;

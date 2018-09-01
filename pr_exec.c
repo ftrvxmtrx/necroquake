@@ -3,23 +3,23 @@
 
 typedef struct
 {
-	int				s;
-	dfunction_t		*f;
+	int s;
+	dfunction_t *f;
 } prstack_t;
 
-#define	MAX_STACK_DEPTH		32
-prstack_t	pr_stack[MAX_STACK_DEPTH];
-int			pr_depth;
+#define MAX_STACK_DEPTH 32
+prstack_t pr_stack[MAX_STACK_DEPTH];
+int pr_depth;
 
-#define	LOCALSTACK_SIZE		2048
-int			localstack[LOCALSTACK_SIZE];
-int			localstack_used;
+#define LOCALSTACK_SIZE 2048
+int localstack[LOCALSTACK_SIZE];
+int localstack_used;
 
-bool	pr_trace;
-dfunction_t	*pr_xfunction;
-int			pr_xstatement;
+bool pr_trace;
+dfunction_t *pr_xfunction;
+int pr_xstatement;
 
-int		pr_argc;
+int pr_argc;
 
 char *pr_opnames[] =
 {
@@ -122,11 +122,11 @@ PR_PrintStatement
 */
 void PR_PrintStatement (dstatement_t *s)
 {
-	int		i;
+	int i;
 
 	if ( (unsigned)s->op < sizeof(pr_opnames)/sizeof(pr_opnames[0]))
 	{
-		Con_Printf ("%s ",  pr_opnames[s->op]);
+		Con_Printf ("%s ", pr_opnames[s->op]);
 		i = strlen(pr_opnames[s->op]);
 		for ( ; i<10 ; i++)
 			Con_Printf (" ");
@@ -162,8 +162,8 @@ PR_StackTrace
 */
 void PR_StackTrace (void)
 {
-	dfunction_t	*f;
-	int			i;
+	dfunction_t *f;
+	int i;
 
 	if (pr_depth == 0)
 	{
@@ -193,10 +193,10 @@ PR_Profile_f
 */
 void PR_Profile_f (void)
 {
-	dfunction_t	*f, *best;
-	int			max;
-	int			num;
-	int			i;
+	dfunction_t *f, *best;
+	int max;
+	int num;
+	int i;
 
 	num = 0;
 	do
@@ -231,8 +231,8 @@ Aborts the currently executing function
 */
 void PR_RunError (char *error, ...)
 {
-	va_list		argptr;
-	char		string[1024];
+	va_list argptr;
+	char string[1024];
 
 	va_start (argptr,error);
 	vsprintf (string,error,argptr);
@@ -242,7 +242,7 @@ void PR_RunError (char *error, ...)
 	PR_StackTrace ();
 	Con_Printf ("%s\n", string);
 
-	pr_depth = 0;		// dump the stack so host_error can shutdown functions
+	pr_depth = 0; // dump the stack so host_error can shutdown functions
 
 	Host_Error ("Program error");
 }
@@ -264,7 +264,7 @@ Returns the new program statement counter
 */
 int PR_EnterFunction (dfunction_t *f)
 {
-	int		i, j, c, o;
+	int i, j, c, o;
 
 	pr_stack[pr_depth].s = pr_xstatement;
 	pr_stack[pr_depth].f = pr_xfunction;
@@ -293,7 +293,7 @@ int PR_EnterFunction (dfunction_t *f)
 	}
 
 	pr_xfunction = f;
-	return f->first_statement - 1;	// offset the s++
+	return f->first_statement - 1; // offset the s++
 }
 
 /*
@@ -303,7 +303,7 @@ PR_LeaveFunction
 */
 int PR_LeaveFunction (void)
 {
-	int		i, c;
+	int i, c;
 
 	if (pr_depth <= 0)
 		Sys_Error ("prog stack underflow");
@@ -330,15 +330,15 @@ PR_ExecuteProgram
 */
 void PR_ExecuteProgram (func_t fnum)
 {
-	eval_t	*a, *b, *c;
-	int			s;
-	dstatement_t	*st;
-	dfunction_t	*f, *newf;
-	int		runaway;
-	int		i;
-	edict_t	*ed;
-	int		exitdepth;
-	eval_t	*ptr;
+	eval_t *a, *b, *c;
+	int s;
+	dstatement_t *st;
+	dfunction_t *f, *newf;
+	int runaway;
+	int i;
+	edict_t *ed;
+	int exitdepth;
+	eval_t *ptr;
 
 	if (!fnum || fnum >= progs->numfunctions)
 	{
@@ -359,7 +359,7 @@ void PR_ExecuteProgram (func_t fnum)
 
 while (1)
 {
-	s++;	// next statement
+	s++; // next statement
 
 	st = &pr_statements[s];
 	a = (eval_t *)&pr_globals[st->a];
@@ -500,9 +500,9 @@ while (1)
 //==================
 	case OP_STORE_F:
 	case OP_STORE_ENT:
-	case OP_STORE_FLD:		// integers
+	case OP_STORE_FLD: // integers
 	case OP_STORE_S:
-	case OP_STORE_FNC:		// pointers
+	case OP_STORE_FNC: // pointers
 		b->_int = a->_int;
 		break;
 	case OP_STORE_V:
@@ -513,9 +513,9 @@ while (1)
 
 	case OP_STOREP_F:
 	case OP_STOREP_ENT:
-	case OP_STOREP_FLD:		// integers
+	case OP_STOREP_FLD: // integers
 	case OP_STOREP_S:
-	case OP_STOREP_FNC:		// pointers
+	case OP_STOREP_FNC: // pointers
 		ptr = (eval_t *)((uint8_t *)sv.edicts + b->_int);
 		ptr->_int = a->_int;
 		break;
@@ -529,7 +529,7 @@ while (1)
 	case OP_ADDRESS:
 		ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-		NUM_FOR_EDICT(ed);		// make sure it's in range
+		NUM_FOR_EDICT(ed); // make sure it's in range
 #endif
 		if (ed == (edict_t *)sv.edicts && sv.state == ss_active)
 			PR_RunError ("assignment to world entity");
@@ -543,7 +543,7 @@ while (1)
 	case OP_LOAD_FNC:
 		ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-		NUM_FOR_EDICT(ed);		// make sure it's in range
+		NUM_FOR_EDICT(ed); // make sure it's in range
 #endif
 		a = (eval_t *)((int *)&ed->v + b->_int);
 		c->_int = a->_int;
@@ -552,7 +552,7 @@ while (1)
 	case OP_LOAD_V:
 		ed = PROG_TO_EDICT(a->edict);
 #ifdef PARANOID
-		NUM_FOR_EDICT(ed);		// make sure it's in range
+		NUM_FOR_EDICT(ed); // make sure it's in range
 #endif
 		a = (eval_t *)((int *)&ed->v + b->_int);
 		c->vector[0] = a->vector[0];
@@ -564,16 +564,16 @@ while (1)
 
 	case OP_IFNOT:
 		if (!a->_int)
-			s += st->b - 1;	// offset the s++
+			s += st->b - 1; // offset the s++
 		break;
 
 	case OP_IF:
 		if (a->_int)
-			s += st->b - 1;	// offset the s++
+			s += st->b - 1; // offset the s++
 		break;
 
 	case OP_GOTO:
-		s += st->a - 1;	// offset the s++
+		s += st->a - 1; // offset the s++
 		break;
 
 	case OP_CALL0:
@@ -592,7 +592,7 @@ while (1)
 		newf = &pr_functions[a->function];
 
 		if (newf->first_statement < 0)
-		{	// negative statements are built in functions
+		{ // negative statements are built in functions
 			i = -newf->first_statement;
 			if (i >= pr_numbuiltins)
 				printf("No builtin %d, max %d\n", i, pr_numbuiltins);
@@ -612,7 +612,7 @@ while (1)
 
 		s = PR_LeaveFunction ();
 		if (pr_depth == exitdepth)
-			return;		// all done
+			return; // all done
 		break;
 
 	case OP_STATE:

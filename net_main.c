@@ -2,69 +2,69 @@
 #include "quakedef.h"
 #include "net_vcr.h"
 
-qsocket_t	*net_activeSockets = NULL;
-qsocket_t	*net_freeSockets = NULL;
-int			net_numsockets = 0;
+qsocket_t *net_activeSockets = NULL;
+qsocket_t *net_freeSockets = NULL;
+int net_numsockets = 0;
 
-bool	serialAvailable = false;
-bool	ipxAvailable = false;
-bool	tcpipAvailable = false;
+bool serialAvailable = false;
+bool ipxAvailable = false;
+bool tcpipAvailable = false;
 
-int			net_hostport;
-int			DEFAULTnet_hostport = 26000;
+int net_hostport;
+int DEFAULTnet_hostport = 26000;
 
-char		my_ipx_address[NET_NAMELEN];
-char		my_tcpip_address[NET_NAMELEN];
+char my_ipx_address[NET_NAMELEN];
+char my_tcpip_address[NET_NAMELEN];
 
 void (*GetComPortConfig) (int portNumber, int *port, int *irq, int *baud, bool *useModem);
 void (*SetComPortConfig) (int portNumber, int port, int irq, int baud, bool useModem);
 void (*GetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
 void (*SetModemConfig) (int portNumber, char *dialType, char *clear, char *init, char *hangup);
 
-static bool	listening = false;
+static bool listening = false;
 
-bool	slistInProgress = false;
-bool	slistSilent = false;
-bool	slistLocal = true;
-static double	slistStartTime;
-static int		slistLastShown;
+bool slistInProgress = false;
+bool slistSilent = false;
+bool slistLocal = true;
+static double slistStartTime;
+static int slistLastShown;
 
 static void Slist_Send(void);
 static void Slist_Poll(void);
-PollProcedure	slistSendProcedure = {NULL, 0.0, Slist_Send};
-PollProcedure	slistPollProcedure = {NULL, 0.0, Slist_Poll};
+PollProcedure slistSendProcedure = {NULL, 0.0, Slist_Send};
+PollProcedure slistPollProcedure = {NULL, 0.0, Slist_Poll};
 
-sizebuf_t		net_message;
-int				net_activeconnections = 0;
+sizebuf_t net_message;
+int net_activeconnections = 0;
 
 int messagesSent = 0;
 int messagesReceived = 0;
 int unreliableMessagesSent = 0;
 int unreliableMessagesReceived = 0;
 
-cvar_t	net_messagetimeout = {"net_messagetimeout","300"};
-cvar_t	hostname = {"hostname", "UNNAMED"};
+cvar_t net_messagetimeout = {"net_messagetimeout","300"};
+cvar_t hostname = {"hostname", "UNNAMED"};
 
-bool	configRestored = false;
-cvar_t	config_com_port = {"_config_com_port", "0x3f8", true};
-cvar_t	config_com_irq = {"_config_com_irq", "4", true};
-cvar_t	config_com_baud = {"_config_com_baud", "57600", true};
-cvar_t	config_com_modem = {"_config_com_modem", "1", true};
-cvar_t	config_modem_dialtype = {"_config_modem_dialtype", "T", true};
-cvar_t	config_modem_clear = {"_config_modem_clear", "ATZ", true};
-cvar_t	config_modem_init = {"_config_modem_init", "", true};
-cvar_t	config_modem_hangup = {"_config_modem_hangup", "AT H", true};
+bool configRestored = false;
+cvar_t config_com_port = {"_config_com_port", "0x3f8", true};
+cvar_t config_com_irq = {"_config_com_irq", "4", true};
+cvar_t config_com_baud = {"_config_com_baud", "57600", true};
+cvar_t config_com_modem = {"_config_com_modem", "1", true};
+cvar_t config_modem_dialtype = {"_config_modem_dialtype", "T", true};
+cvar_t config_modem_clear = {"_config_modem_clear", "ATZ", true};
+cvar_t config_modem_init = {"_config_modem_init", "", true};
+cvar_t config_modem_hangup = {"_config_modem_hangup", "AT H", true};
 
-int	vcrFile = -1;
+int vcrFile = -1;
 bool recording = false;
 
 // these two macros are to make the code more readable
-#define sfunc	net_drivers[sock->driver]
-#define dfunc	net_drivers[net_driverlevel]
+#define sfunc net_drivers[sock->driver]
+#define dfunc net_drivers[net_driverlevel]
 
-int	net_driverlevel;
+int net_driverlevel;
 
-double			net_time;
+double net_time;
 
 double SetNetTime(void)
 {
@@ -82,7 +82,7 @@ The sequence and buffer fields will be filled in properly
 */
 qsocket_t *NET_NewQSocket (void)
 {
-	qsocket_t	*sock;
+	qsocket_t *sock;
 
 	if (net_freeSockets == NULL)
 		return NULL;
@@ -120,7 +120,7 @@ qsocket_t *NET_NewQSocket (void)
 
 void NET_FreeQSocket(qsocket_t *sock)
 {
-	qsocket_t	*s;
+	qsocket_t *s;
 
 	// remove it from active list
 	if (sock == net_activeSockets)
@@ -163,7 +163,7 @@ static void NET_Listen_f (void)
 
 static void MaxPlayers_f (void)
 {
-	int 	n;
+	int n;
 
 	if (Cmd_Argc () != 2)
 	{
@@ -201,7 +201,7 @@ static void MaxPlayers_f (void)
 
 static void NET_Port_f (void)
 {
-	int 	n;
+	int n;
 
 	if (Cmd_Argc () != 2)
 	{
@@ -229,7 +229,7 @@ static void NET_Port_f (void)
 
 static void PrintSlistHeader(void)
 {
-	Con_Printf("Server          Map             Users\n");
+	Con_Printf("Server Map Users\n");
 	Con_Printf("--------------- --------------- -----\n");
 	slistLastShown = 0;
 }
@@ -329,9 +329,9 @@ hostcache_t hostcache[HOSTCACHESIZE];
 
 qsocket_t *NET_Connect (char *host)
 {
-	qsocket_t		*ret;
-	int				n;
-	int				numdrivers = net_numdrivers;
+	qsocket_t *ret;
+	int n;
+	int numdrivers = net_numdrivers;
 
 	SetNetTime();
 
@@ -410,14 +410,14 @@ NET_CheckNewConnections
 
 struct
 {
-	double	time;
-	int		op;
-	long	session;
+	double time;
+	int op;
+	long session;
 } vcrConnect;
 
 qsocket_t *NET_CheckNewConnections (void)
 {
-	qsocket_t	*ret;
+	qsocket_t *ret;
 
 	SetNetTime();
 
@@ -488,16 +488,16 @@ returns -1 if connection is invalid
 
 struct
 {
-	double	time;
-	int		op;
-	long	session;
-	int		ret;
-	int		len;
+	double time;
+	int op;
+	long session;
+	int ret;
+	int len;
 } vcrGetMessage;
 
 extern void PrintStats(qsocket_t *s);
 
-int	NET_GetMessage (qsocket_t *sock)
+int NET_GetMessage (qsocket_t *sock)
 {
 	int ret;
 
@@ -574,15 +574,15 @@ returns -1 if the connection died
 */
 struct
 {
-	double	time;
-	int		op;
-	long	session;
-	int		r;
+	double time;
+	int op;
+	long session;
+	int r;
 } vcrSendMessage;
 
 int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
-	int		r;
+	int r;
 
 	if (!sock)
 		return -1;
@@ -612,7 +612,7 @@ int NET_SendMessage (qsocket_t *sock, sizebuf_t *data)
 
 int NET_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 {
-	int		r;
+	int r;
 
 	if (!sock)
 		return -1;
@@ -650,7 +650,7 @@ message to be transmitted.
 */
 bool NET_CanSendMessage (qsocket_t *sock)
 {
-	int		r;
+	int r;
 
 	if (!sock)
 		return false;
@@ -676,11 +676,11 @@ bool NET_CanSendMessage (qsocket_t *sock)
 
 int NET_SendToAll(sizebuf_t *data, int blocktime)
 {
-	double		start;
-	int			i;
-	int			count = 0;
-	bool	state1 [MAX_SCOREBOARD];
-	bool	state2 [MAX_SCOREBOARD];
+	double start;
+	int i;
+	int count = 0;
+	bool state1 [MAX_SCOREBOARD];
+	bool state2 [MAX_SCOREBOARD];
 
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
@@ -757,9 +757,9 @@ NET_Init
 
 void NET_Init (void)
 {
-	int			i;
-	int			controlSocket;
-	qsocket_t	*s;
+	int i;
+	int controlSocket;
+	qsocket_t *s;
 
 	if (COM_CheckParm("-playback"))
 	{
@@ -844,9 +844,9 @@ NET_Shutdown
 ====================
 */
 
-void		NET_Shutdown (void)
+void NET_Shutdown (void)
 {
-	qsocket_t	*sock;
+	qsocket_t *sock;
 
 	SetNetTime();
 
@@ -877,7 +877,7 @@ static PollProcedure *pollProcedureList = NULL;
 void NET_Poll(void)
 {
 	PollProcedure *pp;
-	bool	useModem;
+	bool useModem;
 
 	if (!configRestored)
 	{

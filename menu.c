@@ -63,20 +63,20 @@ void M_GameOptions_Key (int key);
 void M_Search_Key (int key);
 void M_ServerList_Key (int key);
 
-bool	m_entersound;		// play after drawing a frame, so caching
+bool m_entersound; // play after drawing a frame, so caching
 								// won't disrupt the sound
-bool	m_recursiveDraw;
+bool m_recursiveDraw;
 
-int			m_return_state;
-bool	m_return_onerror;
-char		m_return_reason [32];
+int m_return_state;
+bool m_return_onerror;
+char m_return_reason [32];
 
-#define StartingGame	(m_multiplayer_cursor == 1)
-#define JoiningGame		(m_multiplayer_cursor == 0)
-#define SerialConfig	(m_net_cursor == 0)
-#define DirectConfig	(m_net_cursor == 1)
-#define	IPXConfig		(m_net_cursor == 2)
-#define	TCPIPConfig		(m_net_cursor == 3)
+#define StartingGame (m_multiplayer_cursor == 1)
+#define JoiningGame (m_multiplayer_cursor == 0)
+#define SerialConfig (m_net_cursor == 0)
+#define DirectConfig (m_net_cursor == 1)
+#define IPXConfig (m_net_cursor == 2)
+#define TCPIPConfig (m_net_cursor == 3)
 
 void M_ConfigureNetSubsystem(void);
 
@@ -127,23 +127,23 @@ uint8_t translationTable[256];
 
 void M_BuildTranslationTable(int top, int bottom)
 {
-	int		j;
-	uint8_t	*dest, *source;
+	int j;
+	uint8_t *dest, *source;
 
 	for (j = 0; j < 256; j++)
 		identityTable[j] = j;
 	dest = translationTable;
 	source = identityTable;
-	memcpy (dest, source, 256);
+	memmove (dest, source, 256);
 
-	if (top < 128)	// the artists made some backwards ranges.  sigh.
-		memcpy (dest + TOP_RANGE, source + top, 16);
+	if (top < 128) // the artists made some backwards ranges. sigh.
+		memmove (dest + TOP_RANGE, source + top, 16);
 	else
 		for (j=0 ; j<16 ; j++)
 			dest[TOP_RANGE+j] = source[top+15-j];
 
 	if (bottom < 128)
-		memcpy (dest + BOTTOM_RANGE, source + bottom, 16);
+		memmove (dest + BOTTOM_RANGE, source + bottom, 16);
 	else
 		for (j=0 ; j<16 ; j++)
 			dest[BOTTOM_RANGE+j] = source[bottom+15-j];
@@ -156,9 +156,9 @@ void M_DrawTransPicTranslate (int x, int y, qpic_t *pic)
 
 void M_DrawTextBox (int x, int y, int width, int lines)
 {
-	qpic_t	*p;
-	int		cx, cy;
-	int		n;
+	qpic_t *p;
+	int cx, cy;
+	int n;
 
 	// draw left side
 	cx = x;
@@ -246,8 +246,8 @@ void M_ToggleMenu_f (void)
 //=============================================================================
 /* MAIN MENU */
 
-int	m_main_cursor;
-#define	MAIN_ITEMS	5
+int m_main_cursor;
+#define MAIN_ITEMS 5
 
 void M_Menu_Main_f (void)
 {
@@ -263,8 +263,8 @@ void M_Menu_Main_f (void)
 
 void M_Main_Draw (void)
 {
-	int		f;
-	qpic_t	*p;
+	int f;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/ttl_main.lmp");
@@ -331,8 +331,8 @@ void M_Main_Key (int key)
 //=============================================================================
 /* SINGLE PLAYER MENU */
 
-int	m_singleplayer_cursor;
-#define	SINGLEPLAYER_ITEMS	3
+int m_singleplayer_cursor;
+#define SINGLEPLAYER_ITEMS 3
 
 void M_Menu_SinglePlayer_f (void)
 {
@@ -343,8 +343,8 @@ void M_Menu_SinglePlayer_f (void)
 
 void M_SinglePlayer_Draw (void)
 {
-	int		f;
-	qpic_t	*p;
+	int f;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/ttl_sgl.lmp");
@@ -406,18 +406,18 @@ void M_SinglePlayer_Key (int key)
 //=============================================================================
 /* LOAD/SAVE MENU */
 
-int		load_cursor;		// 0 < load_cursor < MAX_SAVEGAMES
+int load_cursor; // 0 < load_cursor < MAX_SAVEGAMES
 
-#define	MAX_SAVEGAMES		12
-char	m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH+1];
-int		loadable[MAX_SAVEGAMES];
+#define MAX_SAVEGAMES 12
+char m_filenames[MAX_SAVEGAMES][SAVEGAME_COMMENT_LENGTH+1];
+int loadable[MAX_SAVEGAMES];
 
 void M_ScanSaves (void)
 {
-	int		i, j;
-	char	name[MAX_OSPATH];
-	FILE	*f;
-	int		version;
+	int i, j;
+	char name[MAX_OSPATH];
+	FILE *f;
+	int version;
 
 	for (i=0 ; i<MAX_SAVEGAMES ; i++)
 	{
@@ -464,8 +464,8 @@ void M_Menu_Save_f (void)
 
 void M_Load_Draw (void)
 {
-	int		i;
-	qpic_t	*p;
+	int i;
+	qpic_t *p;
 
 	p = Draw_CachePic ("gfx/p_load.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
@@ -479,8 +479,8 @@ void M_Load_Draw (void)
 
 void M_Save_Draw (void)
 {
-	int		i;
-	qpic_t	*p;
+	int i;
+	qpic_t *p;
 
 	p = Draw_CachePic ("gfx/p_save.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
@@ -568,8 +568,8 @@ void M_Save_Key (int k)
 //=============================================================================
 /* MULTIPLAYER MENU */
 
-int	m_multiplayer_cursor;
-#define	MULTIPLAYER_ITEMS	3
+int m_multiplayer_cursor;
+#define MULTIPLAYER_ITEMS 3
 
 void M_Menu_MultiPlayer_f (void)
 {
@@ -580,8 +580,8 @@ void M_Menu_MultiPlayer_f (void)
 
 void M_MultiPlayer_Draw (void)
 {
-	int		f;
-	qpic_t	*p;
+	int f;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -641,17 +641,17 @@ void M_MultiPlayer_Key (int key)
 //=============================================================================
 /* SETUP MENU */
 
-int		setup_cursor = 4;
-int		setup_cursor_table[] = {40, 56, 80, 104, 140};
+int setup_cursor = 4;
+int setup_cursor_table[] = {40, 56, 80, 104, 140};
 
-char	setup_hostname[16];
-char	setup_myname[16];
-int		setup_oldtop;
-int		setup_oldbottom;
-int		setup_top;
-int		setup_bottom;
+char setup_hostname[16];
+char setup_myname[16];
+int setup_oldtop;
+int setup_oldbottom;
+int setup_top;
+int setup_bottom;
 
-#define	NUM_SETUP_CMDS	5
+#define NUM_SETUP_CMDS 5
 
 void M_Menu_Setup_f (void)
 {
@@ -666,7 +666,7 @@ void M_Menu_Setup_f (void)
 
 void M_Setup_Draw (void)
 {
-	qpic_t	*p;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -703,7 +703,7 @@ void M_Setup_Draw (void)
 
 void M_Setup_Key (int k)
 {
-	int			l;
+	int l;
 
 	switch (k)
 	{
@@ -813,32 +813,32 @@ forward:
 //=============================================================================
 /* NET MENU */
 
-int	m_net_cursor;
+int m_net_cursor;
 int m_net_items;
 int m_net_saveHeight;
 
 char *net_helpMessage [] =
 {
 /* .........1.........2.... */
-  "                        ",
+  " ",
   " Two computers connected",
-  "   through two modems.  ",
-  "                        ",
+  " through two modems. ",
+  " ",
 
-  "                        ",
+  " ",
   " Two computers connected",
   " by a null-modem cable. ",
-  "                        ",
+  " ",
 
-  " Novell network LANs    ",
+  " Novell network LANs ",
   " or Windows 95 DOS-box. ",
-  "                        ",
+  " ",
   "(LAN=Local Area Network)",
 
-  " Commonly used to play  ",
+  " Commonly used to play ",
   " over the Internet, but ",
-  " also used on a Local   ",
-  " Area Network.          "
+  " also used on a Local ",
+  " Area Network. "
 };
 
 void M_Menu_Net_f (void)
@@ -856,8 +856,8 @@ void M_Menu_Net_f (void)
 
 void M_Net_Draw (void)
 {
-	int		f;
-	qpic_t	*p;
+	int f;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -885,7 +885,7 @@ void M_Net_Draw (void)
 	p = Draw_CachePic (tcpipAvailable ? "gfx/netmen4.lmp" : "gfx/dim_tcp.lmp");
 	M_DrawTransPic (72, f, p);
 
-	if (m_net_items == 5)	// JDC, could just be removed
+	if (m_net_items == 5) // JDC, could just be removed
 	{
 		f += 19;
 		p = Draw_CachePic ("gfx/netmen5.lmp");
@@ -965,10 +965,10 @@ again:
 //=============================================================================
 /* OPTIONS MENU */
 
-#define	OPTIONS_ITEMS	13
-#define	SLIDER_RANGE	10
+#define OPTIONS_ITEMS 13
+#define SLIDER_RANGE 10
 
-int		options_cursor;
+int options_cursor;
 
 void M_Menu_Options_f (void)
 {
@@ -983,7 +983,7 @@ void M_AdjustSliders (int dir)
 
 	switch (options_cursor)
 	{
-	case 3:	// screen size
+	case 3: // screen size
 		scr_viewsize.value += dir * 10;
 		if (scr_viewsize.value < 30)
 			scr_viewsize.value = 30;
@@ -991,7 +991,7 @@ void M_AdjustSliders (int dir)
 			scr_viewsize.value = 120;
 		Cvar_SetValue ("viewsize", scr_viewsize.value);
 		break;
-	case 4:	// gamma
+	case 4: // gamma
 		v_gamma.value -= dir * 0.05;
 		if (v_gamma.value < 0.5)
 			v_gamma.value = 0.5;
@@ -999,7 +999,7 @@ void M_AdjustSliders (int dir)
 			v_gamma.value = 1;
 		Cvar_SetValue ("gamma", v_gamma.value);
 		break;
-	case 5:	// mouse speed
+	case 5: // mouse speed
 		sensitivity.value += dir * 0.5;
 		if (sensitivity.value < 1)
 			sensitivity.value = 1;
@@ -1007,7 +1007,7 @@ void M_AdjustSliders (int dir)
 			sensitivity.value = 11;
 		Cvar_SetValue ("sensitivity", sensitivity.value);
 		break;
-	case 6:	// music volume
+	case 6: // music volume
 		bgmvolume.value += dir * 0.1;
 		if (bgmvolume.value < 0)
 			bgmvolume.value = 0;
@@ -1015,7 +1015,7 @@ void M_AdjustSliders (int dir)
 			bgmvolume.value = 1;
 		Cvar_SetValue ("bgmvolume", bgmvolume.value);
 		break;
-	case 7:	// sfx volume
+	case 7: // sfx volume
 		volume.value += dir * 0.1;
 		if (volume.value < 0)
 			volume.value = 0;
@@ -1024,7 +1024,7 @@ void M_AdjustSliders (int dir)
 		Cvar_SetValue ("volume", volume.value);
 		break;
 
-	case 8:	// allways run
+	case 8: // allways run
 		if (cl_forwardspeed.value > 200)
 		{
 			Cvar_SetValue ("cl_forwardspeed", 200);
@@ -1037,15 +1037,15 @@ void M_AdjustSliders (int dir)
 		}
 		break;
 
-	case 9:	// invert mouse
+	case 9: // invert mouse
 		Cvar_SetValue ("m_pitch", -m_pitch.value);
 		break;
 
-	case 10:	// lookspring
+	case 10: // lookspring
 		Cvar_SetValue ("lookspring", !lookspring.value);
 		break;
 
-	case 11:	// lookstrafe
+	case 11: // lookstrafe
 		Cvar_SetValue ("lookstrafe", !lookstrafe.value);
 		break;
 	}
@@ -1053,7 +1053,7 @@ void M_AdjustSliders (int dir)
 
 void M_DrawSlider (int x, int y, float range)
 {
-	int	i;
+	int i;
 
 	if (range < 0)
 		range = 0;
@@ -1082,51 +1082,51 @@ void M_DrawCheckbox (int x, int y, int on)
 
 void M_Options_Draw (void)
 {
-	float		r;
-	qpic_t	*p;
+	float r;
+	qpic_t *p;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_option.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
 
-	M_Print (16, 32, "    Customize controls");
-	M_Print (16, 40, "         Go to console");
-	M_Print (16, 48, "     Reset to defaults");
+	M_Print (16, 32, " Customize controls");
+	M_Print (16, 40, " Go to console");
+	M_Print (16, 48, " Reset to defaults");
 
-	M_Print (16, 56, "           Screen size");
+	M_Print (16, 56, " Screen size");
 	r = (scr_viewsize.value - 30) / (120 - 30);
 	M_DrawSlider (220, 56, r);
 
-	M_Print (16, 64, "            Brightness");
+	M_Print (16, 64, " Brightness");
 	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 64, r);
 
-	M_Print (16, 72, "           Mouse Speed");
+	M_Print (16, 72, " Mouse Speed");
 	r = (sensitivity.value - 1)/10;
 	M_DrawSlider (220, 72, r);
 
-	M_Print (16, 80, "       CD Music Volume");
+	M_Print (16, 80, " CD Music Volume");
 	r = bgmvolume.value;
 	M_DrawSlider (220, 80, r);
 
-	M_Print (16, 88, "          Sound Volume");
+	M_Print (16, 88, " Sound Volume");
 	r = volume.value;
 	M_DrawSlider (220, 88, r);
 
-	M_Print (16, 96,  "            Always Run");
+	M_Print (16, 96, " Always Run");
 	M_DrawCheckbox (220, 96, cl_forwardspeed.value > 200);
 
-	M_Print (16, 104, "          Invert Mouse");
+	M_Print (16, 104, " Invert Mouse");
 	M_DrawCheckbox (220, 104, m_pitch.value < 0);
 
-	M_Print (16, 112, "            Lookspring");
+	M_Print (16, 112, " Lookspring");
 	M_DrawCheckbox (220, 112, lookspring.value);
 
-	M_Print (16, 120, "            Lookstrafe");
+	M_Print (16, 120, " Lookstrafe");
 	M_DrawCheckbox (220, 120, lookstrafe.value);
 
 	if (vid_menudrawfn)
-		M_Print (16, 128, "         Video Options");
+		M_Print (16, 128, " Video Options");
 
 // cursor
 	M_DrawCharacter (200, 32 + options_cursor*8, 12+((int)(realtime*4)&1));
@@ -1200,30 +1200,30 @@ void M_Options_Key (int k)
 
 char *bindnames[][2] =
 {
-{"+attack", 		"attack"},
-{"impulse 10", 		"change weapon"},
-{"+jump", 			"jump / swim up"},
-{"+forward", 		"walk forward"},
-{"+back", 			"backpedal"},
-{"+left", 			"turn left"},
-{"+right", 			"turn right"},
-{"+speed", 			"run"},
-{"+moveleft", 		"step left"},
-{"+moveright", 		"step right"},
-{"+strafe", 		"sidestep"},
-{"+lookup", 		"look up"},
-{"+lookdown", 		"look down"},
-{"centerview", 		"center view"},
-{"+mlook", 			"mouse look"},
-{"+klook", 			"keyboard look"},
-{"+moveup",			"swim up"},
-{"+movedown",		"swim down"}
+{"+attack", "attack"},
+{"impulse 10", "change weapon"},
+{"+jump", "jump / swim up"},
+{"+forward", "walk forward"},
+{"+back", "backpedal"},
+{"+left", "turn left"},
+{"+right", "turn right"},
+{"+speed", "run"},
+{"+moveleft", "step left"},
+{"+moveright", "step right"},
+{"+strafe", "sidestep"},
+{"+lookup", "look up"},
+{"+lookdown", "look down"},
+{"centerview", "center view"},
+{"+mlook", "mouse look"},
+{"+klook", "keyboard look"},
+{"+moveup", "swim up"},
+{"+movedown", "swim down"}
 };
 
-#define	NUMCOMMANDS	(sizeof(bindnames)/sizeof(bindnames[0]))
+#define NUMCOMMANDS (sizeof(bindnames)/sizeof(bindnames[0]))
 
-int		keys_cursor;
-int		bind_grab;
+int keys_cursor;
+int bind_grab;
 
 void M_Menu_Keys_f (void)
 {
@@ -1234,10 +1234,10 @@ void M_Menu_Keys_f (void)
 
 void M_FindKeysForCommand (char *command, int *twokeys)
 {
-	int		count;
-	int		j;
-	int		l;
-	char	*b;
+	int count;
+	int j;
+	int l;
+	char *b;
 
 	twokeys[0] = twokeys[1] = -1;
 	l = strlen(command);
@@ -1260,9 +1260,9 @@ void M_FindKeysForCommand (char *command, int *twokeys)
 
 void M_UnbindCommand (char *command)
 {
-	int		j;
-	int		l;
-	char	*b;
+	int j;
+	int l;
+	char *b;
 
 	l = strlen(command);
 
@@ -1278,11 +1278,11 @@ void M_UnbindCommand (char *command)
 
 void M_Keys_Draw (void)
 {
-	int		i, l;
-	int		keys[2];
-	char	*name;
-	int		x, y;
-	qpic_t	*p;
+	int i, l;
+	int keys[2];
+	char *name;
+	int x, y;
+	qpic_t *p;
 
 	p = Draw_CachePic ("gfx/ttl_cstm.lmp");
 	M_DrawPic ( (320-p->width)/2, 4, p);
@@ -1328,11 +1328,11 @@ void M_Keys_Draw (void)
 
 void M_Keys_Key (int k)
 {
-	char	cmd[80];
-	int		keys[2];
+	char cmd[80];
+	int keys[2];
 
 	if (bind_grab)
-	{	// defining a key
+	{ // defining a key
 		S_LocalSound ("misc/menu1.wav");
 		if (k == K_ESCAPE)
 		{
@@ -1370,7 +1370,7 @@ void M_Keys_Key (int k)
 			keys_cursor = 0;
 		break;
 
-	case K_ENTER:		// go into bind mode
+	case K_ENTER: // go into bind mode
 		M_FindKeysForCommand (bindnames[keys_cursor][0], keys);
 		S_LocalSound ("misc/menu2.wav");
 		if (keys[1] != -1)
@@ -1378,8 +1378,8 @@ void M_Keys_Key (int k)
 		bind_grab = true;
 		break;
 
-	case K_BACKSPACE:		// delete bindings
-	case K_DEL:				// delete bindings
+	case K_BACKSPACE: // delete bindings
+	case K_DEL: // delete bindings
 		S_LocalSound ("misc/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
 		break;
@@ -1409,8 +1409,8 @@ void M_Video_Key (int key)
 //=============================================================================
 /* HELP MENU */
 
-int		help_page;
-#define	NUM_HELP_PAGES	6
+int help_page;
+#define NUM_HELP_PAGES 6
 
 void M_Menu_Help_f (void)
 {
@@ -1453,52 +1453,52 @@ void M_Help_Key (int key)
 //=============================================================================
 /* QUIT MENU */
 
-int		msgNumber;
-int		m_quit_prevstate;
-bool	wasInMenus;
+int msgNumber;
+int m_quit_prevstate;
+bool wasInMenus;
 
 char *quitMessage [] =
 {
 /* .........1.........2.... */
-  "  Are you gonna quit    ",
-  "  this game just like   ",
-  "   everything else?     ",
-  "                        ",
+  " Are you gonna quit ",
+  " this game just like ",
+  " everything else? ",
+  " ",
 
-  " Milord, methinks that  ",
-  "   thou art a lowly     ",
+  " Milord, methinks that ",
+  " thou art a lowly ",
   " quitter. Is this true? ",
-  "                        ",
+  " ",
 
   " Do I need to bust your ",
-  "  face open for trying  ",
-  "        to quit?        ",
-  "                        ",
+  " face open for trying ",
+  " to quit? ",
+  " ",
 
   " Man, I oughta smack you",
-  "   for trying to quit!  ",
-  "     Press Y to get     ",
-  "      smacked out.      ",
+  " for trying to quit! ",
+  " Press Y to get ",
+  " smacked out. ",
 
   " Press Y to quit like a ",
-  "   big loser in life.   ",
-  "  Press N to stay proud ",
-  "    and successful!     ",
+  " big loser in life. ",
+  " Press N to stay proud ",
+  " and successful! ",
 
-  "   If you press Y to    ",
-  "  quit, I will summon   ",
-  "  Satan all over your   ",
-  "      hard drive!       ",
+  " If you press Y to ",
+  " quit, I will summon ",
+  " Satan all over your ",
+  " hard drive! ",
 
-  "  Um, Asmodeus dislikes ",
+  " Um, Asmodeus dislikes ",
   " his children trying to ",
   " quit. Press Y to return",
-  "   to your Tinkertoys.  ",
+  " to your Tinkertoys. ",
 
-  "  If you quit now, I'll ",
-  "  throw a blanket-party ",
-  "   for you next time!   ",
-  "                        "
+  " If you quit now, I'll ",
+  " throw a blanket-party ",
+  " for you next time! ",
+  " "
 };
 
 void M_Menu_Quit_f (void)
@@ -1555,8 +1555,8 @@ void M_Quit_Draw (void)
 	}
 
 	M_DrawTextBox (56, 76, 24, 4);
-	M_Print (64, 84,  quitMessage[msgNumber*4+0]);
-	M_Print (64, 92,  quitMessage[msgNumber*4+1]);
+	M_Print (64, 84, quitMessage[msgNumber*4+0]);
+	M_Print (64, 92, quitMessage[msgNumber*4+1]);
 	M_Print (64, 100, quitMessage[msgNumber*4+2]);
 	M_Print (64, 108, quitMessage[msgNumber*4+3]);
 }
@@ -1565,25 +1565,25 @@ void M_Quit_Draw (void)
 
 /* SERIAL CONFIG MENU */
 
-int		serialConfig_cursor;
-int		serialConfig_cursor_table[] = {48, 64, 80, 96, 112, 132};
-#define	NUM_SERIALCONFIG_CMDS	6
+int serialConfig_cursor;
+int serialConfig_cursor_table[] = {48, 64, 80, 96, 112, 132};
+#define NUM_SERIALCONFIG_CMDS 6
 
-static int ISA_uarts[]	= {0x3f8,0x2f8,0x3e8,0x2e8};
-static int ISA_IRQs[]	= {4,3,4,3};
+static int ISA_uarts[] = {0x3f8,0x2f8,0x3e8,0x2e8};
+static int ISA_IRQs[] = {4,3,4,3};
 int serialConfig_baudrate[] = {9600,14400,19200,28800,38400,57600};
 
-int		serialConfig_comport;
-int		serialConfig_irq ;
-int		serialConfig_baud;
-char	serialConfig_phone[16];
+int serialConfig_comport;
+int serialConfig_irq ;
+int serialConfig_baud;
+char serialConfig_phone[16];
 
 void M_Menu_SerialConfig_f (void)
 {
-	int		n;
-	int		port;
-	int		baudrate;
-	bool	useModem;
+	int n;
+	int port;
+	int baudrate;
+	bool useModem;
 
 	key_dest = key_menu;
 	m_state = m_serialconfig;
@@ -1620,10 +1620,10 @@ void M_Menu_SerialConfig_f (void)
 
 void M_SerialConfig_Draw (void)
 {
-	qpic_t	*p;
-	int		basex;
-	char	*startJoin;
-	char	*directModem;
+	qpic_t *p;
+	int basex;
+	char *startJoin;
+	char *directModem;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -1686,7 +1686,7 @@ void M_SerialConfig_Draw (void)
 
 void M_SerialConfig_Key (int key)
 {
-	int		l;
+	int l;
 
 	switch (key)
 	{
@@ -1851,14 +1851,14 @@ forward:
 //=============================================================================
 /* MODEM CONFIG MENU */
 
-int		modemConfig_cursor;
-int		modemConfig_cursor_table [] = {40, 56, 88, 120, 156};
-#define NUM_MODEMCONFIG_CMDS	5
+int modemConfig_cursor;
+int modemConfig_cursor_table [] = {40, 56, 88, 120, 156};
+#define NUM_MODEMCONFIG_CMDS 5
 
-char	modemConfig_dialing;
-char	modemConfig_clear [16];
-char	modemConfig_init [32];
-char	modemConfig_hangup [16];
+char modemConfig_dialing;
+char modemConfig_clear [16];
+char modemConfig_init [32];
+char modemConfig_hangup [16];
 
 void M_Menu_ModemConfig_f (void)
 {
@@ -1870,8 +1870,8 @@ void M_Menu_ModemConfig_f (void)
 
 void M_ModemConfig_Draw (void)
 {
-	qpic_t	*p;
-	int		basex;
+	qpic_t *p;
+	int basex;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -1910,7 +1910,7 @@ void M_ModemConfig_Draw (void)
 
 void M_ModemConfig_Key (int key)
 {
-	int		l;
+	int l;
 
 	switch (key)
 	{
@@ -2021,13 +2021,13 @@ void M_ModemConfig_Key (int key)
 //=============================================================================
 /* LAN CONFIG MENU */
 
-int		lanConfig_cursor = -1;
-int		lanConfig_cursor_table [] = {72, 92, 124};
-#define NUM_LANCONFIG_CMDS	3
+int lanConfig_cursor = -1;
+int lanConfig_cursor_table [] = {72, 92, 124};
+#define NUM_LANCONFIG_CMDS 3
 
-int 	lanConfig_port;
-char	lanConfig_portname[6];
-char	lanConfig_joinname[22];
+int lanConfig_port;
+char lanConfig_portname[6];
+char lanConfig_joinname[22];
 
 void M_Menu_LanConfig_f (void)
 {
@@ -2052,10 +2052,10 @@ void M_Menu_LanConfig_f (void)
 
 void M_LanConfig_Draw (void)
 {
-	qpic_t	*p;
-	int		basex;
-	char	*startJoin;
-	char	*protocol;
+	qpic_t *p;
+	int basex;
+	char *startJoin;
+	char *protocol;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -2110,7 +2110,7 @@ void M_LanConfig_Draw (void)
 
 void M_LanConfig_Key (int key)
 {
-	int		l;
+	int l;
 
 	switch (key)
 	{
@@ -2210,7 +2210,7 @@ void M_LanConfig_Key (int key)
 		else
 			lanConfig_cursor = 0;
 
-	l =  strtol(lanConfig_portname, NULL, 0);
+	l = strtol(lanConfig_portname, NULL, 0);
 	if (l > 65535)
 		l = lanConfig_port;
 	else
@@ -2223,15 +2223,15 @@ void M_LanConfig_Key (int key)
 
 typedef struct
 {
-	char	*name;
-	char	*description;
+	char *name;
+	char *description;
 } level_t;
 
-level_t		levels[] =
+level_t levels[] =
 {
-	{"start", "Entrance"},	// 0
+	{"start", "Entrance"}, // 0
 
-	{"e1m1", "Slipgate Complex"},				// 1
+	{"e1m1", "Slipgate Complex"}, // 1
 	{"e1m2", "Castle of the Damned"},
 	{"e1m3", "The Necropolis"},
 	{"e1m4", "The Grisly Grotto"},
@@ -2240,7 +2240,7 @@ level_t		levels[] =
 	{"e1m7", "The House of Chthon"},
 	{"e1m8", "Ziggurat Vertigo"},
 
-	{"e2m1", "The Installation"},				// 9
+	{"e2m1", "The Installation"}, // 9
 	{"e2m2", "Ogre Citadel"},
 	{"e2m3", "Crypt of Decay"},
 	{"e2m4", "The Ebon Fortress"},
@@ -2248,7 +2248,7 @@ level_t		levels[] =
 	{"e2m6", "The Dismal Oubliette"},
 	{"e2m7", "Underearth"},
 
-	{"e3m1", "Termination Central"},			// 16
+	{"e3m1", "Termination Central"}, // 16
 	{"e3m2", "The Vaults of Zin"},
 	{"e3m3", "The Tomb of Terror"},
 	{"e3m4", "Satan's Dark Delight"},
@@ -2256,7 +2256,7 @@ level_t		levels[] =
 	{"e3m6", "Chambers of Torment"},
 	{"e3m7", "The Haunted Halls"},
 
-	{"e4m1", "The Sewage System"},				// 23
+	{"e4m1", "The Sewage System"}, // 23
 	{"e4m2", "The Tower of Despair"},
 	{"e4m3", "The Elder God Shrine"},
 	{"e4m4", "The Palace of Hate"},
@@ -2265,9 +2265,9 @@ level_t		levels[] =
 	{"e4m7", "Azure Agony"},
 	{"e4m8", "The Nameless City"},
 
-	{"end", "Shub-Niggurath's Pit"},			// 31
+	{"end", "Shub-Niggurath's Pit"}, // 31
 
-	{"dm1", "Place of Two Deaths"},				// 32
+	{"dm1", "Place of Two Deaths"}, // 32
 	{"dm2", "Claustrophobopolis"},
 	{"dm3", "The Abandoned Base"},
 	{"dm4", "The Bad Place"},
@@ -2276,64 +2276,64 @@ level_t		levels[] =
 };
 
 //MED 01/06/97 added hipnotic levels
-level_t     hipnoticlevels[] =
+level_t hipnoticlevels[] =
 {
-   {"start", "Command HQ"},  // 0
+   {"start", "Command HQ"}, // 0
 
-   {"hip1m1", "The Pumping Station"},          // 1
+   {"hip1m1", "The Pumping Station"}, // 1
    {"hip1m2", "Storage Facility"},
    {"hip1m3", "The Lost Mine"},
    {"hip1m4", "Research Facility"},
    {"hip1m5", "Military Complex"},
 
-   {"hip2m1", "Ancient Realms"},          // 6
+   {"hip2m1", "Ancient Realms"}, // 6
    {"hip2m2", "The Black Cathedral"},
    {"hip2m3", "The Catacombs"},
    {"hip2m4", "The Crypt"},
    {"hip2m5", "Mortum's Keep"},
    {"hip2m6", "The Gremlin's Domain"},
 
-   {"hip3m1", "Tur Torment"},       // 12
+   {"hip3m1", "Tur Torment"}, // 12
    {"hip3m2", "Pandemonium"},
    {"hip3m3", "Limbo"},
    {"hip3m4", "The Gauntlet"},
 
-   {"hipend", "Armagon's Lair"},       // 16
+   {"hipend", "Armagon's Lair"}, // 16
 
-   {"hipdm1", "The Edge of Oblivion"}           // 17
+   {"hipdm1", "The Edge of Oblivion"} // 17
 };
 
 //PGM 01/07/97 added rogue levels
 //PGM 03/02/97 added dmatch level
-level_t		roguelevels[] =
+level_t roguelevels[] =
 {
-	{"start",	"Split Decision"},
-	{"r1m1",	"Deviant's Domain"},
-	{"r1m2",	"Dread Portal"},
-	{"r1m3",	"Judgement Call"},
-	{"r1m4",	"Cave of Death"},
-	{"r1m5",	"Towers of Wrath"},
-	{"r1m6",	"Temple of Pain"},
-	{"r1m7",	"Tomb of the Overlord"},
-	{"r2m1",	"Tempus Fugit"},
-	{"r2m2",	"Elemental Fury I"},
-	{"r2m3",	"Elemental Fury II"},
-	{"r2m4",	"Curse of Osiris"},
-	{"r2m5",	"Wizard's Keep"},
-	{"r2m6",	"Blood Sacrifice"},
-	{"r2m7",	"Last Bastion"},
-	{"r2m8",	"Source of Evil"},
-	{"ctf1",    "Division of Change"}
+	{"start", "Split Decision"},
+	{"r1m1", "Deviant's Domain"},
+	{"r1m2", "Dread Portal"},
+	{"r1m3", "Judgement Call"},
+	{"r1m4", "Cave of Death"},
+	{"r1m5", "Towers of Wrath"},
+	{"r1m6", "Temple of Pain"},
+	{"r1m7", "Tomb of the Overlord"},
+	{"r2m1", "Tempus Fugit"},
+	{"r2m2", "Elemental Fury I"},
+	{"r2m3", "Elemental Fury II"},
+	{"r2m4", "Curse of Osiris"},
+	{"r2m5", "Wizard's Keep"},
+	{"r2m6", "Blood Sacrifice"},
+	{"r2m7", "Last Bastion"},
+	{"r2m8", "Source of Evil"},
+	{"ctf1", "Division of Change"}
 };
 
 typedef struct
 {
-	char	*description;
-	int		firstLevel;
-	int		levels;
+	char *description;
+	int firstLevel;
+	int levels;
 } episode_t;
 
-episode_t	episodes[] =
+episode_t episodes[] =
 {
 	{"Welcome to Quake", 0, 1},
 	{"Doomed Dimension", 1, 8},
@@ -2344,8 +2344,8 @@ episode_t	episodes[] =
 	{"Deathmatch Arena", 32, 6}
 };
 
-//MED 01/06/97  added hipnotic episodes
-episode_t   hipnoticepisodes[] =
+//MED 01/06/97 added hipnotic episodes
+episode_t hipnoticepisodes[] =
 {
    {"Scourge of Armagon", 0, 1},
    {"Fortress of the Dead", 1, 5},
@@ -2357,7 +2357,7 @@ episode_t   hipnoticepisodes[] =
 
 //PGM 01/07/97 added rogue episodes
 //PGM 03/02/97 added dmatch episode
-episode_t	rogueepisodes[] =
+episode_t rogueepisodes[] =
 {
 	{"Introduction", 0, 1},
 	{"Hell's Fortress", 1, 7},
@@ -2365,8 +2365,8 @@ episode_t	rogueepisodes[] =
 	{"Deathmatch Arena", 16, 1}
 };
 
-int	startepisode;
-int	startlevel;
+int startepisode;
+int startlevel;
 int maxplayers;
 bool m_serverInfoMessage = false;
 double m_serverInfoMessageTime;
@@ -2383,13 +2383,13 @@ void M_Menu_GameOptions_f (void)
 }
 
 int gameoptions_cursor_table[] = {40, 56, 64, 72, 80, 88, 96, 112, 120};
-#define	NUM_GAMEOPTIONS	9
-int		gameoptions_cursor;
+#define NUM_GAMEOPTIONS 9
+int gameoptions_cursor;
 
 void M_GameOptions_Draw (void)
 {
-	qpic_t	*p;
-	int		x;
+	qpic_t *p;
+	int x;
 
 	M_DrawTransPic (16, 4, Draw_CachePic ("gfx/qplaque.lmp") );
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -2398,16 +2398,16 @@ void M_GameOptions_Draw (void)
 	M_DrawTextBox (152, 32, 10, 1);
 	M_Print (160, 40, "begin game");
 
-	M_Print (0, 56, "      Max players");
+	M_Print (0, 56, " Max players");
 	M_Print (160, 56, va("%i", maxplayers) );
 
-	M_Print (0, 64, "        Game Type");
+	M_Print (0, 64, " Game Type");
 	if (coop.value)
 		M_Print (160, 64, "Cooperative");
 	else
 		M_Print (160, 64, "Deathmatch");
 
-	M_Print (0, 72, "        Teamplay");
+	M_Print (0, 72, " Teamplay");
 	if (rogue)
 	{
 		char *msg;
@@ -2437,7 +2437,7 @@ void M_GameOptions_Draw (void)
 		M_Print (160, 72, msg);
 	}
 
-	M_Print (0, 80, "            Skill");
+	M_Print (0, 80, " Skill");
 	if (skill.value == 0)
 		M_Print (160, 80, "Easy difficulty");
 	else if (skill.value == 1)
@@ -2447,19 +2447,19 @@ void M_GameOptions_Draw (void)
 	else
 		M_Print (160, 80, "Nightmare difficulty");
 
-	M_Print (0, 88, "       Frag Limit");
+	M_Print (0, 88, " Frag Limit");
 	if (fraglimit.value == 0)
 		M_Print (160, 88, "none");
 	else
 		M_Print (160, 88, va("%i frags", (int)fraglimit.value));
 
-	M_Print (0, 96, "       Time Limit");
+	M_Print (0, 96, " Time Limit");
 	if (timelimit.value == 0)
 		M_Print (160, 96, "none");
 	else
 		M_Print (160, 96, va("%i minutes", (int)timelimit.value));
 
-	M_Print (0, 112, "         Episode");
+	M_Print (0, 112, " Episode");
    //MED 01/06/97 added hipnotic episodes
    if (hipnotic)
       M_Print (160, 112, hipnoticepisodes[startepisode].description);
@@ -2469,7 +2469,7 @@ void M_GameOptions_Draw (void)
    else
       M_Print (160, 112, episodes[startepisode].description);
 
-	M_Print (0, 120, "           Level");
+	M_Print (0, 120, " Level");
    //MED 01/06/97 added hipnotic episodes
    if (hipnotic)
    {
@@ -2498,10 +2498,10 @@ void M_GameOptions_Draw (void)
 			x = (320-26*8)/2;
 			M_DrawTextBox (x, 138, 24, 4);
 			x += 8;
-			M_Print (x, 146, "  More than 4 players   ");
+			M_Print (x, 146, " More than 4 players ");
 			M_Print (x, 154, " requires using command ");
 			M_Print (x, 162, "line parameters; please ");
-			M_Print (x, 170, "   see techinfo.txt.    ");
+			M_Print (x, 170, " see techinfo.txt. ");
 		}
 		else
 		{
@@ -2654,7 +2654,7 @@ void M_GameOptions_Key (int key)
 		{
 			if (sv.active)
 				Cbuf_AddText ("disconnect\n");
-			Cbuf_AddText ("listen 0\n");	// so host_netport will be re-examined
+			Cbuf_AddText ("listen 0\n"); // so host_netport will be re-examined
 			Cbuf_AddText ( va ("maxplayers %u\n", maxplayers) );
 			SCR_BeginLoadingPlaque ();
 
@@ -2676,8 +2676,8 @@ void M_GameOptions_Key (int key)
 //=============================================================================
 /* SEARCH MENU */
 
-bool	searchComplete = false;
-double		searchCompleteTime;
+bool searchComplete = false;
+double searchCompleteTime;
 
 void M_Menu_Search_f (void)
 {
@@ -2693,7 +2693,7 @@ void M_Menu_Search_f (void)
 
 void M_Search_Draw (void)
 {
-	qpic_t	*p;
+	qpic_t *p;
 	int x;
 
 	p = Draw_CachePic ("gfx/p_multi.lmp");
@@ -2734,7 +2734,7 @@ void M_Search_Key (int key)
 //=============================================================================
 /* SLIST MENU */
 
-int		slist_cursor;
+int slist_cursor;
 bool slist_sorted;
 
 void M_Menu_ServerList_f (void)
@@ -2750,23 +2750,23 @@ void M_Menu_ServerList_f (void)
 
 void M_ServerList_Draw (void)
 {
-	int		n;
-	char	string [64];
-	qpic_t	*p;
+	int n;
+	char string [64];
+	qpic_t *p;
 
 	if (!slist_sorted)
 	{
 		if (hostCacheCount > 1)
 		{
-			int	i,j;
+			int i,j;
 			hostcache_t temp;
 			for (i = 0; i < hostCacheCount; i++)
 				for (j = i+1; j < hostCacheCount; j++)
 					if (strcmp(hostcache[j].name, hostcache[i].name) < 0)
 					{
-						memcpy(&temp, &hostcache[j], sizeof(hostcache_t));
-						memcpy(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
-						memcpy(&hostcache[i], &temp, sizeof(hostcache_t));
+						memmove(&temp, &hostcache[j], sizeof(hostcache_t));
+						memmove(&hostcache[j], &hostcache[i], sizeof(hostcache_t));
+						memmove(&hostcache[i], &temp, sizeof(hostcache_t));
 					}
 		}
 		slist_sorted = true;

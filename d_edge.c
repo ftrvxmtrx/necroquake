@@ -2,18 +2,18 @@
 #include "r_shared.h"
 #include "d_local.h"
 
-static int	miplevel;
+static int miplevel;
 
-float		scale_for_mip;
-int			screenwidth;
-int			ubasestep, errorterm, erroradjustup, erroradjustdown;
-int			vstartscan;
+float scale_for_mip;
+int screenwidth;
+int ubasestep, errorterm, erroradjustup, erroradjustdown;
+int vstartscan;
 
 // FIXME: should go away
-extern void			R_RotateBmodel (void);
-extern void			R_TransformFrustum (void);
+extern void R_RotateBmodel (void);
+extern void R_TransformFrustum (void);
 
-vec3_t		transformed_modelorg;
+vec3_t transformed_modelorg;
 
 /*
 ==============
@@ -33,7 +33,7 @@ D_MipLevelForScale
 */
 int D_MipLevelForScale (float scale)
 {
-	int		lmiplevel;
+	int lmiplevel;
 
 	if (scale >= d_scalemip[0] )
 		lmiplevel = 0;
@@ -60,9 +60,9 @@ D_DrawSolidSurface
 
 void D_DrawSolidSurface (surf_t *surf, int color)
 {
-	espan_t	*span;
-	uint8_t	*pdest;
-	int		u, u2, pix;
+	espan_t *span;
+	uint8_t *pdest;
+	int u, u2, pix;
 
 	pix = (color<<24) | (color<<16) | (color<<8) | color;
 	for (span=surf->spans ; span ; span=span->pnext)
@@ -99,10 +99,10 @@ D_CalcGradients
 */
 void D_CalcGradients (msurface_t *pface)
 {
-	float		mipscale;
-	vec3_t		p_temp1;
-	vec3_t		p_saxis, p_taxis;
-	float		t;
+	float mipscale;
+	vec3_t p_temp1;
+	vec3_t p_saxis, p_taxis;
+	float t;
 
 	mipscale = 1.0 / (float)(1 << miplevel);
 
@@ -146,11 +146,11 @@ D_DrawSurfaces
 */
 void D_DrawSurfaces (void)
 {
-	surf_t			*s;
-	msurface_t		*pface;
-	surfcache_t		*pcurrentcache;
-	vec3_t			world_transformed_modelorg;
-	vec3_t			local_modelorg;
+	surf_t *s;
+	msurface_t *pface;
+	surfcache_t *pcurrentcache;
+	vec3_t world_transformed_modelorg;
+	vec3_t local_modelorg;
 
 	currententity = &cl_entities[0];
 	TransformVector (modelorg, transformed_modelorg);
@@ -219,13 +219,13 @@ void D_DrawSurfaces (void)
 				{
 				// FIXME: we don't want to do all this for every polygon!
 				// TODO: store once at start of frame
-					currententity = s->entity;	//FIXME: make this passed in to
+					currententity = s->entity; //FIXME: make this passed in to
 												// R_RotateBmodel ()
 					VectorSubtract (r_origin, currententity->origin,
 							local_modelorg);
 					TransformVector (local_modelorg, transformed_modelorg);
 
-					R_RotateBmodel ();	// FIXME: don't mess with the frustum,
+					R_RotateBmodel (); // FIXME: don't mess with the frustum,
 										// make entity passed in
 				}
 
@@ -256,12 +256,12 @@ void D_DrawSurfaces (void)
 				{
 				// FIXME: we don't want to do all this for every polygon!
 				// TODO: store once at start of frame
-					currententity = s->entity;	//FIXME: make this passed in to
+					currententity = s->entity; //FIXME: make this passed in to
 												// R_RotateBmodel ()
 					VectorSubtract (r_origin, currententity->origin, local_modelorg);
 					TransformVector (local_modelorg, transformed_modelorg);
 
-					R_RotateBmodel ();	// FIXME: don't mess with the frustum,
+					R_RotateBmodel (); // FIXME: don't mess with the frustum,
 										// make entity passed in
 				}
 

@@ -9,12 +9,12 @@ R_CheckVariables
 */
 void R_CheckVariables (void)
 {
-	static float	oldbright;
+	static float oldbright;
 
 	if (r_fullbright.value != oldbright)
 	{
 		oldbright = r_fullbright.value;
-		D_FlushCaches ();	// so all lighting changes
+		D_FlushCaches (); // so all lighting changes
 	}
 }
 
@@ -27,7 +27,7 @@ Debugging use
 */
 void Show (void)
 {
-	vrect_t	vr;
+	vrect_t vr;
 
 	vr.x = vr.y = 0;
 	vr.width = vid.width;
@@ -45,10 +45,10 @@ For program optimization
 */
 void R_TimeRefresh_f (void)
 {
-	int			i;
-	float		start, stop, time;
-	int			startangle;
-	vrect_t		vr;
+	int i;
+	float start, stop, time;
+	int startangle;
+	vrect_t vr;
 
 	startangle = r_refdef.viewangles[1];
 
@@ -82,9 +82,9 @@ Only called by R_DisplayTime
 */
 void R_LineGraph (int x, int y, int h)
 {
-	int		i;
-	uint8_t	*dest;
-	int		s;
+	int i;
+	uint8_t *dest;
+	int s;
 
 // FIXME: should be disabled on no-buffer adapters, or should be in the driver
 
@@ -117,15 +117,15 @@ R_TimeGraph
 Performance monitoring tool
 ==============
 */
-#define	MAX_TIMINGS		100
+#define MAX_TIMINGS 100
 extern float mouse_x, mouse_y;
 void R_TimeGraph (void)
 {
-	static	int		timex;
-	int		a;
-	float	r_time2;
-	static uint8_t	r_timings[MAX_TIMINGS];
-	int		x;
+	static int timex;
+	int a;
+	float r_time2;
+	static uint8_t r_timings[MAX_TIMINGS];
+	int x;
 
 	r_time2 = Sys_FloatTime ();
 
@@ -147,7 +147,7 @@ void R_TimeGraph (void)
 	{
 		R_LineGraph (x, r_refdef.vrect.height-2, r_timings[a]);
 		if (x==0)
-			break;		// screen too small to hold entire thing
+			break; // screen too small to hold entire thing
 		x--;
 		a--;
 		if (a == -1)
@@ -164,8 +164,8 @@ R_PrintTimes
 */
 void R_PrintTimes (void)
 {
-	float	r_time2;
-	float		ms;
+	float r_time2;
+	float ms;
 
 	r_time2 = Sys_FloatTime ();
 
@@ -183,7 +183,7 @@ R_PrintDSpeeds
 */
 void R_PrintDSpeeds (void)
 {
-	float	ms, dp_time, r_time2, rw_time, db_time, se_time, de_time, dv_time;
+	float ms, dp_time, r_time2, rw_time, db_time, se_time, de_time, dv_time;
 
 	r_time2 = Sys_FloatTime ();
 
@@ -212,9 +212,9 @@ void R_PrintAliasStats (void)
 
 void WarpPalette (void)
 {
-	int		i,j;
-	uint8_t	newpalette[768];
-	int		basecolor[3];
+	int i,j;
+	uint8_t newpalette[768];
+	int basecolor[3];
 
 	basecolor[0] = 130;
 	basecolor[1] = 80;
@@ -239,8 +239,8 @@ R_TransformFrustum
 */
 void R_TransformFrustum (void)
 {
-	int		i;
-	vec3_t	v, v2;
+	int i;
+	vec3_t v, v2;
 
 	for (i=0 ; i<4 ; i++)
 	{
@@ -277,7 +277,7 @@ R_TransformPlane
 */
 void R_TransformPlane (mplane_t *p, float *normal, float *dist)
 {
-	float	d;
+	float d;
 
 	d = DotProduct (r_origin, p->normal);
 	*dist = p->dist - d;
@@ -292,7 +292,7 @@ R_SetUpFrustumIndexes
 */
 void R_SetUpFrustumIndexes (void)
 {
-	int		i, j, *pindex;
+	int i, j, *pindex;
 
 	pindex = r_frustum_indexes;
 
@@ -325,9 +325,9 @@ R_SetupFrame
 */
 void R_SetupFrame (void)
 {
-	int				edgecount;
-	vrect_t			vrect;
-	float			w, h;
+	int edgecount;
+	vrect_t vrect;
+	float w, h;
 
 // don't allow cheats in multiplayer
 	if (cl.maxclients > 1)
@@ -364,7 +364,7 @@ void R_SetupFrame (void)
 		r_refdef.ambientlight = 0;
 
 	if (!sv.active)
-		r_draworder.value = 0;	// don't let cheaters look behind walls
+		r_draworder.value = 0; // don't let cheaters look behind walls
 
 	R_CheckVariables ();
 
@@ -376,12 +376,12 @@ void R_SetupFrame (void)
 
 // debugging
 #if 0
-r_refdef.vieworg[0]=  80;
-r_refdef.vieworg[1]=      64;
-r_refdef.vieworg[2]=      40;
-r_refdef.viewangles[0]=    0;
-r_refdef.viewangles[1]=    46.763641357;
-r_refdef.viewangles[2]=    0;
+r_refdef.vieworg[0]= 80;
+r_refdef.vieworg[1]= 64;
+r_refdef.vieworg[2]= 40;
+r_refdef.viewangles[0]= 0;
+r_refdef.viewangles[1]= 46.763641357;
+r_refdef.viewangles[2]= 0;
 #endif
 
 // build the transformation matrix for the given view angles

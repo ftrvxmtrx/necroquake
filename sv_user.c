@@ -3,42 +3,42 @@
 #include <math.h>
 #include "quakedef.h"
 
-edict_t	*sv_player;
+edict_t *sv_player;
 
-extern	cvar_t	sv_friction;
-cvar_t	sv_edgefriction = {"edgefriction", "2"};
-extern	cvar_t	sv_stopspeed;
+extern cvar_t sv_friction;
+cvar_t sv_edgefriction = {"edgefriction", "2"};
+extern cvar_t sv_stopspeed;
 
-static	vec3_t		forward, right, up;
+static vec3_t forward, right, up;
 
-vec3_t	wishdir;
-float	wishspeed;
+vec3_t wishdir;
+float wishspeed;
 
 // world
-float	*angles;
-float	*origin;
-float	*velocity;
+float *angles;
+float *origin;
+float *velocity;
 
-bool	onground;
+bool onground;
 
-usercmd_t	cmd;
+usercmd_t cmd;
 
-cvar_t	sv_idealpitchscale = {"sv_idealpitchscale","0.8"};
+cvar_t sv_idealpitchscale = {"sv_idealpitchscale","0.8"};
 
 /*
 ===============
 SV_SetIdealPitch
 ===============
 */
-#define	MAX_FORWARD	6
+#define MAX_FORWARD 6
 void SV_SetIdealPitch (void)
 {
-	float	angleval, sinval, cosval;
-	trace_t	tr;
-	vec3_t	top, bottom;
-	float	z[MAX_FORWARD];
-	int		i, j;
-	int		step, dir, steps;
+	float angleval, sinval, cosval;
+	trace_t tr;
+	vec3_t top, bottom;
+	float z[MAX_FORWARD];
+	int i, j;
+	int step, dir, steps;
 
 	if (!((int)sv_player->v.flags & FL_ONGROUND))
 		return;
@@ -59,10 +59,10 @@ void SV_SetIdealPitch (void)
 
 		tr = SV_Move (top, vec3_origin, vec3_origin, bottom, 1, sv_player);
 		if (tr.allsolid)
-			return;	// looking at a wall, leave ideal the way is was
+			return; // looking at a wall, leave ideal the way is was
 
 		if (tr.fraction == 1)
-			return;	// near a dropoff
+			return; // near a dropoff
 
 		z[i] = top[2] + tr.fraction*(bottom[2]-top[2]);
 	}
@@ -76,7 +76,7 @@ void SV_SetIdealPitch (void)
 			continue;
 
 		if (dir && ( step-dir > ON_EPSILON || step-dir < -ON_EPSILON ) )
-			return;		// mixed changes
+			return; // mixed changes
 
 		steps++;
 		dir = step;
@@ -101,11 +101,11 @@ SV_UserFriction
 */
 void SV_UserFriction (void)
 {
-	float	*vel;
-	float	speed, newspeed, control;
-	vec3_t	start, stop;
-	float	friction;
-	trace_t	trace;
+	float *vel;
+	float speed, newspeed, control;
+	vec3_t start, stop;
+	float friction;
+	trace_t trace;
 
 	vel = velocity;
 
@@ -144,14 +144,14 @@ void SV_UserFriction (void)
 SV_Accelerate
 ==============
 */
-cvar_t	sv_maxspeed = {"sv_maxspeed", "320", false, true};
-cvar_t	sv_accelerate = {"sv_accelerate", "10"};
+cvar_t sv_maxspeed = {"sv_maxspeed", "320", false, true};
+cvar_t sv_accelerate = {"sv_accelerate", "10"};
 #if 0
 void SV_Accelerate (vec3_t wishvel)
 {
-	int			i;
-	float		addspeed, accelspeed;
-	vec3_t		pushvec;
+	int i;
+	float addspeed, accelspeed;
+	vec3_t pushvec;
 
 	if (wishspeed == 0)
 		return;
@@ -169,8 +169,8 @@ void SV_Accelerate (vec3_t wishvel)
 #endif
 void SV_Accelerate (void)
 {
-	int			i;
-	float		addspeed, accelspeed, currentspeed;
+	int i;
+	float addspeed, accelspeed, currentspeed;
 
 	currentspeed = DotProduct (velocity, wishdir);
 	addspeed = wishspeed - currentspeed;
@@ -186,8 +186,8 @@ void SV_Accelerate (void)
 
 void SV_AirAccelerate (vec3_t wishveloc)
 {
-	int			i;
-	float		addspeed, wishspd, accelspeed, currentspeed;
+	int i;
+	float addspeed, wishspd, accelspeed, currentspeed;
 
 	wishspd = VectorNormalize (wishveloc);
 	if (wishspd > 30)
@@ -196,7 +196,7 @@ void SV_AirAccelerate (vec3_t wishveloc)
 	addspeed = wishspd - currentspeed;
 	if (addspeed <= 0)
 		return;
-//	accelspeed = sv_accelerate.value * host_frametime;
+// accelspeed = sv_accelerate.value * host_frametime;
 	accelspeed = sv_accelerate.value*wishspeed * host_frametime;
 	if (accelspeed > addspeed)
 		accelspeed = addspeed;
@@ -207,7 +207,7 @@ void SV_AirAccelerate (vec3_t wishveloc)
 
 void DropPunchAngle (void)
 {
-	float	len;
+	float len;
 
 	len = VectorNormalize (sv_player->v.punchangle);
 
@@ -225,9 +225,9 @@ SV_WaterMove
 */
 void SV_WaterMove (void)
 {
-	int		i;
-	vec3_t	wishvel;
-	float	speed, newspeed, wishspeed, addspeed, accelspeed;
+	int i;
+	vec3_t wishvel;
+	float speed, newspeed, wishspeed, addspeed, accelspeed;
 
 //
 // user intentions
@@ -238,7 +238,7 @@ void SV_WaterMove (void)
 		wishvel[i] = forward[i]*cmd.forwardmove + right[i]*cmd.sidemove;
 
 	if (!cmd.forwardmove && !cmd.sidemove && !cmd.upmove)
-		wishvel[2] -= 60;		// drift towards bottom
+		wishvel[2] -= 60; // drift towards bottom
 	else
 		wishvel[2] += cmd.upmove;
 
@@ -303,9 +303,9 @@ SV_AirMove
 */
 void SV_AirMove (void)
 {
-	int			i;
-	vec3_t		wishvel;
-	float		fmove, smove;
+	int i;
+	vec3_t wishvel;
+	float fmove, smove;
 
 	AngleVectors (sv_player->v.angles, forward, right, up);
 
@@ -333,7 +333,7 @@ void SV_AirMove (void)
 	}
 
 	if ( sv_player->v.movetype == MOVETYPE_NOCLIP)
-	{	// noclip
+	{ // noclip
 		VectorCopy (wishvel, velocity);
 	}
 	else if ( onground )
@@ -342,7 +342,7 @@ void SV_AirMove (void)
 		SV_Accelerate ();
 	}
 	else
-	{	// not on ground, so little effect on velocity
+	{ // not on ground, so little effect on velocity
 		SV_AirAccelerate (wishvel);
 	}
 }
@@ -357,7 +357,7 @@ the angle fields specify an exact angular motion in degrees
 */
 void SV_ClientThink (void)
 {
-	vec3_t		v_angle;
+	vec3_t v_angle;
 
 	if (sv_player->v.movetype == MOVETYPE_NONE)
 		return;
@@ -414,9 +414,9 @@ SV_ReadClientMove
 */
 void SV_ReadClientMove (usercmd_t *move)
 {
-	int		i;
-	vec3_t	angle;
-	int		bits;
+	int i;
+	vec3_t angle;
+	int bits;
 
 // read ping time
 	host_client->ping_times[host_client->num_pings%NUM_PING_TIMES]
@@ -453,9 +453,9 @@ Returns false if the client should be killed
 */
 bool SV_ReadClientMessage (void)
 {
-	int		ret;
-	int		cmd;
-	char		*s;
+	int ret;
+	int cmd;
+	char *s;
 
 	do
 	{
@@ -474,7 +474,7 @@ nextmsg:
 		while (1)
 		{
 			if (!host_client->active)
-				return false;	// a command caused an error
+				return false; // a command caused an error
 
 			if (msg_badread)
 			{
@@ -487,14 +487,14 @@ nextmsg:
 			switch (cmd)
 			{
 			case -1:
-				goto nextmsg;		// end of message
+				goto nextmsg; // end of message
 
 			default:
 				Sys_Printf ("SV_ReadClientMessage: unknown command char\n");
 				return false;
 
 			case clc_nop:
-//				Sys_Printf ("clc_nop\n");
+// Sys_Printf ("clc_nop\n");
 				break;
 
 			case clc_stringcmd:
@@ -550,7 +550,7 @@ nextmsg:
 				break;
 
 			case clc_disconnect:
-//				Sys_Printf ("SV_ReadClientMessage: client disconnected\n");
+// Sys_Printf ("SV_ReadClientMessage: client disconnected\n");
 				return false;
 
 			case clc_move:
@@ -570,7 +570,7 @@ SV_RunClients
 */
 void SV_RunClients (void)
 {
-	int				i;
+	int i;
 
 	for (i=0, host_client = svs.clients ; i<svs.maxclients ; i++, host_client++)
 	{
@@ -581,7 +581,7 @@ void SV_RunClients (void)
 
 		if (!SV_ReadClientMessage ())
 		{
-			SV_DropClient (false);	// client misbehaved...
+			SV_DropClient (false); // client misbehaved...
 			continue;
 		}
 

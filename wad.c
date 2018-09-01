@@ -1,8 +1,8 @@
 #include "quakedef.h"
 
-int			wad_numlumps;
-lumpinfo_t	*wad_lumps;
-uint8_t		*wad_base;
+int wad_numlumps;
+lumpinfo_t *wad_lumps;
+uint8_t *wad_base;
 
 void SwapPic (qpic_t *pic);
 
@@ -19,8 +19,8 @@ Can safely be performed in place.
 */
 void W_CleanupName (char *in, char *out)
 {
-	int		i;
-	int		c;
+	int i;
+	int c;
 
 	for (i=0 ; i<16 ; i++ )
 	{
@@ -44,10 +44,10 @@ W_LoadWadFile
 */
 void W_LoadWadFile (char *filename)
 {
-	lumpinfo_t		*lump_p;
-	wadinfo_t		*header;
-	unsigned		i;
-	int				infotableofs;
+	lumpinfo_t *lump_p;
+	wadinfo_t *header;
+	unsigned i;
+	int infotableofs;
 
 	wad_base = COM_LoadHunkFile (filename);
 	if (!wad_base)
@@ -80,11 +80,11 @@ void W_LoadWadFile (char *filename)
 W_GetLumpinfo
 =============
 */
-lumpinfo_t	*W_GetLumpinfo (char *name)
+lumpinfo_t *W_GetLumpinfo (char *name)
 {
-	int		i;
-	lumpinfo_t	*lump_p;
-	char	clean[16];
+	int i;
+	lumpinfo_t *lump_p;
+	char clean[16];
 
 	W_CleanupName (name, clean);
 
@@ -100,7 +100,7 @@ lumpinfo_t	*W_GetLumpinfo (char *name)
 
 void *W_GetLumpName (char *name)
 {
-	lumpinfo_t	*lump;
+	lumpinfo_t *lump;
 
 	lump = W_GetLumpinfo (name);
 
@@ -109,7 +109,7 @@ void *W_GetLumpName (char *name)
 
 void *W_GetLumpNum (int num)
 {
-	lumpinfo_t	*lump;
+	lumpinfo_t *lump;
 
 	if (num < 0 || num > wad_numlumps)
 		Sys_Error ("W_GetLumpNum: bad number: %i", num);

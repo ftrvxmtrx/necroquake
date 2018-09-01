@@ -4,13 +4,13 @@
 
 // *********************************************************
 // * This file must be identical in the modelgen directory *
-// * and in the Quake directory, because it's used to      *
-// * pass data from one to the other via model files.      *
+// * and in the Quake directory, because it's used to *
+// * pass data from one to the other via model files. *
 // *********************************************************
 
-#define ALIAS_VERSION	6
+#define ALIAS_VERSION 6
 
-#define ALIAS_ONSEAM				0x0020
+#define ALIAS_ONSEAM 0x0020
 
 // must match definition in spritegn.h
 #ifndef SYNCTYPE_T
@@ -23,78 +23,78 @@ typedef enum { ALIAS_SINGLE=0, ALIAS_GROUP } aliasframetype_t;
 typedef enum { ALIAS_SKIN_SINGLE=0, ALIAS_SKIN_GROUP } aliasskintype_t;
 
 typedef struct {
-	int			ident;
-	int			version;
-	vec3_t		scale;
-	vec3_t		scale_origin;
-	float		boundingradius;
-	vec3_t		eyeposition;
-	int			numskins;
-	int			skinwidth;
-	int			skinheight;
-	int			numverts;
-	int			numtris;
-	int			numframes;
-	synctype_t	synctype;
-	int			flags;
-	float		size;
+	int ident;
+	int version;
+	vec3_t scale;
+	vec3_t scale_origin;
+	float boundingradius;
+	vec3_t eyeposition;
+	int numskins;
+	int skinwidth;
+	int skinheight;
+	int numverts;
+	int numtris;
+	int numframes;
+	synctype_t synctype;
+	int flags;
+	float size;
 } mdl_t;
 
 // TODO: could be shorts
 
 typedef struct {
-	int		onseam;
-	int		s;
-	int		t;
+	int onseam;
+	int s;
+	int t;
 } stvert_t;
 
 typedef struct dtriangle_s {
-	int					facesfront;
-	int					vertindex[3];
+	int facesfront;
+	int vertindex[3];
 } dtriangle_t;
 
-#define DT_FACES_FRONT				0x0010
+#define DT_FACES_FRONT 0x0010
 
 // This mirrors trivert_t in trilib.h, is present so Quake knows how to
 // load this data
 
 typedef struct {
-	uint8_t	v[3];
-	uint8_t	lightnormalindex;
+	uint8_t v[3];
+	uint8_t lightnormalindex;
 } trivertx_t;
 
 typedef struct {
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
-	char		name[16];	// frame name from grabbing
+	trivertx_t bboxmin; // lightnormal isn't used
+	trivertx_t bboxmax; // lightnormal isn't used
+	char name[16]; // frame name from grabbing
 } daliasframe_t;
 
 typedef struct {
-	int			numframes;
-	trivertx_t	bboxmin;	// lightnormal isn't used
-	trivertx_t	bboxmax;	// lightnormal isn't used
+	int numframes;
+	trivertx_t bboxmin; // lightnormal isn't used
+	trivertx_t bboxmax; // lightnormal isn't used
 } daliasgroup_t;
 
 typedef struct {
-	int			numskins;
+	int numskins;
 } daliasskingroup_t;
 
 typedef struct {
-	float	interval;
+	float interval;
 } daliasinterval_t;
 
 typedef struct {
-	float	interval;
+	float interval;
 } daliasskininterval_t;
 
 typedef struct {
-	aliasframetype_t	type;
+	aliasframetype_t type;
 } daliasframetype_t;
 
 typedef struct {
-	aliasskintype_t	type;
+	aliasskintype_t type;
 } daliasskintype_t;
 
-#define IDPOLYHEADER	(('O'<<24)+('P'<<16)+('D'<<8)+'I')
+#define IDPOLYHEADER (('O'<<24)+('P'<<16)+('D'<<8)+'I')
 														// little-endian "IDPO"
 

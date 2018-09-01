@@ -19,35 +19,24 @@
 
 #include "quakedef.h"
 
-bool			isDedicated;
-
 int noconinput = 0;
 
 char *basedir = ".";
 char *cachedir = "/tmp";
 
-cvar_t  sys_linerefresh = {"sys_linerefresh","0"};// set for entity display
-cvar_t  sys_nostdout = {"sys_nostdout","0"};
-
 // =======================================================================
 // General routines
 // =======================================================================
 
-void Sys_DebugNumber(int y, int val)
-{
-}
-
 void Sys_Printf (char *fmt, ...)
 {
-	va_list		argptr;
-	char		text[1024];
+	va_list argptr;
+	char text[1024];
 
 	va_start (argptr,fmt);
 	vsprintf (text,fmt,argptr);
 	va_end (argptr);
 	fprintf(stderr, "%s", text);
-
-	//Con_Print (text);
 }
 
 void Sys_Quit (void)
@@ -62,8 +51,8 @@ void Sys_Init(void)
 
 void Sys_Error (char *error, ...)
 {
-    va_list     argptr;
-    char        string[1024];
+    va_list argptr;
+    char string[1024];
 
     va_start (argptr,error);
     vsprintf (string,error,argptr);
@@ -77,8 +66,8 @@ void Sys_Error (char *error, ...)
 
 void Sys_Warn (char *warning, ...)
 {
-    va_list     argptr;
-    char        string[1024];
+    va_list argptr;
+    char string[1024];
 
     va_start (argptr,warning);
     vsprintf (string,warning,argptr);
@@ -94,12 +83,12 @@ FILE IO
 ===============================================================================
 */
 
-#define	MAX_HANDLES		10
-FILE	*sys_handles[MAX_HANDLES];
+#define MAX_HANDLES 10
+FILE *sys_handles[MAX_HANDLES];
 
-int		findhandle (void)
+int findhandle (void)
 {
-	int		i;
+	int i;
 
 	for (i=1 ; i<MAX_HANDLES ; i++)
 		if (!sys_handles[i])
@@ -115,8 +104,8 @@ Qfilelength
 */
 static int Qfilelength (FILE *f)
 {
-	int		pos;
-	int		end;
+	int pos;
+	int end;
 
 	pos = ftell (f);
 	fseek (f, 0, SEEK_END);
@@ -128,8 +117,8 @@ static int Qfilelength (FILE *f)
 
 int Sys_FileOpenRead (char *path, int *hndl)
 {
-	FILE	*f;
-	int		i;
+	FILE *f;
+	int i;
 
 	i = findhandle ();
 
@@ -147,8 +136,8 @@ int Sys_FileOpenRead (char *path, int *hndl)
 
 int Sys_FileOpenWrite (char *path)
 {
-	FILE	*f;
-	int		i;
+	FILE *f;
+	int i;
 
 	i = findhandle ();
 
@@ -218,9 +207,9 @@ int Sys_FileWrite (int handle, void *src, int count)
 	return size;
 }
 
-int	Sys_FileTime (char *path)
+int Sys_FileTime (char *path)
 {
-	FILE	*f;
+	FILE *f;
 
 	f = fopen(path, "rb");
 	if (f)
@@ -255,7 +244,7 @@ double Sys_FloatTime (void)
 {
     struct timeval tp;
     struct timezone tzp;
-    static int      secbase;
+    static int secbase;
 
     gettimeofday(&tp, &tzp);
 
@@ -272,66 +261,18 @@ double Sys_FloatTime (void)
 // Sleeps for microseconds
 // =======================================================================
 
-static volatile int oktogo;
-
-void alarm_handler(int x)
-{
-	oktogo=1;
-}
-
-uint8_t *Sys_ZoneBase (int *size)
-{
-
-	char *QUAKEOPT = getenv("QUAKEOPT");
-
-	*size = 0xc00000;
-	if (QUAKEOPT)
-	{
-		while (*QUAKEOPT)
-			if (tolower(*QUAKEOPT++) == 'm')
-			{
-				*size = atof(QUAKEOPT) * 1024*1024;
-				break;
-			}
-	}
-	return malloc (*size);
-
-}
-
-void Sys_LineRefresh(void)
-{
-}
-
-void Sys_Sleep(void)
-{
-	SDL_Delay(1);
-}
-
-void floating_point_exception_handler(int whatever)
-{
-//	Sys_Warn("floating point exception\n");
-	signal(SIGFPE, floating_point_exception_handler);
-}
-
-void moncontrol(int x)
-{
-}
-
 int main (int c, char **v)
 {
 
-	double		time, oldtime, newtime;
+	double time, oldtime, newtime;
 	quakeparms_t parms;
 	extern int vcrFile;
 	extern int recording;
-	static int frame;
 
-	moncontrol(0);
-
-//	signal(SIGFPE, floating_point_exception_handler);
 	signal(SIGFPE, SIG_IGN);
 
-	parms.memsize = 8*1024*1024;
+	memset(&parms, 0, sizeof(parms));
+	parms.memsize = 32*1024*1024;
 	parms.membase = malloc (parms.memsize);
 	parms.basedir = basedir;
 	parms.cachedir = cachedir;
@@ -341,10 +282,7 @@ int main (int c, char **v)
 	parms.argv = com_argv;
 
 	Sys_Init();
-
     Host_Init(&parms);
-
-	Cvar_RegisterVariable (&sys_nostdout);
 
     oldtime = Sys_FloatTime () - 0.1;
     while (1)
@@ -354,11 +292,11 @@ int main (int c, char **v)
         time = newtime - oldtime;
 
         if (cls.state == ca_dedicated)
-        {   // play vcrfiles at max speed
+        { // play vcrfiles at max speed
             if (time < sys_ticrate.value && (vcrFile == -1 || recording) )
             {
                 SDL_Delay (1);
-                continue;       // not time to run a server only tic yet
+                continue; // not time to run a server only tic yet
             }
             time = sys_ticrate.value;
         }
@@ -368,38 +306,6 @@ int main (int c, char **v)
         else
             oldtime += time;
 
-        if (++frame > 10)
-            moncontrol(1);      // profile only while we do each Quake frame
-        Host_Frame (time);
-        moncontrol(0);
-
-// graphic debugging aids
-        if (sys_linerefresh.value)
-            Sys_LineRefresh ();
+		Host_Frame (time);
     }
-
 }
-
-/*
-================
-Sys_MakeCodeWriteable
-================
-*/
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length)
-{
-
-	int r;
-	unsigned long addr;
-	int psize = getpagesize();
-
-	fprintf(stderr, "writable code %lx-%lx\n", startaddr, startaddr+length);
-
-	addr = startaddr & ~(psize-1);
-
-	r = mprotect((char*)addr, length + startaddr - addr, 7);
-
-	if (r < 0)
-    		Sys_Error("Protection change failed\n");
-
-}
-

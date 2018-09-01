@@ -14,13 +14,8 @@ void Sys_FileClose (int handle);
 void Sys_FileSeek (int handle, int position);
 int Sys_FileRead (int handle, void *dest, int count);
 int Sys_FileWrite (int handle, void *data, int count);
-int	Sys_FileTime (char *path);
+int Sys_FileTime (char *path);
 void Sys_mkdir (char *path);
-
-//
-// memory protection
-//
-void Sys_MakeCodeWriteable (unsigned long startaddr, unsigned long length);
 
 //
 // system IO
@@ -39,14 +34,5 @@ double Sys_FloatTime (void);
 
 char *Sys_ConsoleInput (void);
 
-void Sys_Sleep (void);
-// called to yield for a little bit so as
-// not to hog cpu when paused or debugging
-
 void Sys_SendKeyEvents (void);
 // Perform Key_Event () callbacks until the input que is empty
-
-void Sys_LowFPPrecision (void);
-void Sys_HighFPPrecision (void);
-void Sys_SetFPCW (void);
-

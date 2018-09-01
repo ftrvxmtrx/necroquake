@@ -3,8 +3,8 @@
 #include <stdlib.h>
 #include "quakedef.h"
 
-cvar_t	*cvar_vars;
-char	*cvar_null_string = "";
+cvar_t *cvar_vars;
+char *cvar_null_string = "";
 
 /*
 ============
@@ -13,7 +13,7 @@ Cvar_FindVar
 */
 cvar_t *Cvar_FindVar (char *var_name)
 {
-	cvar_t	*var;
+	cvar_t *var;
 
 	for (var=cvar_vars ; var ; var=var->next)
 		if (!strcmp (var_name, var->name))
@@ -27,9 +27,9 @@ cvar_t *Cvar_FindVar (char *var_name)
 Cvar_VariableValue
 ============
 */
-float	Cvar_VariableValue (char *var_name)
+float Cvar_VariableValue (char *var_name)
 {
-	cvar_t	*var;
+	cvar_t *var;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
@@ -59,8 +59,8 @@ Cvar_CompleteVariable
 */
 char *Cvar_CompleteVariable (char *partial)
 {
-	cvar_t		*cvar;
-	int			len;
+	cvar_t *cvar;
+	int len;
 
 	len = strlen(partial);
 
@@ -82,19 +82,19 @@ Cvar_Set
 */
 void Cvar_Set (char *var_name, char *value)
 {
-	cvar_t	*var;
+	cvar_t *var;
 	bool changed;
 
 	var = Cvar_FindVar (var_name);
 	if (!var)
-	{	// there is an error in C code if this happens
+	{ // there is an error in C code if this happens
 		Con_Printf ("Cvar_Set: variable %s not found\n", var_name);
 		return;
 	}
 
 	changed = strcmp(var->string, value);
 
-	Z_Free (var->string);	// free the old value string
+	Z_Free (var->string); // free the old value string
 
 	var->string = Z_Malloc (strlen(value)+1);
 	strcpy (var->string, value);
@@ -113,7 +113,7 @@ Cvar_SetValue
 */
 void Cvar_SetValue (char *var_name, float value)
 {
-	char	val[32];
+	char val[32];
 
 	sprintf (val, "%f",value);
 	Cvar_Set (var_name, val);
@@ -128,7 +128,7 @@ Adds a freestanding variable to the variable list.
 */
 void Cvar_RegisterVariable (cvar_t *variable)
 {
-	char	*oldstr;
+	char *oldstr;
 
 // first check to see if it has allready been defined
 	if (Cvar_FindVar (variable->name))
@@ -162,9 +162,9 @@ Cvar_Command
 Handles variable inspection and changing from the console
 ============
 */
-bool	Cvar_Command (void)
+bool Cvar_Command (void)
 {
-	cvar_t			*v;
+	cvar_t *v;
 
 // check variables
 	v = Cvar_FindVar (Cmd_Argv(0));
@@ -192,7 +192,7 @@ with the archive flag set to true.
 */
 void Cvar_WriteVariables (FILE *f)
 {
-	cvar_t	*var;
+	cvar_t *var;
 
 	for (var = cvar_vars ; var ; var = var->next)
 		if (var->archive)

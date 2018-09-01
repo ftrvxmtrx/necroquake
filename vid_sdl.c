@@ -5,30 +5,30 @@
 #include "r_shared.h"
 #include "d_local.h"
 
-viddef_t    vid;                // global video state
-unsigned short  d_8to16table[256];
+viddef_t vid; // global video state
+unsigned short d_8to16table[256];
 
 // The original defaults
-//#define    BASEWIDTH    320
-//#define    BASEHEIGHT   200
+//#define BASEWIDTH 320
+//#define BASEHEIGHT 200
 // Much better for high resolution displays
-#define    BASEWIDTH    (320*2)
-#define    BASEHEIGHT   (200*2)
+#define BASEWIDTH (320*2)
+#define BASEHEIGHT (200*2)
 
-int    VGA_width, VGA_height, VGA_rowbytes, VGA_bufferrowbytes = 0;
-uint8_t    *VGA_pagebase;
+int VGA_width, VGA_height, VGA_rowbytes, VGA_bufferrowbytes = 0;
+uint8_t *VGA_pagebase;
 
 static SDL_Surface *screen = NULL;
 
 static bool mouse_avail;
-static float   mouse_x, mouse_y;
+static float mouse_x, mouse_y;
 static int mouse_oldbuttonstate = 0;
 
 // No support for option menus
 void (*vid_menudrawfn)(void) = NULL;
 void (*vid_menukeyfn)(int key) = NULL;
 
-void    VID_SetPalette (unsigned char *palette)
+void VID_SetPalette (unsigned char *palette)
 {
     int i;
     SDL_Color colors[256];
@@ -42,12 +42,12 @@ void    VID_SetPalette (unsigned char *palette)
     SDL_SetColors(screen, colors, 0, 256);
 }
 
-void    VID_ShiftPalette (unsigned char *palette)
+void VID_ShiftPalette (unsigned char *palette)
 {
     VID_SetPalette(palette);
 }
 
-void    VID_Init (unsigned char *palette)
+void VID_Init (unsigned char *palette)
 {
     int pnum, chunk;
     uint8_t *cache;
@@ -115,12 +115,12 @@ void    VID_Init (unsigned char *palette)
     SDL_ShowCursor(0);
 }
 
-void    VID_Shutdown (void)
+void VID_Shutdown (void)
 {
     SDL_Quit();
 }
 
-void    VID_Update (vrect_t *rects)
+void VID_Update (vrect_t *rects)
 {
     SDL_Rect *sdlrects;
     int n, i;
@@ -162,7 +162,7 @@ void D_BeginDirectRect (int x, int y, uint8_t *pbitmap, int width, int height)
     offset = (Uint8 *)screen->pixels + y*screen->pitch + x;
     while ( height-- )
     {
-        memcpy(offset, pbitmap, width);
+        memmove(offset, pbitmap, width);
         offset += screen->pitch;
         pbitmap += width;
     }

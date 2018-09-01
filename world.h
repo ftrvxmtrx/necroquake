@@ -1,23 +1,23 @@
 typedef struct
 {
-	vec3_t	normal;
-	float	dist;
+	vec3_t normal;
+	float dist;
 } plane_t;
 
 typedef struct
 {
-	bool	allsolid;	// if true, plane is not valid
-	bool	startsolid;	// if true, the initial point was in a solid area
-	bool	inopen, inwater;
-	float	fraction;		// time completed, 1.0 = didn't hit anything
-	vec3_t	endpos;			// final position
-	plane_t	plane;			// surface normal at impact
-	edict_t	*ent;			// entity the surface is on
+	bool allsolid; // if true, plane is not valid
+	bool startsolid; // if true, the initial point was in a solid area
+	bool inopen, inwater;
+	float fraction; // time completed, 1.0 = didn't hit anything
+	vec3_t endpos; // final position
+	plane_t plane; // surface normal at impact
+	edict_t *ent; // entity the surface is on
 } trace_t;
 
-#define	MOVE_NORMAL		0
-#define	MOVE_NOMONSTERS	1
-#define	MOVE_MISSILE	2
+#define MOVE_NORMAL 0
+#define MOVE_NOMONSTERS 1
+#define MOVE_MISSILE 2
 
 void SV_ClearWorld (void);
 // called after the world model has been loaded, before linking any entities
@@ -39,7 +39,7 @@ int SV_TruePointContents (vec3_t p);
 // does not check any entities at all
 // the non-true version remaps the water current contents to content_water
 
-edict_t	*SV_TestEntityPosition (edict_t *ent);
+edict_t *SV_TestEntityPosition (edict_t *ent);
 
 bool SV_RecursiveHullCheck (hull_t *hull, int num, float p1f, float p2f, vec3_t p1, vec3_t p2, trace_t *trace);
 

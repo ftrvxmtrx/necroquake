@@ -2,7 +2,7 @@
 
 #include "quakedef.h"
 
-int			cache_full_cycle;
+int cache_full_cycle;
 
 uint8_t *S_Alloc (int size);
 
@@ -13,18 +13,18 @@ ResampleSfx
 */
 void ResampleSfx (sfx_t *sfx, int inrate, int inwidth, uint8_t *data)
 {
-	int		outcount;
-	int		srcsample;
-	float	stepscale;
-	int		i;
-	int		sample, samplefrac, fracstep;
-	sfxcache_t	*sc;
+	int outcount;
+	int srcsample;
+	float stepscale;
+	int i;
+	int sample, samplefrac, fracstep;
+	sfxcache_t *sc;
 
 	sc = Cache_Check (&sfx->cache);
 	if (!sc)
 		return;
 
-	stepscale = (float)inrate / shm->speed;	// this is usually 0.5, 1, or 2
+	stepscale = (float)inrate / shm->speed; // this is usually 0.5, 1, or 2
 
 	outcount = sc->length / stepscale;
 	sc->length = outcount;
@@ -77,13 +77,13 @@ S_LoadSound
 */
 sfxcache_t *S_LoadSound (sfx_t *s)
 {
-    char	namebuffer[256];
-	uint8_t	*data;
-	wavinfo_t	info;
-	int		len;
-	float	stepscale;
-	sfxcache_t	*sc;
-	uint8_t	stackbuf[1*1024];		// avoid dirtying the cache heap
+    char namebuffer[256];
+	uint8_t *data;
+	wavinfo_t info;
+	int len;
+	float stepscale;
+	sfxcache_t *sc;
+	uint8_t stackbuf[1*1024]; // avoid dirtying the cache heap
 
 // see if still in memory
 	sc = Cache_Check (&s->cache);
@@ -95,7 +95,7 @@ sfxcache_t *S_LoadSound (sfx_t *s)
     strcpy(namebuffer, "sound/");
     strcat(namebuffer, s->name);
 
-//	Con_Printf ("loading %s\n",namebuffer);
+// Con_Printf ("loading %s\n",namebuffer);
 
 	data = COM_LoadStackFile(namebuffer, stackbuf, sizeof(stackbuf));
 
@@ -140,11 +140,11 @@ WAV loading
 ===============================================================================
 */
 
-uint8_t	*data_p;
-uint8_t 	*iff_end;
-uint8_t 	*last_chunk;
-uint8_t 	*iff_data;
-int 	iff_chunk_len;
+uint8_t *data_p;
+uint8_t *iff_end;
+uint8_t *last_chunk;
+uint8_t *iff_data;
+int iff_chunk_len;
 
 short GetLittleShort(void)
 {
@@ -173,7 +173,7 @@ void FindNextChunk(char *name)
 		data_p=last_chunk;
 
 		if (data_p >= iff_end)
-		{	// didn't find the chunk
+		{ // didn't find the chunk
 			data_p = NULL;
 			return;
 		}
@@ -185,8 +185,8 @@ void FindNextChunk(char *name)
 			data_p = NULL;
 			return;
 		}
-//		if (iff_chunk_len > 1024*1024)
-//			Sys_Error ("FindNextChunk: %i length is past the 1 meg sanity limit", iff_chunk_len);
+// if (iff_chunk_len > 1024*1024)
+// Sys_Error ("FindNextChunk: %i length is past the 1 meg sanity limit", iff_chunk_len);
 		data_p -= 8;
 		last_chunk = data_p + 8 + ( (iff_chunk_len + 1) & ~1 );
 		if (!strncmp(data_p, name, 4))
@@ -202,13 +202,13 @@ void FindChunk(char *name)
 
 void DumpChunks(void)
 {
-	char	str[5];
+	char str[5];
 
 	str[4] = 0;
 	data_p=iff_data;
 	do
 	{
-		memcpy (str, data_p, 4);
+		memmove (str, data_p, 4);
 		data_p += 4;
 		iff_chunk_len = GetLittleLong();
 		Con_Printf ("0x%x : %s (%d)\n", (int)(data_p - 4), str, iff_chunk_len);
@@ -223,10 +223,10 @@ GetWavinfo
 */
 wavinfo_t GetWavinfo (char *name, uint8_t *wav, int wavlength)
 {
-	wavinfo_t	info;
-	int     i;
-	int     format;
-	int		samples;
+	wavinfo_t info;
+	int i;
+	int format;
+	int samples;
 
 	memset (&info, 0, sizeof(info));
 
@@ -273,18 +273,18 @@ wavinfo_t GetWavinfo (char *name, uint8_t *wav, int wavlength)
 	{
 		data_p += 32;
 		info.loopstart = GetLittleLong();
-//		Con_Printf("loopstart=%d\n", sfx->loopstart);
+// Con_Printf("loopstart=%d\n", sfx->loopstart);
 
 	// if the next chunk is a LIST chunk, look for a cue length marker
 		FindNextChunk ("LIST");
 		if (data_p)
 		{
 			if (!strncmp (data_p + 28, "mark", 4))
-			{	// this is not a proper parse, but it works with cooledit...
+			{ // this is not a proper parse, but it works with cooledit...
 				data_p += 24;
-				i = GetLittleLong ();	// samples in loop
+				i = GetLittleLong (); // samples in loop
 				info.samples = info.loopstart + i;
-//				Con_Printf("looped length: %i\n", i);
+// Con_Printf("looped length: %i\n", i);
 			}
 		}
 	}

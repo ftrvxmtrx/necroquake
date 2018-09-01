@@ -6,9 +6,9 @@
 #include "r_shared.h"
 #include "d_local.h"
 
-static int		sprite_height;
-static int		minindex, maxindex;
-static sspan_t	*sprite_spans;
+static int sprite_height;
+static int minindex, maxindex;
+static sspan_t *sprite_spans;
 
 /*
 =====================
@@ -17,17 +17,17 @@ D_SpriteDrawSpans
 */
 void D_SpriteDrawSpans (sspan_t *pspan)
 {
-	int			count, spancount, izistep;
-	int			izi;
-	uint8_t		*pbase, *pdest;
-	fixed16_t	s, t, snext, tnext, sstep, tstep;
-	float		sdivz, tdivz, zi, z, du, dv, spancountminus1;
-	float		sdivz8stepu, tdivz8stepu, zi8stepu;
-	uint8_t		btemp;
-	short		*pz;
+	int count, spancount, izistep;
+	int izi;
+	uint8_t *pbase, *pdest;
+	fixed16_t s, t, snext, tnext, sstep, tstep;
+	float sdivz, tdivz, zi, z, du, dv, spancountminus1;
+	float sdivz8stepu, tdivz8stepu, zi8stepu;
+	uint8_t btemp;
+	short *pz;
 
-	sstep = 0;	// keep compiler happy
-	tstep = 0;	// ditto
+	sstep = 0; // keep compiler happy
+	tstep = 0; // ditto
 
 	pbase = cacheblock;
 
@@ -55,7 +55,7 @@ void D_SpriteDrawSpans (sspan_t *pspan)
 		sdivz = d_sdivzorigin + dv*d_sdivzstepv + du*d_sdivzstepu;
 		tdivz = d_tdivzorigin + dv*d_tdivzstepv + du*d_tdivzstepu;
 		zi = d_ziorigin + dv*d_zistepv + du*d_zistepu;
-		z = (float)0x10000 / zi;	// prescale to 16.16 fixed-point
+		z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 	// we count on FP exceptions being turned off to avoid range problems
 		izi = (int)(zi * 0x8000 * 0x10000);
 
@@ -88,21 +88,21 @@ void D_SpriteDrawSpans (sspan_t *pspan)
 				sdivz += sdivz8stepu;
 				tdivz += tdivz8stepu;
 				zi += zi8stepu;
-				z = (float)0x10000 / zi;	// prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 
 				snext = (int)(sdivz * z) + sadjust;
 				if (snext > bbextents)
 					snext = bbextents;
 				else if (snext < 8)
-					snext = 8;	// prevent round-off error on <0 steps from
-								//  from causing overstepping & running off the
-								//  edge of the texture
+					snext = 8; // prevent round-off error on <0 steps from
+								// from causing overstepping & running off the
+								// edge of the texture
 
 				tnext = (int)(tdivz * z) + tadjust;
 				if (tnext > bbextentt)
 					tnext = bbextentt;
 				else if (tnext < 8)
-					tnext = 8;	// guard against round-off error on <0 steps
+					tnext = 8; // guard against round-off error on <0 steps
 
 				sstep = (snext - s) >> 3;
 				tstep = (tnext - t) >> 3;
@@ -117,20 +117,20 @@ void D_SpriteDrawSpans (sspan_t *pspan)
 				sdivz += d_sdivzstepu * spancountminus1;
 				tdivz += d_tdivzstepu * spancountminus1;
 				zi += d_zistepu * spancountminus1;
-				z = (float)0x10000 / zi;	// prescale to 16.16 fixed-point
+				z = (float)0x10000 / zi; // prescale to 16.16 fixed-point
 				snext = (int)(sdivz * z) + sadjust;
 				if (snext > bbextents)
 					snext = bbextents;
 				else if (snext < 8)
-					snext = 8;	// prevent round-off error on <0 steps from
-								//  from causing overstepping & running off the
-								//  edge of the texture
+					snext = 8; // prevent round-off error on <0 steps from
+								// from causing overstepping & running off the
+								// edge of the texture
 
 				tnext = (int)(tdivz * z) + tadjust;
 				if (tnext > bbextentt)
 					tnext = bbextentt;
 				else if (tnext < 8)
-					tnext = 8;	// guard against round-off error on <0 steps
+					tnext = 8; // guard against round-off error on <0 steps
 
 				if (spancount > 1)
 				{
@@ -176,11 +176,11 @@ D_SpriteScanLeftEdge
 */
 void D_SpriteScanLeftEdge (void)
 {
-	int			i, v, itop, ibottom, lmaxindex;
-	emitpoint_t	*pvert, *pnext;
-	sspan_t		*pspan;
-	float		du, dv, vtop, vbottom, slope;
-	fixed16_t	u, u_step;
+	int i, v, itop, ibottom, lmaxindex;
+	emitpoint_t *pvert, *pnext;
+	sspan_t *pspan;
+	float du, dv, vtop, vbottom, slope;
+	fixed16_t u, u_step;
 
 	pspan = sprite_spans;
 	i = minindex;
@@ -237,11 +237,11 @@ D_SpriteScanRightEdge
 */
 void D_SpriteScanRightEdge (void)
 {
-	int			i, v, itop, ibottom;
-	emitpoint_t	*pvert, *pnext;
-	sspan_t		*pspan;
-	float		du, dv, vtop, vbottom, slope, uvert, unext, vvert, vnext;
-	fixed16_t	u, u_step;
+	int i, v, itop, ibottom;
+	emitpoint_t *pvert, *pnext;
+	sspan_t *pspan;
+	float du, dv, vtop, vbottom, slope, uvert, unext, vvert, vnext;
+	fixed16_t u, u_step;
 
 	pspan = sprite_spans;
 	i = minindex;
@@ -308,7 +308,7 @@ void D_SpriteScanRightEdge (void)
 
 	} while (i != maxindex);
 
-	pspan->count = DS_SPAN_LIST_END;	// mark the end of the span list
+	pspan->count = DS_SPAN_LIST_END; // mark the end of the span list
 }
 
 /*
@@ -318,8 +318,8 @@ D_SpriteCalculateGradients
 */
 void D_SpriteCalculateGradients (void)
 {
-	vec3_t		p_normal, p_saxis, p_taxis, p_temp1;
-	float		distinv;
+	vec3_t p_normal, p_saxis, p_taxis, p_temp1;
+	float distinv;
 
 	TransformVector (r_spritedesc.vpn, p_normal);
 	TransformVector (r_spritedesc.vright, p_saxis);
@@ -363,10 +363,10 @@ D_DrawSprite
 */
 void D_DrawSprite (void)
 {
-	int			i, nump;
-	float		ymin, ymax;
-	emitpoint_t	*pverts;
-	sspan_t		spans[MAXHEIGHT+1];
+	int i, nump;
+	float ymin, ymax;
+	emitpoint_t *pverts;
+	sspan_t spans[MAXHEIGHT+1];
 
 	sprite_spans = spans;
 
@@ -397,7 +397,7 @@ void D_DrawSprite (void)
 	ymax = ceil (ymax);
 
 	if (ymin >= ymax)
-		return;		// doesn't cross any scans at all
+		return; // doesn't cross any scans at all
 
 	cachewidth = r_spritedesc.pspriteframe->width;
 	sprite_height = r_spritedesc.pspriteframe->height;

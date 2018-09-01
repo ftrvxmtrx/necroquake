@@ -2,7 +2,7 @@
 #include "r_shared.h"
 #include "r_local.h"
 
-int	r_dlightframecount;
+int r_dlightframecount;
 
 /*
 ==================
@@ -11,7 +11,7 @@ R_AnimateLight
 */
 void R_AnimateLight (void)
 {
-	int			i,j,k;
+	int i,j,k;
 
 //
 // light animations
@@ -46,10 +46,10 @@ R_MarkLights
 */
 void R_MarkLights (dlight_t *light, int bit, mnode_t *node)
 {
-	mplane_t	*splitplane;
-	float		dist;
-	msurface_t	*surf;
-	int			i;
+	mplane_t *splitplane;
+	float dist;
+	msurface_t *surf;
+	int i;
 
 	if (node->contents < 0)
 		return;
@@ -91,11 +91,11 @@ R_PushDlights
 */
 void R_PushDlights (void)
 {
-	int		i;
-	dlight_t	*l;
+	int i;
+	dlight_t *l;
 
-	r_dlightframecount = r_framecount + 1;	// because the count hasn't
-											//  advanced yet for this frame
+	r_dlightframecount = r_framecount + 1; // because the count hasn't
+											// advanced yet for this frame
 	l = cl_dlights;
 
 	for (i=0 ; i<MAX_DLIGHTS ; i++, l++)
@@ -116,21 +116,21 @@ LIGHT SAMPLING
 
 int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 {
-	int			r;
-	float		front, back, frac;
-	int			side;
-	mplane_t	*plane;
-	vec3_t		mid;
-	msurface_t	*surf;
-	int			s, t, ds, dt;
-	int			i;
-	mtexinfo_t	*tex;
-	uint8_t		*lightmap;
-	unsigned	scale;
-	int			maps;
+	int r;
+	float front, back, frac;
+	int side;
+	mplane_t *plane;
+	vec3_t mid;
+	msurface_t *surf;
+	int s, t, ds, dt;
+	int i;
+	mtexinfo_t *tex;
+	uint8_t *lightmap;
+	unsigned scale;
+	int maps;
 
 	if (node->contents < 0)
-		return -1;		// didn't hit anything
+		return -1; // didn't hit anything
 
 // calculate mid point
 
@@ -151,10 +151,10 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 // go down front side
 	r = RecursiveLightPoint (node->children[side], start, mid);
 	if (r >= 0)
-		return r;		// hit something
+		return r; // hit something
 
 	if ( (back < 0) == side )
-		return -1;		// didn't hit anuthing
+		return -1; // didn't hit anuthing
 
 // check for impact on this node
 
@@ -162,7 +162,7 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 	for (i=0 ; i<node->numsurfaces ; i++, surf++)
 	{
 		if (surf->flags & SURF_DRAWTILED)
-			continue;	// no lightmaps
+			continue; // no lightmaps
 
 		tex = surf->texinfo;
 
@@ -213,8 +213,8 @@ int RecursiveLightPoint (mnode_t *node, vec3_t start, vec3_t end)
 
 int R_LightPoint (vec3_t p)
 {
-	vec3_t		end;
-	int			r;
+	vec3_t end;
+	int r;
 
 	if (!cl.worldmodel->lightdata)
 		return 255;

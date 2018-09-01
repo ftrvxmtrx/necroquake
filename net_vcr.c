@@ -3,17 +3,17 @@
 
 extern int vcrFile;
 
-// This is the playback portion of the VCR.  It reads the file produced
-// by the recorder and plays it back to the host.  The recording contains
+// This is the playback portion of the VCR. It reads the file produced
+// by the recorder and plays it back to the host. The recording contains
 // everything necessary (events, timestamps, and data) to duplicate the game
 // from the viewpoint of everything above the network layer.
 
 static struct
 {
-	double	time;
-	int		op;
-	long	session;
-}	next;
+	double time;
+	int op;
+	long session;
+} next;
 
 int VCR_Init (void)
 {
@@ -53,7 +53,7 @@ void VCR_Shutdown (void)
 
 int VCR_GetMessage (qsocket_t *sock)
 {
-	int	ret;
+	int ret;
 
 	if (host_time != next.time || next.op != VCR_OP_GETMESSAGE || next.session != *(long *)(&sock->driverdata))
 		Sys_Error ("VCR missmatch");
@@ -75,7 +75,7 @@ int VCR_GetMessage (qsocket_t *sock)
 
 int VCR_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
-	int	ret;
+	int ret;
 
 	if (host_time != next.time || next.op != VCR_OP_SENDMESSAGE || next.session != *(long *)(&sock->driverdata))
 		Sys_Error ("VCR missmatch");
@@ -89,7 +89,7 @@ int VCR_SendMessage (qsocket_t *sock, sizebuf_t *data)
 
 bool VCR_CanSendMessage (qsocket_t *sock)
 {
-	bool	ret;
+	bool ret;
 
 	if (host_time != next.time || next.op != VCR_OP_CANSENDMESSAGE || next.session != *(long *)(&sock->driverdata))
 		Sys_Error ("VCR missmatch");
@@ -116,7 +116,7 @@ qsocket_t *VCR_Connect (char *host)
 
 qsocket_t *VCR_CheckNewConnections (void)
 {
-	qsocket_t	*sock;
+	qsocket_t *sock;
 
 	if (host_time != next.time || next.op != VCR_OP_CONNECT)
 		Sys_Error ("VCR missmatch");

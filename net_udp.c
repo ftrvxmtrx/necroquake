@@ -12,7 +12,7 @@
 
 extern cvar_t hostname;
 
-static int net_acceptsocket = -1;		// socket for fielding new connections
+static int net_acceptsocket = -1; // socket for fielding new connections
 static int net_controlsocket;
 static int net_broadcastsocket = 0;
 static struct qsockaddr broadcastaddr;
@@ -26,7 +26,7 @@ static unsigned long myAddr;
 int UDP_Init (void)
 {
 	struct hostent *local;
-	char	buff[MAXHOSTNAMELEN];
+	char buff[MAXHOSTNAMELEN];
 	struct qsockaddr addr;
 	char *colon;
 
@@ -53,7 +53,7 @@ int UDP_Init (void)
 	((struct sockaddr_in *)&broadcastaddr)->sin_port = htons(net_hostport);
 
 	UDP_GetSocketAddr (net_controlsocket, &addr);
-	strcpy(my_tcpip_address,  UDP_AddrToString (&addr));
+	strcpy(my_tcpip_address, UDP_AddrToString (&addr));
 	colon = strrchr (my_tcpip_address, ':');
 	if (colon)
 		*colon = 0;
@@ -193,7 +193,7 @@ int UDP_Connect (int socket, struct qsockaddr *addr)
 
 int UDP_CheckNewConnections (void)
 {
-	unsigned long	available;
+	unsigned long available;
 
 	if (net_acceptsocket == -1)
 		return -1;
@@ -222,7 +222,7 @@ int UDP_Read (int socket, uint8_t *buf, int len, struct qsockaddr *addr)
 
 int UDP_MakeSocketBroadcastCapable (int socket)
 {
-	int				i = 1;
+	int i = 1;
 
 	// make this socket broadcast capable
 	if (setsockopt(socket, SOL_SOCKET, SO_BROADCAST, (char *)&i, sizeof(i)) < 0)

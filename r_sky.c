@@ -3,25 +3,25 @@
 #include "r_local.h"
 #include "d_local.h"
 
-int		iskyspeed = 8;
-int		iskyspeed2 = 2;
-float	skyspeed, skyspeed2;
+int iskyspeed = 8;
+int iskyspeed2 = 2;
+float skyspeed, skyspeed2;
 
-float		skytime;
+float skytime;
 
-uint8_t		*r_skysource;
+uint8_t *r_skysource;
 
 int r_skymade;
-int r_skydirect;		// not used?
+int r_skydirect; // not used?
 
 // TODO: clean up these routines
 
-uint8_t	bottomsky[128*131];
-uint8_t	bottommask[128*131];
-uint8_t	newsky[128*256];	// newsky and topsky both pack in here, 128 bytes
-							//  of newsky on the left of each scan, 128 bytes
-							//  of topsky on the right, because the low-level
-							//  drawers need 256-byte scan widths
+uint8_t bottomsky[128*131];
+uint8_t bottommask[128*131];
+uint8_t newsky[128*256]; // newsky and topsky both pack in here, 128 bytes
+							// of newsky on the left of each scan, 128 bytes
+							// of topsky on the right, because the low-level
+							// drawers need 256-byte scan widths
 
 /*
 =============
@@ -32,8 +32,8 @@ A sky texture is 256*128, with the right side being a masked overlay
 */
 void R_InitSky (texture_t *mt)
 {
-	int			i, j;
-	uint8_t		*src;
+	int i, j;
+	uint8_t *src;
 
 	src = (uint8_t *)mt + mt->offsets[0];
 
@@ -72,11 +72,11 @@ R_MakeSky
 */
 void R_MakeSky (void)
 {
-	int			x, y;
-	int			ofs, baseofs;
-	int			xshift, yshift;
-	unsigned	*pnewsky;
-	static int	xlast = -1, ylast = -1;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
+	unsigned *pnewsky;
+	static int xlast = -1, ylast = -1;
 
 	xshift = skytime*skyspeed;
 	yshift = skytime*skyspeed;
@@ -135,11 +135,11 @@ R_GenSkyTile
 */
 void R_GenSkyTile (void *pdest)
 {
-	int			x, y;
-	int			ofs, baseofs;
-	int			xshift, yshift;
-	unsigned	*pnewsky;
-	unsigned	*pd;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
+	unsigned *pnewsky;
+	unsigned *pd;
 
 	xshift = skytime*skyspeed;
 	yshift = skytime*skyspeed;
@@ -193,11 +193,11 @@ R_GenSkyTile16
 */
 void R_GenSkyTile16 (void *pdest)
 {
-	int				x, y;
-	int				ofs, baseofs;
-	int				xshift, yshift;
-	uint8_t			*pnewsky;
-	unsigned short	*pd;
+	int x, y;
+	int ofs, baseofs;
+	int xshift, yshift;
+	uint8_t *pnewsky;
+	unsigned short *pd;
 
 	xshift = skytime * skyspeed;
 	yshift = skytime * skyspeed;
@@ -233,8 +233,8 @@ R_SetSkyFrame
 */
 void R_SetSkyFrame (void)
 {
-	int		g, s1, s2;
-	float	temp;
+	int g, s1, s2;
+	float temp;
 
 	skyspeed = iskyspeed;
 	skyspeed2 = iskyspeed2;

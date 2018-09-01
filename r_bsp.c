@@ -6,32 +6,32 @@
 //
 // current entity info
 //
-bool		insubmodel;
-entity_t		*currententity;
-vec3_t			modelorg, base_modelorg;
+bool insubmodel;
+entity_t *currententity;
+vec3_t modelorg, base_modelorg;
 								// modelorg is the viewpoint reletive to
 								// the currently rendering entity
-vec3_t			r_entorigin;	// the currently rendering entity in world
+vec3_t r_entorigin; // the currently rendering entity in world
 								// coordinates
 
-float			entity_rotation[3][3];
+float entity_rotation[3][3];
 
-vec3_t			r_worldmodelorg;
+vec3_t r_worldmodelorg;
 
-int				r_currentbkey;
+int r_currentbkey;
 
 typedef enum {touchessolid, drawnode, nodrawnode} solidstate_t;
 
-#define MAX_BMODEL_VERTS	500			// 6K
-#define MAX_BMODEL_EDGES	1000		// 12K
+#define MAX_BMODEL_VERTS 500 // 6K
+#define MAX_BMODEL_EDGES 1000 // 12K
 
-static mvertex_t	*pbverts;
-static bedge_t		*pbedges;
-static int			numbverts, numbedges;
+static mvertex_t *pbverts;
+static bedge_t *pbedges;
+static int numbverts, numbedges;
 
-static mvertex_t	*pfrontenter, *pfrontexit;
+static mvertex_t *pfrontenter, *pfrontexit;
 
-static bool		makeclippededge;
+static bool makeclippededge;
 
 //===========================================================================
 
@@ -42,7 +42,7 @@ R_EntityRotate
 */
 void R_EntityRotate (vec3_t vec)
 {
-	vec3_t	tvec;
+	vec3_t tvec;
 
 	VectorCopy (vec, tvec);
 	vec[0] = DotProduct (entity_rotation[0], tvec);
@@ -57,7 +57,7 @@ R_RotateBmodel
 */
 void R_RotateBmodel (void)
 {
-	float	angle, s, c, temp1[3][3], temp2[3][3], temp3[3][3];
+	float angle, s, c, temp1[3][3], temp2[3][3], temp3[3][3];
 
 // TODO: should use a look-up table
 // TODO: should really be stored with the entity instead of being reconstructed
@@ -134,12 +134,12 @@ R_RecursiveClipBPoly
 */
 void R_RecursiveClipBPoly (bedge_t *pedges, mnode_t *pnode, msurface_t *psurf)
 {
-	bedge_t		*psideedges[2], *pnextedge, *ptedge;
-	int			i, side, lastside;
-	float		dist, frac, lastdist;
-	mplane_t	*splitplane, tplane;
-	mvertex_t	*pvert, *plastvert, *ptvert;
-	mnode_t		*pn;
+	bedge_t *psideedges[2], *pnextedge, *ptedge;
+	int i, side, lastside;
+	float dist, frac, lastdist;
+	mplane_t *splitplane, tplane;
+	mvertex_t *pvert, *plastvert, *ptvert;
+	mnode_t *pn;
 
 	psideedges[0] = psideedges[1] = NULL;
 
@@ -303,14 +303,14 @@ R_DrawSolidClippedSubmodelPolygons
 */
 void R_DrawSolidClippedSubmodelPolygons (model_t *pmodel)
 {
-	int			i, j, lindex;
-	vec_t		dot;
-	msurface_t	*psurf;
-	int			numsurfaces;
-	mplane_t	*pplane;
-	mvertex_t	bverts[MAX_BMODEL_VERTS];
-	bedge_t		bedges[MAX_BMODEL_EDGES], *pbedge;
-	medge_t		*pedge, *pedges;
+	int i, j, lindex;
+	vec_t dot;
+	msurface_t *psurf;
+	int numsurfaces;
+	mplane_t *pplane;
+	mvertex_t bverts[MAX_BMODEL_VERTS];
+	bedge_t bedges[MAX_BMODEL_EDGES], *pbedge;
+	medge_t *pedge, *pedges;
 
 // FIXME: use bounding-box-based frustum clipping info?
 
@@ -365,7 +365,7 @@ void R_DrawSolidClippedSubmodelPolygons (model_t *pmodel)
 					pbedge[j].pnext = &pbedge[j+1];
 				}
 
-				pbedge[j-1].pnext = NULL;	// mark end of edges
+				pbedge[j-1].pnext = NULL; // mark end of edges
 
 				R_RecursiveClipBPoly (pbedge, currententity->topnode, psurf);
 			}
@@ -384,11 +384,11 @@ R_DrawSubmodelPolygons
 */
 void R_DrawSubmodelPolygons (model_t *pmodel, int clipflags)
 {
-	int			i;
-	vec_t		dot;
-	msurface_t	*psurf;
-	int			numsurfaces;
-	mplane_t	*pplane;
+	int i;
+	vec_t dot;
+	msurface_t *psurf;
+	int numsurfaces;
+	mplane_t *pplane;
 
 // FIXME: use bounding-box-based frustum clipping info?
 
@@ -421,28 +421,28 @@ R_RecursiveWorldNode
 */
 void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 {
-	int			i, c, side, *pindex;
-	vec3_t		acceptpt, rejectpt;
-	mplane_t	*plane;
-	msurface_t	*surf, **mark;
-	mleaf_t		*pleaf;
-	double		d, dot;
+	int i, c, side, *pindex;
+	vec3_t acceptpt, rejectpt;
+	mplane_t *plane;
+	msurface_t *surf, **mark;
+	mleaf_t *pleaf;
+	double d, dot;
 
 	if (node->contents == CONTENTS_SOLID)
-		return;		// solid
+		return; // solid
 
 	if (node->visframe != r_visframecount)
 		return;
 
 // cull the clipping planes if not trivial accept
 // FIXME: the compiler is doing a lousy job of optimizing here; it could be
-//  twice as fast in ASM
+// twice as fast in ASM
 	if (clipflags)
 	{
 		for (i=0 ; i<4 ; i++)
 		{
 			if (! (clipflags & (1<<i)) )
-				continue;	// don't need to clip against it
+				continue; // don't need to clip against it
 
 		// generate accept and reject points
 		// FIXME: do with fast look-ups or integer tests based on the sign bit
@@ -468,7 +468,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 			d -= view_clipplanes[i].dist;
 
 			if (d >= 0)
-				clipflags &= ~(1<<i);	// node is entirely on screen
+				clipflags &= ~(1<<i); // node is entirely on screen
 		}
 	}
 
@@ -496,7 +496,7 @@ void R_RecursiveWorldNode (mnode_t *node, int clipflags)
 		}
 
 		pleaf->key = r_currentkey;
-		r_currentkey++;		// all bmodels in a leaf share the same key
+		r_currentkey++; // all bmodels in a leaf share the same key
 	}
 	else
 	{
@@ -619,9 +619,9 @@ R_RenderWorld
 */
 void R_RenderWorld (void)
 {
-	int			i;
-	model_t		*clmodel;
-	btofpoly_t	btofpolys[MAX_BTOFPOLYS];
+	int i;
+	model_t *clmodel;
+	btofpoly_t btofpolys[MAX_BTOFPOLYS];
 
 	pbtofpolys = btofpolys;
 

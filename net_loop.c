@@ -1,9 +1,9 @@
 #include "quakedef.h"
 #include "net_loop.h"
 
-bool	localconnectpending = false;
-qsocket_t	*loop_client = NULL;
-qsocket_t	*loop_server = NULL;
+bool localconnectpending = false;
+qsocket_t *loop_client = NULL;
+qsocket_t *loop_server = NULL;
 
 int Loop_Init (void)
 {
@@ -98,8 +98,8 @@ static int IntAlign(int value)
 
 int Loop_GetMessage (qsocket_t *sock)
 {
-	int		ret;
-	int		length;
+	int ret;
+	int length;
 
 	if (sock->receiveMessageLength == 0)
 		return 0;
@@ -114,7 +114,7 @@ int Loop_GetMessage (qsocket_t *sock)
 	sock->receiveMessageLength -= length;
 
 	if (sock->receiveMessageLength)
-		memcpy(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
+		memmove(sock->receiveMessage, &sock->receiveMessage[length], sock->receiveMessageLength);
 
 	if (sock->driverdata && ret == 1)
 		((qsocket_t *)sock->driverdata)->canSend = true;
@@ -125,7 +125,7 @@ int Loop_GetMessage (qsocket_t *sock)
 int Loop_SendMessage (qsocket_t *sock, sizebuf_t *data)
 {
 	uint8_t *buffer;
-	int  *bufferLength;
+	int *bufferLength;
 
 	if (!sock->driverdata)
 		return -1;
@@ -148,7 +148,7 @@ int Loop_SendMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	memcpy(buffer, data->data, data->cursize);
+	memmove(buffer, data->data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 
 	sock->canSend = false;
@@ -158,7 +158,7 @@ int Loop_SendMessage (qsocket_t *sock, sizebuf_t *data)
 int Loop_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 {
 	uint8_t *buffer;
-	int  *bufferLength;
+	int *bufferLength;
 
 	if (!sock->driverdata)
 		return -1;
@@ -181,7 +181,7 @@ int Loop_SendUnreliableMessage (qsocket_t *sock, sizebuf_t *data)
 	buffer++;
 
 	// message
-	memcpy(buffer, data->data, data->cursize);
+	memmove(buffer, data->data, data->cursize);
 	*bufferLength = IntAlign(*bufferLength + data->cursize + 4);
 	return 1;
 }

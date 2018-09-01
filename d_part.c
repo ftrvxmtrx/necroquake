@@ -11,11 +11,11 @@ D_DrawParticle
 */
 void D_DrawParticle (particle_t *pparticle)
 {
-	vec3_t	local, transformed;
-	float	zi;
-	uint8_t	*pdest;
-	short	*pz;
-	int		i, izi, pix, count, u, v;
+	vec3_t local, transformed;
+	float zi;
+	uint8_t *pdest;
+	short *pz;
+	int i, izi, pix, count, u, v;
 
 // transform point
 	VectorSubtract (pparticle->org, r_origin, local);

@@ -3,38 +3,38 @@
 #include <stdarg.h>
 #include "quakedef.h"
 
-int 		con_linewidth;
+int con_linewidth;
 
-float		con_cursorspeed = 4;
+float con_cursorspeed = 4;
 
-#define		CON_TEXTSIZE	16384
+#define CON_TEXTSIZE 16384
 
-bool 	con_forcedup;		// because no entities to refresh
+bool con_forcedup; // because no entities to refresh
 
-int			con_totallines;		// total lines in console scrollback
-int			con_backscroll;		// lines up from bottom to display
-int			con_current;		// where next message will be printed
-int			con_x;				// offset in current line for next print
-char		*con_text=0;
+int con_totallines; // total lines in console scrollback
+int con_backscroll; // lines up from bottom to display
+int con_current; // where next message will be printed
+int con_x; // offset in current line for next print
+char *con_text=0;
 
-cvar_t		con_notifytime = {"con_notifytime","3"};		//seconds
+cvar_t con_notifytime = {"con_notifytime","3"}; //seconds
 
-#define	NUM_CON_TIMES 4
-float		con_times[NUM_CON_TIMES];	// realtime time the line was generated
+#define NUM_CON_TIMES 4
+float con_times[NUM_CON_TIMES]; // realtime time the line was generated
 								// for transparent notify lines
 
-int			con_vislines;
+int con_vislines;
 
-bool	con_debuglog;
+bool con_debuglog;
 
-#define		MAXCMDLINE	256
-extern	char	key_lines[32][MAXCMDLINE];
-extern	int		edit_line;
-extern	int		key_linepos;
+#define MAXCMDLINE 256
+extern char key_lines[32][MAXCMDLINE];
+extern int edit_line;
+extern int key_linepos;
 
-bool	con_initialized;
+bool con_initialized;
 
-int			con_notifylines;		// scan lines to clear for notify lines
+int con_notifylines; // scan lines to clear for notify lines
 
 extern void M_Menu_Main_f (void);
 
@@ -50,7 +50,7 @@ void Con_ToggleConsole_f (void)
 		if (cls.state == ca_connected)
 		{
 			key_dest = key_game;
-			key_lines[edit_line][1] = 0;	// clear any typing
+			key_lines[edit_line][1] = 0; // clear any typing
 			key_linepos = 1;
 		}
 		else
@@ -83,7 +83,7 @@ Con_ClearNotify
 */
 void Con_ClearNotify (void)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<NUM_CON_TIMES ; i++)
 		con_times[i] = 0;
@@ -122,15 +122,15 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize (void)
 {
-	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
-	char	tbuf[CON_TEXTSIZE];
+	int i, j, width, oldwidth, oldtotallines, numlines, numchars;
+	char tbuf[CON_TEXTSIZE];
 
 	width = (vid.width >> 3) - 2;
 
 	if (width == con_linewidth)
 		return;
 
-	if (width < 1)			// video hasn't been initialized yet
+	if (width < 1) // video hasn't been initialized yet
 	{
 		width = 38;
 		con_linewidth = width;
@@ -153,7 +153,7 @@ void Con_CheckResize (void)
 		if (con_linewidth < numchars)
 			numchars = con_linewidth;
 
-		memcpy (tbuf, con_text, CON_TEXTSIZE);
+		memmove (tbuf, con_text, CON_TEXTSIZE);
 		memset (con_text, ' ', CON_TEXTSIZE);
 
 		for (i=0 ; i<numlines ; i++)
@@ -180,9 +180,9 @@ Con_Init
 */
 void Con_Init (void)
 {
-#define MAXGAMEDIRLEN	1000
-	char	temp[MAXGAMEDIRLEN+1];
-	char	*t2 = "/qconsole.log";
+#define MAXGAMEDIRLEN 1000
+	char temp[MAXGAMEDIRLEN+1];
+	char *t2 = "/qconsole.log";
 
 	con_debuglog = COM_CheckParm("-condebug");
 
@@ -239,24 +239,24 @@ If no console is visible, the notify window will pop up.
 */
 void Con_Print (char *txt)
 {
-	int		y;
-	int		c, l;
-	static int	cr;
-	int		mask;
+	int y;
+	int c, l;
+	static int cr;
+	int mask;
 
 	if ( ! con_initialized ) return;
 	con_backscroll = 0;
 
 	if (txt[0] == 1)
 	{
-		mask = 128;		// go to colored text
+		mask = 128; // go to colored text
 		S_LocalSound ("misc/talk.wav");
 	// play talk wav
 		txt++;
 	}
 	else if (txt[0] == 2)
 	{
-		mask = 128;		// go to colored text
+		mask = 128; // go to colored text
 		txt++;
 	}
 	else
@@ -300,7 +300,7 @@ void Con_Print (char *txt)
 			cr = 1;
 			break;
 
-		default:	// display character and advance
+		default: // display character and advance
 			y = con_current % con_totallines;
 			con_text[y*con_linewidth+con_x] = c | mask;
 			con_x++;
@@ -341,20 +341,20 @@ Con_Printf
 Handles cursor positioning, line wrapping, etc
 ================
 */
-#define	MAXPRINTMSG	4096
+#define MAXPRINTMSG 4096
 // FIXME: make a buffer size safe vsprintf?
 void Con_Printf (char *fmt, ...)
 {
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
-	static bool	inupdate;
+	va_list argptr;
+	char msg[MAXPRINTMSG];
+	static bool inupdate;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
 	va_end (argptr);
 
 // also echo to debugging console
-	Sys_Printf ("%s", msg);	// also echo to debugging console
+	Sys_Printf ("%s", msg); // also echo to debugging console
 
 // log all messages to file
 	if (con_debuglog)
@@ -364,7 +364,7 @@ void Con_Printf (char *fmt, ...)
 		return;
 
 	if (cls.state == ca_dedicated)
-		return;		// no graphics mode
+		return; // no graphics mode
 
 // write it to the scrollable buffer
 	Con_Print (msg);
@@ -392,11 +392,11 @@ A Con_Printf that only shows up if the "developer" cvar is set
 */
 void Con_DPrintf (char *fmt, ...)
 {
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
+	va_list argptr;
+	char msg[MAXPRINTMSG];
 
 	if (!developer.value)
-		return;			// don't confuse non-developers with techie stuff...
+		return; // don't confuse non-developers with techie stuff...
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
@@ -414,9 +414,9 @@ Okay to call even when the screen can't be updated
 */
 void Con_SafePrintf (char *fmt, ...)
 {
-	va_list		argptr;
-	char		msg[1024];
-	int			temp;
+	va_list argptr;
+	char msg[1024];
+	int temp;
 
 	va_start (argptr,fmt);
 	vsprintf (msg,fmt,argptr);
@@ -445,11 +445,11 @@ The input line scrolls horizontally if typing goes beyond the right edge
 */
 void Con_DrawInput (void)
 {
-	int		i;
-	char	*text;
+	int i;
+	char *text;
 
 	if (key_dest != key_console && !con_forcedup)
-		return;		// don't draw anything
+		return; // don't draw anything
 
 	text = key_lines[edit_line];
 
@@ -460,7 +460,7 @@ void Con_DrawInput (void)
 	for (i=key_linepos+1 ; i< con_linewidth ; i++)
 		text[i] = ' ';
 
-//	prestep if horizontally scrolling
+// prestep if horizontally scrolling
 	if (key_linepos >= con_linewidth)
 		text += 1 + key_linepos - con_linewidth;
 
@@ -481,10 +481,10 @@ Draws the last few lines of output transparently over the game top
 */
 void Con_DrawNotify (void)
 {
-	int		x, v;
-	char	*text;
-	int		i;
-	float	time;
+	int x, v;
+	char *text;
+	int i;
+	float time;
 	extern char chat_buffer[];
 
 	v = 0;
@@ -540,10 +540,10 @@ The typing input line at the bottom should only be drawn if typing is allowed
 */
 void Con_DrawConsole (int lines, bool drawinput)
 {
-	int				i, x, y;
-	int				rows;
-	char			*text;
-	int				j;
+	int i, x, y;
+	int rows;
+	char *text;
+	int j;
 
 	if (lines <= 0)
 		return;
@@ -554,8 +554,8 @@ void Con_DrawConsole (int lines, bool drawinput)
 // draw the text
 	con_vislines = lines;
 
-	rows = (lines-16)>>3;		// rows of text to draw
-	y = lines - 16 - (rows<<3);	// may start slightly negative
+	rows = (lines-16)>>3; // rows of text to draw
+	y = lines - 16 - (rows<<3); // may start slightly negative
 
 	for (i= con_current - rows + 1 ; i<=con_current ; i++, y+=8 )
 	{
@@ -580,7 +580,7 @@ Con_NotifyBox
 */
 void Con_NotifyBox (char *text)
 {
-	double		t1, t2;
+	double t1, t2;
 
 // during startup for sound / cd warnings
 	Con_Printf("\n\n\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
@@ -590,7 +590,7 @@ void Con_NotifyBox (char *text)
 	Con_Printf ("Press a key.\n");
 	Con_Printf("\35\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\36\37\n");
 
-	key_count = -2;		// wait for a key down and up
+	key_count = -2; // wait for a key down and up
 	key_dest = key_console;
 
 	do
@@ -599,11 +599,11 @@ void Con_NotifyBox (char *text)
 		SCR_UpdateScreen ();
 		Sys_SendKeyEvents ();
 		t2 = Sys_FloatTime ();
-		realtime += t2-t1;		// make the cursor blink
+		realtime += t2-t1; // make the cursor blink
 	} while (key_count < 0);
 
 	Con_Printf ("\n");
 	key_dest = key_game;
-	realtime = 0;				// put the cursor back to invisible
+	realtime = 0; // put the cursor back to invisible
 }
 

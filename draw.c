@@ -4,33 +4,33 @@
 #include "quakedef.h"
 
 typedef struct {
-	vrect_t	rect;
-	int		width;
-	int		height;
-	uint8_t	*ptexbytes;
-	int		rowbytes;
+	vrect_t rect;
+	int width;
+	int height;
+	uint8_t *ptexbytes;
+	int rowbytes;
 } rectdesc_t;
 
-static rectdesc_t	r_rectdesc;
+static rectdesc_t r_rectdesc;
 
-uint8_t		*draw_chars;				// 8*8 graphic characters
-qpic_t		*draw_disc;
-qpic_t		*draw_backtile;
+uint8_t *draw_chars; // 8*8 graphic characters
+qpic_t *draw_disc;
+qpic_t *draw_backtile;
 
 //=============================================================================
 /* Support Routines */
 
 typedef struct cachepic_s
 {
-	char		name[MAX_QPATH];
-	cache_user_t	cache;
+	char name[MAX_QPATH];
+	cache_user_t cache;
 } cachepic_t;
 
-#define	MAX_CACHED_PICS		128
-cachepic_t	menu_cachepics[MAX_CACHED_PICS];
-int			menu_numcachepics;
+#define MAX_CACHED_PICS 128
+cachepic_t menu_cachepics[MAX_CACHED_PICS];
+int menu_numcachepics;
 
-qpic_t	*Draw_PicFromWad (char *name)
+qpic_t *Draw_PicFromWad (char *name)
 {
 	return W_GetLumpName (name);
 }
@@ -40,11 +40,11 @@ qpic_t	*Draw_PicFromWad (char *name)
 Draw_CachePic
 ================
 */
-qpic_t	*Draw_CachePic (char *path)
+qpic_t *Draw_CachePic (char *path)
 {
-	cachepic_t	*pic;
-	int			i;
-	qpic_t		*dat;
+	cachepic_t *pic;
+	int i;
+	qpic_t *dat;
 
 	for (pic=menu_cachepics, i=0 ; i<menu_numcachepics ; pic++, i++)
 		if (!strcmp (path, pic->name))
@@ -107,16 +107,16 @@ smoothly scrolled off.
 */
 void Draw_Character (int x, int y, int num)
 {
-	uint8_t			*dest;
-	uint8_t			*source;
-	unsigned short	*pusdest;
-	int				drawline;
-	int				row, col;
+	uint8_t *dest;
+	uint8_t *source;
+	unsigned short *pusdest;
+	int drawline;
+	int row, col;
 
 	num &= 255;
 
 	if (y <= -8)
-		return;			// totally off screen
+		return; // totally off screen
 
 #ifdef PARANOID
 	if (y > vid.height - 8 || x < 0 || x > vid.width - 8)
@@ -130,7 +130,7 @@ void Draw_Character (int x, int y, int num)
 	source = draw_chars + (row<<10) + (col<<3);
 
 	if (y < 0)
-	{	// clipped
+	{ // clipped
 		drawline = 8 + y;
 		source -= 128*y;
 		y = 0;
@@ -221,14 +221,14 @@ of the code.
 */
 void Draw_DebugChar (char num)
 {
-	uint8_t			*dest;
-	uint8_t			*source;
-	int				drawline;
-	extern uint8_t		*draw_chars;
-	int				row, col;
+	uint8_t *dest;
+	uint8_t *source;
+	int drawline;
+	extern uint8_t *draw_chars;
+	int row, col;
 
 	if (!vid.direct)
-		return;		// don't have direct FB access, so no debugchars...
+		return; // don't have direct FB access, so no debugchars...
 
 	drawline = 8;
 
@@ -260,9 +260,9 @@ Draw_Pic
 */
 void Draw_Pic (int x, int y, qpic_t *pic)
 {
-	uint8_t			*dest, *source;
-	unsigned short	*pusdest;
-	int				v, u;
+	uint8_t *dest, *source;
+	unsigned short *pusdest;
+	int v, u;
 
 	if ((x < 0) ||
 		(x + pic->width > vid.width) ||
@@ -280,7 +280,7 @@ void Draw_Pic (int x, int y, qpic_t *pic)
 
 		for (v=0 ; v<pic->height ; v++)
 		{
-			memcpy (dest, source, pic->width);
+			memmove (dest, source, pic->width);
 			dest += vid.rowbytes;
 			source += pic->width;
 		}
@@ -310,9 +310,9 @@ Draw_TransPic
 */
 void Draw_TransPic (int x, int y, qpic_t *pic)
 {
-	uint8_t	*dest, *source, tbyte;
-	unsigned short	*pusdest;
-	int				v, u;
+	uint8_t *dest, *source, tbyte;
+	unsigned short *pusdest;
+	int v, u;
 
 	if (x < 0 || (x + pic->width) > vid.width || y < 0 || (y + pic->height) > vid.height)
 	{
@@ -326,7 +326,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 		dest = vid.buffer + y * vid.rowbytes + x;
 
 		if (pic->width & 7)
-		{	// general
+		{ // general
 			for (v=0 ; v<pic->height ; v++)
 			{
 				for (u=0 ; u<pic->width ; u++)
@@ -338,7 +338,7 @@ void Draw_TransPic (int x, int y, qpic_t *pic)
 			}
 		}
 		else
-		{	// unwound
+		{ // unwound
 			for (v=0 ; v<pic->height ; v++)
 			{
 				for (u=0 ; u<pic->width ; u+=8)
@@ -395,9 +395,9 @@ Draw_TransPicTranslate
 */
 void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 {
-	uint8_t	*dest, *source, tbyte;
-	unsigned short	*pusdest;
-	int				v, u;
+	uint8_t *dest, *source, tbyte;
+	unsigned short *pusdest;
+	int v, u;
 
 	if (x < 0 || (x + pic->width) > vid.width || y < 0 || (y + pic->height) > vid.height)
 	{
@@ -411,7 +411,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 		dest = vid.buffer + y * vid.rowbytes + x;
 
 		if (pic->width & 7)
-		{	// general
+		{ // general
 			for (v=0 ; v<pic->height ; v++)
 			{
 				for (u=0 ; u<pic->width ; u++)
@@ -423,7 +423,7 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 			}
 		}
 		else
-		{	// unwound
+		{ // unwound
 			for (v=0 ; v<pic->height ; v++)
 			{
 				for (u=0 ; u<pic->width ; u+=8)
@@ -475,10 +475,10 @@ void Draw_TransPicTranslate (int x, int y, qpic_t *pic, uint8_t *translation)
 
 void Draw_CharToConback (int num, uint8_t *dest)
 {
-	int		row, col;
-	uint8_t	*source;
-	int		drawline;
-	int		x;
+	int row, col;
+	uint8_t *source;
+	int drawline;
+	int x;
 
 	row = num>>4;
 	col = num&15;
@@ -505,12 +505,12 @@ Draw_ConsoleBackground
 */
 void Draw_ConsoleBackground (int lines)
 {
-	int				x, y, v, n;
-	uint8_t			*src, *dest;
-	unsigned short	*pusdest;
-	int				f, fstep;
-	qpic_t			*conback;
-	char			ver[100];
+	int x, y, v, n;
+	uint8_t *src, *dest;
+	unsigned short *pusdest;
+	int f, fstep;
+	qpic_t *conback;
+	char ver[100];
 
 	conback = Draw_CachePic ("gfx/conback.lmp");
 
@@ -531,7 +531,7 @@ void Draw_ConsoleBackground (int lines)
 			v = (vid.conheight - lines + y)*200/vid.conheight;
 			src = conback->data + v*320;
 			if (vid.conwidth == 320)
-				memcpy (dest, src, vid.conwidth);
+				memmove (dest, src, vid.conwidth);
 			else
 			{
 				f = 0;
@@ -585,9 +585,9 @@ R_DrawRect8
 void R_DrawRect8 (vrect_t *prect, int rowbytes, uint8_t *psrc,
 	int transparent)
 {
-	uint8_t	t;
-	int		i, j, srcdelta, destdelta;
-	uint8_t	*pdest;
+	uint8_t t;
+	int i, j, srcdelta, destdelta;
+	uint8_t *pdest;
 
 	pdest = vid.buffer + (prect->y * vid.rowbytes) + prect->x;
 
@@ -618,7 +618,7 @@ void R_DrawRect8 (vrect_t *prect, int rowbytes, uint8_t *psrc,
 	{
 		for (i=0 ; i<prect->height ; i++)
 		{
-			memcpy (pdest, psrc, prect->width);
+			memmove (pdest, psrc, prect->width);
 			psrc += rowbytes;
 			pdest += vid.rowbytes;
 		}
@@ -633,9 +633,9 @@ R_DrawRect16
 void R_DrawRect16 (vrect_t *prect, int rowbytes, uint8_t *psrc,
 	int transparent)
 {
-	uint8_t			t;
-	int				i, j, srcdelta, destdelta;
-	unsigned short	*pdest;
+	uint8_t t;
+	int i, j, srcdelta, destdelta;
+	unsigned short *pdest;
 
 // FIXME: would it be better to pre-expand native-format versions?
 
@@ -692,9 +692,9 @@ refresh window.
 */
 void Draw_TileClear (int x, int y, int w, int h)
 {
-	int				width, height, tileoffsetx, tileoffsety;
-	uint8_t			*psrc;
-	vrect_t			vr;
+	int width, height, tileoffsetx, tileoffsety;
+	uint8_t *psrc;
+	vrect_t vr;
 
 	r_rectdesc.rect.x = x;
 	r_rectdesc.rect.y = y;
@@ -745,12 +745,12 @@ void Draw_TileClear (int x, int y, int w, int h)
 
 			vr.x += vr.width;
 			width -= vr.width;
-			tileoffsetx = 0;	// only the left tile can be left-clipped
+			tileoffsetx = 0; // only the left tile can be left-clipped
 		}
 
 		vr.y += vr.height;
 		height -= vr.height;
-		tileoffsety = 0;		// only the top tile can be top-clipped
+		tileoffsety = 0; // only the top tile can be top-clipped
 	}
 }
 
@@ -763,10 +763,10 @@ Fills a box of pixels with a single color
 */
 void Draw_Fill (int x, int y, int w, int h, int c)
 {
-	uint8_t			*dest;
-	unsigned short	*pusdest;
-	unsigned		uc;
-	int				u, v;
+	uint8_t *dest;
+	unsigned short *pusdest;
+	unsigned uc;
+	int u, v;
 
 	if (r_pixbytes == 1)
 	{
@@ -795,14 +795,14 @@ Draw_FadeScreen
 */
 void Draw_FadeScreen (void)
 {
-	int			x,y;
-	uint8_t		*pbuf;
+	int x,y;
+	uint8_t *pbuf;
 
 	S_ExtraUpdate ();
 
 	for (y=0 ; y<vid.height ; y++)
 	{
-		int	t;
+		int t;
 
 		pbuf = (uint8_t *)(vid.buffer + vid.rowbytes*y);
 		t = (y & 1) << 1;

@@ -6,30 +6,30 @@ key up events are sent even if in console mode
 
 */
 
-#define		MAXCMDLINE	256
-char	key_lines[32][MAXCMDLINE];
-int		key_linepos;
-int		shift_down=false;
-int		key_lastpress;
+#define MAXCMDLINE 256
+char key_lines[32][MAXCMDLINE];
+int key_linepos;
+int shift_down=false;
+int key_lastpress;
 
-int		edit_line=0;
-int		history_line=0;
+int edit_line=0;
+int history_line=0;
 
-keydest_t	key_dest;
+keydest_t key_dest;
 
-int		key_count;			// incremented every key event
+int key_count; // incremented every key event
 
-char	*keybindings[256];
-bool	consolekeys[256];	// if true, can't be rebound while in console
-bool	menubound[256];	// if true, can't be rebound while in menu
-int		keyshift[256];		// key to map to if shift held down in console
-int		key_repeats[256];	// if > 1, it is autorepeating
-bool	keydown[256];
+char *keybindings[256];
+bool consolekeys[256]; // if true, can't be rebound while in console
+bool menubound[256]; // if true, can't be rebound while in menu
+int keyshift[256]; // key to map to if shift held down in console
+int key_repeats[256]; // if > 1, it is autorepeating
+bool keydown[256];
 
 typedef struct
 {
-	char	*name;
-	int		keynum;
+	char *name;
+	int keynum;
 } keyname_t;
 
 keyname_t keynames[] =
@@ -115,7 +115,7 @@ keyname_t keynames[] =
 	{"MWHEELUP", K_MWHEELUP},
 	{"MWHEELDOWN", K_MWHEELDOWN},
 
-	{"SEMICOLON", ';'},	// because a raw semicolon seperates commands
+	{"SEMICOLON", ';'}, // because a raw semicolon seperates commands
 
 	{NULL,0}
 };
@@ -137,11 +137,11 @@ Interactive line editing and console scrollback
 */
 void Key_Console (int key)
 {
-	char	*cmd;
+	char *cmd;
 
 	if (key == K_ENTER)
 	{
-		Cbuf_AddText (key_lines[edit_line]+1);	// skip the >
+		Cbuf_AddText (key_lines[edit_line]+1); // skip the >
 		Cbuf_AddText ("\n");
 		Con_Printf ("%s\n",key_lines[edit_line]);
 		edit_line = (edit_line + 1) & 31;
@@ -149,13 +149,13 @@ void Key_Console (int key)
 		key_lines[edit_line][0] = ']';
 		key_linepos = 1;
 		if (cls.state == ca_disconnected)
-			SCR_UpdateScreen ();	// force an update, because the command
+			SCR_UpdateScreen (); // force an update, because the command
 									// may take some time
 		return;
 	}
 
 	if (key == K_TAB)
-	{	// command completion
+	{ // command completion
 		cmd = Cmd_CompleteCommand (key_lines[edit_line]+1);
 		if (!cmd)
 			cmd = Cvar_CompleteVariable (key_lines[edit_line]+1);
@@ -242,7 +242,7 @@ void Key_Console (int key)
 	}
 
 	if (key < 32 || key > 127)
-		return;	// non printable
+		return; // non printable
 
 	if (key_linepos < MAXCMDLINE-1)
 	{
@@ -286,7 +286,7 @@ void Key_Message (int key)
 	}
 
 	if (key < 32 || key > 127)
-		return;	// non printable
+		return; // non printable
 
 	if (key == K_BACKSPACE)
 	{
@@ -312,13 +312,13 @@ void Key_Message (int key)
 Key_StringToKeynum
 
 Returns a key number to be used to index keybindings[] by looking at
-the given string.  Single ascii characters return themselves, while
+the given string. Single ascii characters return themselves, while
 the K_* names are matched up.
 ===================
 */
 int Key_StringToKeynum (char *str)
 {
-	keyname_t	*kn;
+	keyname_t *kn;
 
 	if (!str || !str[0])
 		return -1;
@@ -344,13 +344,13 @@ FIXME: handle quote special (general escape sequence?)
 */
 char *Key_KeynumToString (int keynum)
 {
-	keyname_t	*kn;
-	static	char	tinystr[2];
+	keyname_t *kn;
+	static char tinystr[2];
 
 	if (keynum == -1)
 		return "<KEY NOT FOUND>";
 	if (keynum > 32 && keynum < 127)
-	{	// printable ascii
+	{ // printable ascii
 		tinystr[0] = keynum;
 		tinystr[1] = 0;
 		return tinystr;
@@ -370,8 +370,8 @@ Key_SetBinding
 */
 void Key_SetBinding (int keynum, char *binding)
 {
-	char	*new;
-	int		l;
+	char *new;
+	int l;
 
 	if (keynum == -1)
 		return;
@@ -398,7 +398,7 @@ Key_Unbind_f
 */
 void Key_Unbind_f (void)
 {
-	int		b;
+	int b;
 
 	if (Cmd_Argc() != 2)
 	{
@@ -418,7 +418,7 @@ void Key_Unbind_f (void)
 
 void Key_Unbindall_f (void)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<256 ; i++)
 		if (keybindings[i])
@@ -432,8 +432,8 @@ Key_Bind_f
 */
 void Key_Bind_f (void)
 {
-	int			i, c, b;
-	char		cmd[1024];
+	int i, c, b;
+	char cmd[1024];
 
 	c = Cmd_Argc();
 
@@ -459,7 +459,7 @@ void Key_Bind_f (void)
 	}
 
 // copy the rest of the command line
-	cmd[0] = 0;		// start out with a null string
+	cmd[0] = 0; // start out with a null string
 	for (i=2 ; i< c ; i++)
 	{
 		if (i > 2)
@@ -479,7 +479,7 @@ Writes lines containing "bind key value"
 */
 void Key_WriteBindings (FILE *f)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<256 ; i++)
 		if (keybindings[i])
@@ -494,7 +494,7 @@ Key_Init
 */
 void Key_Init (void)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<32 ; i++)
 	{
@@ -572,8 +572,8 @@ Should NOT be called during an interrupt!
 */
 void Key_Event (int key, bool down)
 {
-	char	*kb;
-	char	cmd[1024];
+	char *kb;
+	char cmd[1024];
 
 	keydown[key] = down;
 
@@ -584,7 +584,7 @@ void Key_Event (int key, bool down)
 	key_count++;
 	if (key_count <= 0)
 	{
-		return;		// just catching keys for Con_NotifyBox
+		return; // just catching keys for Con_NotifyBox
 	}
 
 // update auto-repeat status
@@ -593,7 +593,7 @@ void Key_Event (int key, bool down)
 		key_repeats[key]++;
 		if (key != K_BACKSPACE && key != K_PAUSE && key_repeats[key] > 1)
 		{
-			return;	// ignore most autorepeats
+			return; // ignore most autorepeats
 		}
 
 		if (key >= 200 && !keybindings[key])
@@ -630,9 +630,9 @@ void Key_Event (int key, bool down)
 
 //
 // key up events only generate commands if the game key binding is
-// a button command (leading + sign).  These will occur even in console mode,
+// a button command (leading + sign). These will occur even in console mode,
 // to keep the character from continuing an action started before a console
-// switch.  Button commands include the kenum as a parameter, so multiple
+// switch. Button commands include the kenum as a parameter, so multiple
 // downs can be matched with ups
 //
 	if (!down)
@@ -675,7 +675,7 @@ void Key_Event (int key, bool down)
 		if (kb)
 		{
 			if (kb[0] == '+')
-			{	// button commands add keynum as a parm
+			{ // button commands add keynum as a parm
 				sprintf (cmd, "%s %i\n", kb, key);
 				Cbuf_AddText (cmd);
 			}
@@ -689,7 +689,7 @@ void Key_Event (int key, bool down)
 	}
 
 	if (!down)
-		return;		// other systems only care about key down events
+		return; // other systems only care about key down events
 
 	if (shift_down)
 	{
@@ -721,7 +721,7 @@ Key_ClearStates
 */
 void Key_ClearStates (void)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<256 ; i++)
 	{

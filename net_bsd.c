@@ -44,7 +44,7 @@ int net_numdrivers = 2;
 
 #include "net_udp.h"
 
-net_landriver_t	net_landrivers[MAX_NET_DRIVERS] =
+net_landriver_t net_landrivers[MAX_NET_DRIVERS] =
 {
 	{
 	"UDP",

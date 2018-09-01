@@ -3,8 +3,8 @@
 #include "r_local.h"
 #include "d_local.h"
 
-#define SKY_SPAN_SHIFT	5
-#define SKY_SPAN_MAX	(1 << SKY_SPAN_SHIFT)
+#define SKY_SPAN_SHIFT 5
+#define SKY_SPAN_MAX (1 << SKY_SPAN_SHIFT)
 
 /*
 =================
@@ -13,8 +13,8 @@ D_Sky_uv_To_st
 */
 void D_Sky_uv_To_st (int u, int v, fixed16_t *s, fixed16_t *t)
 {
-	float	wu, wv, temp;
-	vec3_t	end;
+	float wu, wv, temp;
+	vec3_t end;
 
 	if (r_refdef.vrect.width >= r_refdef.vrect.height)
 		temp = (float)r_refdef.vrect.width;
@@ -30,7 +30,7 @@ void D_Sky_uv_To_st (int u, int v, fixed16_t *s, fixed16_t *t)
 	end[2] *= 3;
 	VectorNormalize (end);
 
-	temp = skytime*skyspeed;	// TODO: add D_SetupFrame & set this there
+	temp = skytime*skyspeed; // TODO: add D_SetupFrame & set this there
 	*s = (int)((temp + 6*(SKYSIZE/2-1)*end[0]) * 0x10000);
 	*t = (int)((temp + 6*(SKYSIZE/2-1)*end[1]) * 0x10000);
 }
@@ -42,13 +42,13 @@ D_DrawSkyScans8
 */
 void D_DrawSkyScans8 (espan_t *pspan)
 {
-	int				count, spancount, u, v;
-	unsigned char	*pdest;
-	fixed16_t		s, t, snext, tnext, sstep, tstep;
-	int				spancountminus1;
+	int count, spancount, u, v;
+	unsigned char *pdest;
+	fixed16_t s, t, snext, tnext, sstep, tstep;
+	int spancountminus1;
 
-	sstep = 0;	// keep compiler happy
-	tstep = 0;	// ditto
+	sstep = 0; // keep compiler happy
+	tstep = 0; // ditto
 
 	do
 	{

@@ -3,54 +3,54 @@
 #include "quakedef.h"
 #include "r_shared.h"
 #include "r_local.h"
-#include "d_local.h"	// FIXME: shouldn't be needed (is needed for patch
+#include "d_local.h" // FIXME: shouldn't be needed (is needed for patch
 						// right now, but that should move)
 
-#define LIGHT_MIN	5		// lowest light value we'll allow, to avoid the
-							//  need for inner-loop light clamping
+#define LIGHT_MIN 5 // lowest light value we'll allow, to avoid the
+							// need for inner-loop light clamping
 
-mtriangle_t		*ptriangles;
-affinetridesc_t	r_affinetridesc;
+mtriangle_t *ptriangles;
+affinetridesc_t r_affinetridesc;
 
-void *			acolormap;	// FIXME: should go away
+void * acolormap; // FIXME: should go away
 
-trivertx_t		*r_apverts;
+trivertx_t *r_apverts;
 
 // TODO: these probably will go away with optimized rasterization
-mdl_t				*pmdl;
-vec3_t				r_plightvec;
-int					r_ambientlight;
-float				r_shadelight;
-aliashdr_t			*paliashdr;
-finalvert_t			*pfinalverts;
-auxvert_t			*pauxverts;
-static float		ziscale;
-static model_t		*pmodel;
+mdl_t *pmdl;
+vec3_t r_plightvec;
+int r_ambientlight;
+float r_shadelight;
+aliashdr_t *paliashdr;
+finalvert_t *pfinalverts;
+auxvert_t *pauxverts;
+static float ziscale;
+static model_t *pmodel;
 
-static vec3_t		alias_forward, alias_right, alias_up;
+static vec3_t alias_forward, alias_right, alias_up;
 
-static maliasskindesc_t	*pskindesc;
+static maliasskindesc_t *pskindesc;
 
-int				r_amodels_drawn;
-int				a_skinwidth;
-int				r_anumverts;
+int r_amodels_drawn;
+int a_skinwidth;
+int r_anumverts;
 
-float	aliastransform[3][4];
+float aliastransform[3][4];
 
 typedef struct {
-	int	index0;
-	int	index1;
+	int index0;
+	int index1;
 } aedge_t;
 
-static aedge_t	aedges[12] = {
+static aedge_t aedges[12] = {
 {0, 1}, {1, 2}, {2, 3}, {3, 0},
 {4, 5}, {5, 6}, {6, 7}, {7, 4},
 {0, 5}, {1, 4}, {2, 7}, {3, 6}
 };
 
-#define NUMVERTEXNORMALS	162
+#define NUMVERTEXNORMALS 162
 
-float	r_avertexnormals[NUMVERTEXNORMALS][3] = {
+float r_avertexnormals[NUMVERTEXNORMALS][3] = {
 #include "anorms.h"
 };
 
@@ -69,15 +69,15 @@ R_AliasCheckBBox
 */
 bool R_AliasCheckBBox (void)
 {
-	int					i, flags, frame, numv;
-	aliashdr_t			*pahdr;
-	float				zi, basepts[8][3], v0, v1, frac;
-	finalvert_t			*pv0, *pv1, viewpts[16];
-	auxvert_t			*pa0, *pa1, viewaux[16];
-	maliasframedesc_t	*pframedesc;
-	bool			zclipped, zfullyclipped;
-	unsigned			anyclip, allclip;
-	int					minz;
+	int i, flags, frame, numv;
+	aliashdr_t *pahdr;
+	float zi, basepts[8][3], v0, v1, frac;
+	finalvert_t *pv0, *pv1, viewpts[16];
+	auxvert_t *pa0, *pa1, viewaux[16];
+	maliasframedesc_t *pframedesc;
+	bool zclipped, zfullyclipped;
+	unsigned anyclip, allclip;
+	int minz;
 
 // expand, rotate, and translate points into worldspace
 
@@ -124,7 +124,7 @@ bool R_AliasCheckBBox (void)
 	minz = 9999;
 	for (i=0; i<8 ; i++)
 	{
-		R_AliasTransformVector  (&basepts[i][0], &viewaux[i].fv[0]);
+		R_AliasTransformVector (&basepts[i][0], &viewaux[i].fv[0]);
 
 		if (viewaux[i].fv[2] < ALIAS_Z_CLIP_PLANE)
 		{
@@ -143,7 +143,7 @@ bool R_AliasCheckBBox (void)
 
 	if (zfullyclipped)
 	{
-		return false;	// everything was near-z-clipped
+		return false; // everything was near-z-clipped
 	}
 
 	numv = 8;
@@ -209,7 +209,7 @@ bool R_AliasCheckBBox (void)
 	}
 
 	if (allclip)
-		return false;	// trivial reject off one side
+		return false; // trivial reject off one side
 
 	currententity->trivial_accept = !anyclip & !zclipped;
 
@@ -245,12 +245,12 @@ General clipped case
 */
 void R_AliasPreparePoints (void)
 {
-	int			i;
-	stvert_t	*pstverts;
-	finalvert_t	*fv;
-	auxvert_t	*av;
-	mtriangle_t	*ptri;
-	finalvert_t	*pfv[3];
+	int i;
+	stvert_t *pstverts;
+	finalvert_t *fv;
+	auxvert_t *av;
+	mtriangle_t *ptri;
+	finalvert_t *pfv[3];
 
 	pstverts = (stvert_t *)((uint8_t *)paliashdr + paliashdr->stverts);
 	r_anumverts = pmdl->numverts;
@@ -290,17 +290,17 @@ void R_AliasPreparePoints (void)
 		pfv[2] = &pfinalverts[ptri->vertindex[2]];
 
 		if ( pfv[0]->flags & pfv[1]->flags & pfv[2]->flags & (ALIAS_XY_CLIP_MASK | ALIAS_Z_CLIP) )
-			continue;		// completely clipped
+			continue; // completely clipped
 
 		if ( ! ( (pfv[0]->flags | pfv[1]->flags | pfv[2]->flags) &
 			(ALIAS_XY_CLIP_MASK | ALIAS_Z_CLIP) ) )
-		{	// totally unclipped
+		{ // totally unclipped
 			r_affinetridesc.pfinalverts = pfinalverts;
 			r_affinetridesc.ptriangles = ptri;
 			D_PolysetDraw ();
 		}
 		else
-		{	// partially clipped
+		{ // partially clipped
 			R_AliasClipTriangle (ptri);
 		}
 	}
@@ -313,11 +313,11 @@ R_AliasSetUpTransform
 */
 void R_AliasSetUpTransform (int trivial_accept)
 {
-	int				i;
-	float			rotationmatrix[3][4], t2matrix[3][4];
-	static float	tmatrix[3][4];
-	static float	viewmatrix[3][4];
-	vec3_t			angles;
+	int i;
+	float rotationmatrix[3][4], t2matrix[3][4];
+	static float tmatrix[3][4];
+	static float viewmatrix[3][4];
+	vec3_t angles;
 
 // TODO: should really be stored with the entity instead of being reconstructed
 // TODO: should use a look-up table
@@ -358,9 +358,9 @@ void R_AliasSetUpTransform (int trivial_accept)
 	VectorInverse (viewmatrix[1]);
 	VectorCopy (vpn, viewmatrix[2]);
 
-//	viewmatrix[0][3] = 0;
-//	viewmatrix[1][3] = 0;
-//	viewmatrix[2][3] = 0;
+// viewmatrix[0][3] = 0;
+// viewmatrix[1][3] = 0;
+// viewmatrix[2][3] = 0;
 
 	R_ConcatTransforms (viewmatrix, rotationmatrix, aliastransform);
 
@@ -391,8 +391,8 @@ R_AliasTransformFinalVert
 void R_AliasTransformFinalVert (finalvert_t *fv, auxvert_t *av,
 	trivertx_t *pverts, stvert_t *pstverts)
 {
-	int		temp;
-	float	lightcos, *plightnormal;
+	int temp;
+	float lightcos, *plightnormal;
 
 	av->fv[0] = DotProduct(pverts->v, aliastransform[0]) +
 			aliastransform[0][3];
@@ -431,9 +431,9 @@ R_AliasTransformAndProjectFinalVerts
 */
 void R_AliasTransformAndProjectFinalVerts (finalvert_t *fv, stvert_t *pstverts)
 {
-	int			i, temp;
-	float		lightcos, *plightnormal, zi;
-	trivertx_t	*pverts;
+	int i, temp;
+	float lightcos, *plightnormal, zi;
+	trivertx_t *pverts;
 
 	pverts = r_apverts;
 
@@ -483,7 +483,7 @@ R_AliasProjectFinalVert
 */
 void R_AliasProjectFinalVert (finalvert_t *fv, auxvert_t *av)
 {
-	float	zi;
+	float zi;
 
 // project points
 	zi = 1.0 / av->fv[2];
@@ -501,8 +501,8 @@ R_AliasPrepareUnclippedPoints
 */
 void R_AliasPrepareUnclippedPoints (void)
 {
-	stvert_t	*pstverts;
-	finalvert_t	*fv;
+	stvert_t *pstverts;
+	finalvert_t *fv;
 
 	pstverts = (stvert_t *)((uint8_t *)paliashdr + paliashdr->stverts);
 	r_anumverts = pmdl->numverts;
@@ -529,11 +529,11 @@ R_AliasSetupSkin
 */
 void R_AliasSetupSkin (void)
 {
-	int					skinnum;
-	int					i, numskins;
-	maliasskingroup_t	*paliasskingroup;
-	float				*pskinintervals, fullskininterval;
-	float				skintargettime, skintime;
+	int skinnum;
+	int i, numskins;
+	maliasskingroup_t *paliasskingroup;
+	float *pskinintervals, fullskininterval;
+	float skintargettime, skintime;
 
 	skinnum = currententity->skinnum;
 	if ((skinnum >= pmdl->numskins) || (skinnum < 0))
@@ -574,7 +574,7 @@ void R_AliasSetupSkin (void)
 	r_affinetridesc.pskindesc = pskindesc;
 	r_affinetridesc.pskin = (void *)((uint8_t *)paliashdr + pskindesc->skin);
 	r_affinetridesc.skinwidth = a_skinwidth;
-	r_affinetridesc.seamfixupX16 =  (a_skinwidth >> 1) << 16;
+	r_affinetridesc.seamfixupX16 = (a_skinwidth >> 1) << 16;
 	r_affinetridesc.skinheight = pmdl->skinheight;
 }
 
@@ -620,10 +620,10 @@ set r_apverts
 */
 void R_AliasSetupFrame (void)
 {
-	int				frame;
-	int				i, numframes;
-	maliasgroup_t	*paliasgroup;
-	float			*pintervals, fullinterval, targettime, time;
+	int frame;
+	int i, numframes;
+	maliasgroup_t *paliasgroup;
+	float *pintervals, fullinterval, targettime, time;
 
 	frame = currententity->frame;
 	if ((frame >= pmdl->numframes) || (frame < 0))
@@ -670,9 +670,9 @@ R_AliasDrawModel
 */
 void R_AliasDrawModel (alight_t *plighting)
 {
-	finalvert_t		finalverts[MAXALIASVERTS +
+	finalvert_t finalverts[MAXALIASVERTS +
 						((CACHE_SIZE - 1) / sizeof(finalvert_t)) + 1];
-	auxvert_t		auxverts[MAXALIASVERTS];
+	auxvert_t auxverts[MAXALIASVERTS];
 
 	r_amodels_drawn++;
 
@@ -696,7 +696,7 @@ void R_AliasDrawModel (alight_t *plighting)
 			r_recursiveaffinetriangles;
 
 	if (r_affinetridesc.drawtype)
-		D_PolysetUpdateTables ();		// FIXME: precalc...
+		D_PolysetUpdateTables (); // FIXME: precalc...
 
 	acolormap = currententity->colormap;
 

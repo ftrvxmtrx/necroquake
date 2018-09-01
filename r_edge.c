@@ -13,36 +13,36 @@ this breaks spans at every edge, even hidden ones (bad)
 have a sentinal at both ends?
 #endif
 
-edge_t	*auxedges;
-edge_t	*r_edges, *edge_p, *edge_max;
+edge_t *auxedges;
+edge_t *r_edges, *edge_p, *edge_max;
 
-surf_t	*surfaces, *surface_p, *surf_max;
+surf_t *surfaces, *surface_p, *surf_max;
 
 // surfaces are generated in back to front order by the bsp, so if a surf
 // pointer is greater than another one, it should be drawn in front
 // surfaces[1] is the background, and is used as the active surface stack
 
-edge_t	*newedges[MAXHEIGHT];
-edge_t	*removeedges[MAXHEIGHT];
+edge_t *newedges[MAXHEIGHT];
+edge_t *removeedges[MAXHEIGHT];
 
-espan_t	*span_p, *max_span_p;
+espan_t *span_p, *max_span_p;
 
-int		r_currentkey;
+int r_currentkey;
 
-extern	int	screenwidth;
+extern int screenwidth;
 
-int	current_iv;
+int current_iv;
 
-int	edge_head_u_shift20, edge_tail_u_shift20;
+int edge_head_u_shift20, edge_tail_u_shift20;
 
 static void (*pdrawfunc)(void);
 
-edge_t	edge_head;
-edge_t	edge_tail;
-edge_t	edge_aftertail;
-edge_t	edge_sentinel;
+edge_t edge_head;
+edge_t edge_tail;
+edge_t edge_aftertail;
+edge_t edge_sentinel;
 
-float	fv;
+float fv;
 
 void R_GenerateSpans (void);
 void R_GenerateSpansBackward (void);
@@ -60,8 +60,8 @@ R_DrawCulledPolys
 */
 void R_DrawCulledPolys (void)
 {
-	surf_t			*s;
-	msurface_t		*pface;
+	surf_t *s;
+	msurface_t *pface;
 
 	currententity = &cl_entities[0];
 
@@ -102,14 +102,14 @@ R_BeginEdgeFrame
 */
 void R_BeginEdgeFrame (void)
 {
-	int		v;
+	int v;
 
 	edge_p = r_edges;
 	edge_max = &r_edges[r_numallocatededges];
 
-	surface_p = &surfaces[2];	// background is surface 1,
-								//  surface 0 is a dummy
-	surfaces[1].spans = NULL;	// no background spans yet
+	surface_p = &surfaces[2]; // background is surface 1,
+								// surface 0 is a dummy
+	surfaces[1].spans = NULL; // no background spans yet
 	surfaces[1].flags = SURF_DRAWBACKGROUND;
 
 // put the background behind everything in the world
@@ -138,14 +138,14 @@ void R_BeginEdgeFrame (void)
 R_InsertNewEdges
 
 Adds the edges in the linked list edgestoadd, adding them to the edges in the
-linked list edgelist.  edgestoadd is assumed to be sorted on u, and non-empty (this is actually newedges[v]).  edgelist is assumed to be sorted on u, with a
+linked list edgelist. edgestoadd is assumed to be sorted on u, and non-empty (this is actually newedges[v]). edgelist is assumed to be sorted on u, with a
 sentinel at the end (actually, this is the active edge table starting at
 edge_head.next).
 ==============
 */
 void R_InsertNewEdges (edge_t *edgestoadd, edge_t *edgelist)
 {
-	edge_t	*next_edge;
+	edge_t *next_edge;
 
 	do
 	{
@@ -196,7 +196,7 @@ R_StepActiveU
 */
 void R_StepActiveU (edge_t *pedge)
 {
-	edge_t		*pnext_edge, *pwedge;
+	edge_t *pnext_edge, *pwedge;
 
 	while (1)
 	{
@@ -261,9 +261,9 @@ R_CleanupSpan
 */
 void R_CleanupSpan ()
 {
-	surf_t	*surf;
-	int		iu;
-	espan_t	*span;
+	surf_t *surf;
+	int iu;
+	espan_t *span;
 
 // now that we've reached the right edge of the screen, we're done with any
 // unfinished surfaces, so emit a span for whatever's on top
@@ -294,9 +294,9 @@ R_LeadingEdgeBackwards
 */
 void R_LeadingEdgeBackwards (edge_t *edge)
 {
-	espan_t			*span;
-	surf_t			*surf, *surf2;
-	int				iu;
+	espan_t *span;
+	surf_t *surf, *surf2;
+	int iu;
 
 // it's adding a new surface in, so find the correct place
 	surf = &surfaces[edge->surfs[1]];
@@ -373,8 +373,8 @@ R_TrailingEdge
 */
 void R_TrailingEdge (surf_t *surf, edge_t *edge)
 {
-	espan_t			*span;
-	int				iu;
+	espan_t *span;
+	int iu;
 
 // don't generate a span if this is an inverted span, with the end
 // edge preceding the start edge (that is, we haven't seen the
@@ -411,10 +411,10 @@ R_LeadingEdge
 */
 void R_LeadingEdge (edge_t *edge)
 {
-	espan_t			*span;
-	surf_t			*surf, *surf2;
-	int				iu;
-	double			fu, newzi, testzi, newzitop, newzibottom;
+	espan_t *span;
+	surf_t *surf, *surf2;
+	int iu;
+	double fu, newzi, testzi, newzitop, newzibottom;
 
 	if (edge->surfs[1])
 	{
@@ -535,8 +535,8 @@ R_GenerateSpans
 */
 void R_GenerateSpans (void)
 {
-	edge_t			*edge;
-	surf_t			*surf;
+	edge_t *edge;
+	surf_t *surf;
 
 // clear active surfaces to just the background surface
 	surfaces[1].next = surfaces[1].prev = &surfaces[1];
@@ -569,7 +569,7 @@ R_GenerateSpansBackward
 */
 void R_GenerateSpansBackward (void)
 {
-	edge_t			*edge;
+	edge_t *edge;
 
 // clear active surfaces to just the background surface
 	surfaces[1].next = surfaces[1].prev = &surfaces[1];
@@ -602,10 +602,10 @@ Each surface has a linked list of its visible spans
 */
 void R_ScanEdges (void)
 {
-	int		iv, bottom;
-	uint8_t	basespans[MAXSPANS*sizeof(espan_t)+CACHE_SIZE];
-	espan_t	*basespan_p;
-	surf_t	*s;
+	int iv, bottom;
+	uint8_t basespans[MAXSPANS*sizeof(espan_t)+CACHE_SIZE];
+	espan_t *basespan_p;
+	surf_t *s;
 
 	basespan_p = (espan_t *)
 			((long)(basespans + CACHE_SIZE - 1) & ~(CACHE_SIZE - 1));
@@ -631,13 +631,13 @@ void R_ScanEdges (void)
 	edge_tail.surfs[0] = 1;
 	edge_tail.surfs[1] = 0;
 
-	edge_aftertail.u = -1;		// force a move
+	edge_aftertail.u = -1; // force a move
 	edge_aftertail.u_step = 0;
 	edge_aftertail.next = &edge_sentinel;
 	edge_aftertail.prev = &edge_tail;
 
 // FIXME: do we need this now that we clamp x in r_draw.c?
-	edge_sentinel.u = 2000 << 24;		// make sure nothing sorts past this
+	edge_sentinel.u = 2000 << 24; // make sure nothing sorts past this
 	edge_sentinel.prev = &edge_aftertail;
 
 //
@@ -664,7 +664,7 @@ void R_ScanEdges (void)
 	// the next scan
 		if (span_p >= max_span_p)
 		{
-			S_ExtraUpdate ();	// don't let sound get messed up if going slow
+			S_ExtraUpdate (); // don't let sound get messed up if going slow
 
 			if (r_drawculledpolys)
 			{

@@ -3,11 +3,11 @@
 #include "r_shared.h"
 #include "r_local.h"
 
-static int				clip_current;
-static vec5_t			clip_verts[2][MAXWORKINGVERTS];
-static int				sprite_width, sprite_height;
+static int clip_current;
+static vec5_t clip_verts[2][MAXWORKINGVERTS];
+static int sprite_width, sprite_height;
 
-spritedesc_t			r_spritedesc;
+spritedesc_t r_spritedesc;
 
 /*
 ================
@@ -16,7 +16,7 @@ R_RotateSprite
 */
 void R_RotateSprite (float beamlength)
 {
-	vec3_t	vec;
+	vec3_t vec;
 
 	if (beamlength == 0.0)
 		return;
@@ -36,10 +36,10 @@ Throws out the back side
 */
 int R_ClipSpriteFace (int nump, clipplane_t *pclipplane)
 {
-	int		i, outcount;
-	float	dists[MAXWORKINGVERTS+1];
-	float	frac, clipdist, *pclipnormal;
-	float	*in, *instep, *outstep, *vert2;
+	int i, outcount;
+	float dists[MAXWORKINGVERTS+1];
+	float frac, clipdist, *pclipnormal;
+	float *in, *instep, *outstep, *vert2;
 
 	clipdist = pclipplane->dist;
 	pclipnormal = pclipplane->normal;
@@ -66,7 +66,7 @@ int R_ClipSpriteFace (int nump, clipplane_t *pclipplane)
 
 // handle wraparound case
 	dists[nump] = dists[0];
-	memcpy (instep, in, sizeof (vec5_t));
+	memmove (instep, in, sizeof (vec5_t));
 
 // clip the winding
 	instep = in;
@@ -76,7 +76,7 @@ int R_ClipSpriteFace (int nump, clipplane_t *pclipplane)
 	{
 		if (dists[i] >= 0)
 		{
-			memcpy (outstep, instep, sizeof (vec5_t));
+			memmove (outstep, instep, sizeof (vec5_t));
 			outstep += sizeof (vec5_t) / sizeof (float);
 			outcount++;
 		}
@@ -112,11 +112,11 @@ R_SetupAndDrawSprite
 */
 void R_SetupAndDrawSprite ()
 {
-	int			i, nump;
-	float		dot, scale, *pv;
-	vec5_t		*pverts;
-	vec3_t		left, up, right, down, transformed, local;
-	emitpoint_t	outverts[MAXWORKINGVERTS+1], *pout;
+	int i, nump;
+	float dot, scale, *pv;
+	vec5_t *pverts;
+	vec3_t left, up, right, down, transformed, local;
+	emitpoint_t outverts[MAXWORKINGVERTS+1], *pout;
 
 	dot = DotProduct (r_spritedesc.vpn, modelorg);
 
@@ -211,10 +211,10 @@ R_GetSpriteframe
 */
 mspriteframe_t *R_GetSpriteframe (msprite_t *psprite)
 {
-	mspritegroup_t	*pspritegroup;
-	mspriteframe_t	*pspriteframe;
-	int				i, numframes, frame;
-	float			*pintervals, fullinterval, targettime, time;
+	mspritegroup_t *pspritegroup;
+	mspriteframe_t *pspriteframe;
+	int i, numframes, frame;
+	float *pintervals, fullinterval, targettime, time;
 
 	frame = currententity->frame;
 
@@ -260,10 +260,10 @@ R_DrawSprite
 */
 void R_DrawSprite (void)
 {
-	int				i;
-	msprite_t		*psprite;
-	vec3_t			tvec;
-	float			dot, angle, sr, cr;
+	int i;
+	msprite_t *psprite;
+	vec3_t tvec;
+	float dot, angle, sr, cr;
 
 	psprite = currententity->model->cache.data;
 
@@ -285,9 +285,9 @@ void R_DrawSprite (void)
 		tvec[1] = -modelorg[1];
 		tvec[2] = -modelorg[2];
 		VectorNormalize (tvec);
-		dot = tvec[2];	// same as DotProduct (tvec, r_spritedesc.vup) because
-						//  r_spritedesc.vup is 0, 0, 1
-		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
+		dot = tvec[2]; // same as DotProduct (tvec, r_spritedesc.vup) because
+						// r_spritedesc.vup is 0, 0, 1
+		if ((dot > 0.999848) || (dot < -0.999848)) // cos(1 degree) = 0.999848
 			return;
 		r_spritedesc.vup[0] = 0;
 		r_spritedesc.vup[1] = 0;
@@ -295,14 +295,14 @@ void R_DrawSprite (void)
 		r_spritedesc.vright[0] = tvec[1];
 								// CrossProduct(r_spritedesc.vup, -modelorg,
 		r_spritedesc.vright[1] = -tvec[0];
-								//              r_spritedesc.vright)
+								// r_spritedesc.vright)
 		r_spritedesc.vright[2] = 0;
 		VectorNormalize (r_spritedesc.vright);
 		r_spritedesc.vpn[0] = -r_spritedesc.vright[1];
 		r_spritedesc.vpn[1] = r_spritedesc.vright[0];
 		r_spritedesc.vpn[2] = 0;
 					// CrossProduct (r_spritedesc.vright, r_spritedesc.vup,
-					//  r_spritedesc.vpn)
+					// r_spritedesc.vpn)
 	}
 	else if (psprite->type == SPR_VP_PARALLEL)
 	{
@@ -324,23 +324,23 @@ void R_DrawSprite (void)
 	// down, because the cross product will be between two nearly parallel
 	// vectors and starts to approach an undefined state, so we don't draw if
 	// the two vectors are less than 1 degree apart
-		dot = vpn[2];	// same as DotProduct (vpn, r_spritedesc.vup) because
-						//  r_spritedesc.vup is 0, 0, 1
-		if ((dot > 0.999848) || (dot < -0.999848))	// cos(1 degree) = 0.999848
+		dot = vpn[2]; // same as DotProduct (vpn, r_spritedesc.vup) because
+						// r_spritedesc.vup is 0, 0, 1
+		if ((dot > 0.999848) || (dot < -0.999848)) // cos(1 degree) = 0.999848
 			return;
 		r_spritedesc.vup[0] = 0;
 		r_spritedesc.vup[1] = 0;
 		r_spritedesc.vup[2] = 1;
 		r_spritedesc.vright[0] = vpn[1];
 										// CrossProduct (r_spritedesc.vup, vpn,
-		r_spritedesc.vright[1] = -vpn[0];	//  r_spritedesc.vright)
+		r_spritedesc.vright[1] = -vpn[0]; // r_spritedesc.vright)
 		r_spritedesc.vright[2] = 0;
 		VectorNormalize (r_spritedesc.vright);
 		r_spritedesc.vpn[0] = -r_spritedesc.vright[1];
 		r_spritedesc.vpn[1] = r_spritedesc.vright[0];
 		r_spritedesc.vpn[2] = 0;
 					// CrossProduct (r_spritedesc.vright, r_spritedesc.vup,
-					//  r_spritedesc.vpn)
+					// r_spritedesc.vpn)
 	}
 	else if (psprite->type == SPR_ORIENTED)
 	{

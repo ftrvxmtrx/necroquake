@@ -36,7 +36,7 @@ void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal )
 */
 void PerpendicularVector( vec3_t dst, const vec3_t src )
 {
-	int	pos;
+	int pos;
 	int i;
 	float minelem = 1.0F;
 	vec3_t tempvec;
@@ -68,12 +68,12 @@ void PerpendicularVector( vec3_t dst, const vec3_t src )
 
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees )
 {
-	float	m[3][3];
-	float	im[3][3];
-	float	zrot[3][3];
-	float	tmpmat[3][3];
-	float	rot[3][3];
-	int	i;
+	float m[3][3];
+	float im[3][3];
+	float zrot[3][3];
+	float tmpmat[3][3];
+	float rot[3][3];
+	int i;
 	vec3_t vr, vup, vf;
 
 	vf[0] = dir[0];
@@ -95,7 +95,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 	m[1][2] = vf[1];
 	m[2][2] = vf[2];
 
-	memcpy( im, m, sizeof( im ) );
+	memmove( im, m, sizeof( im ) );
 
 	im[0][1] = m[1][0];
 	im[0][2] = m[2][0];
@@ -123,7 +123,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 
 /*-----------------------------------------------------------------*/
 
-float	anglemod(float a)
+float anglemod(float a)
 {
 #if 0
 	if (a >= 0)
@@ -144,7 +144,7 @@ Split out like this for ASM to call.
 */
 void BOPS_Error (void)
 {
-	Sys_Error ("BoxOnPlaneSide:  Bad signbits");
+	Sys_Error ("BoxOnPlaneSide: Bad signbits");
 }
 
 /*
@@ -156,10 +156,10 @@ Returns 1, 2, or 1 + 2
 */
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, mplane_t *p)
 {
-	float	dist1, dist2;
-	int		sides;
+	float dist1, dist2;
+	int sides;
 
-#if 0	// this is done by the BOX_ON_PLANE_SIDE macro before calling this
+#if 0 // this is done by the BOX_ON_PLANE_SIDE macro before calling this
 		// function
 // fast axial cases
 	if (p->type < 3)
@@ -208,14 +208,14 @@ dist1 = p->normal[0]*emins[0] + p->normal[1]*emins[1] + p->normal[2]*emins[2];
 dist2 = p->normal[0]*emaxs[0] + p->normal[1]*emaxs[1] + p->normal[2]*emaxs[2];
 		break;
 	default:
-		dist1 = dist2 = 0;		// shut up compiler
+		dist1 = dist2 = 0; // shut up compiler
 		BOPS_Error ();
 		break;
 	}
 
 #if 0
-	int		i;
-	vec3_t	corners[2];
+	int i;
+	vec3_t corners[2];
 
 	for (i=0 ; i<3 ; i++)
 	{
@@ -256,8 +256,8 @@ if (sides == 0)
 
 void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 {
-	float		angle;
-	float		sr, sp, sy, cr, cp, cy;
+	float angle;
+	float sr, sp, sy, cr, cp, cy;
 
 	angle = angles[YAW] * (M_PI*2 / 360);
 	sy = sin(angle);
@@ -282,7 +282,7 @@ void AngleVectors (vec3_t angles, vec3_t forward, vec3_t right, vec3_t up)
 
 int VectorCompare (vec3_t v1, vec3_t v2)
 {
-	int		i;
+	int i;
 
 	for (i=0 ; i<3 ; i++)
 		if (v1[i] != v2[i])
@@ -335,23 +335,23 @@ double sqrt(double x);
 
 vec_t Length(vec3_t v)
 {
-	int		i;
-	float	length;
+	int i;
+	float length;
 
 	length = 0;
 	for (i=0 ; i< 3 ; i++)
 		length += v[i]*v[i];
-	length = sqrt (length);		// FIXME
+	length = sqrt (length); // FIXME
 
 	return length;
 }
 
 float VectorNormalize (vec3_t v)
 {
-	float	length, ilength;
+	float length, ilength;
 
 	length = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
-	length = sqrt (length);		// FIXME
+	length = sqrt (length); // FIXME
 
 	if (length)
 	{
@@ -460,16 +460,16 @@ quotient must fit in 32 bits.
 void FloorDivMod (double numer, double denom, int *quotient,
 		int *rem)
 {
-	int		q, r;
-	double	x;
+	int q, r;
+	double x;
 
 #ifndef PARANOID
 	if (denom <= 0.0)
 		Sys_Error ("FloorDivMod: bad denominator %d\n", denom);
 
-//	if ((floor(numer) != numer) || (floor(denom) != denom))
-//		Sys_Error ("FloorDivMod: non-integer numer or denom %f %f\n",
-//				numer, denom);
+// if ((floor(numer) != numer) || (floor(denom) != denom))
+// Sys_Error ("FloorDivMod: non-integer numer or denom %f %f\n",
+// numer, denom);
 #endif
 
 	if (numer >= 0.0)
