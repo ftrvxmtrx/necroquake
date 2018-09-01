@@ -203,6 +203,7 @@ void Sys_SendKeyEvents(void)
                 modstate = SDL_GetModState();
                 switch(sym)
                 {
+                   case SDLK_WORLD_7: sym = '~'; break;
                    case SDLK_DELETE: sym = K_DEL; break;
                    case SDLK_BACKSPACE: sym = K_BACKSPACE; break;
                    case SDLK_F1: sym = K_F1; break;
