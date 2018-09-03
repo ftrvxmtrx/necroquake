@@ -278,7 +278,7 @@ int main (int c, char **v)
 	signal(SIGFPE, SIG_IGN);
 
 	memset(&parms, 0, sizeof(parms));
-	parms.memsize = 32*1024*1024;
+	parms.memsize = 128*1024*1024;
 	parms.membase = malloc (parms.memsize);
 	parms.basedir = basedir;
 	parms.cachedir = cachedir;
