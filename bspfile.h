@@ -7,10 +7,10 @@
 #define MAX_MAP_ENTITIES 1024
 #define MAX_MAP_ENTSTRING 65536
 
-#define MAX_MAP_PLANES 32767
-#define MAX_MAP_NODES 32767 // because negative shorts are contents
-#define MAX_MAP_CLIPNODES 32767 //
-#define MAX_MAP_LEAFS 8192
+#define MAX_MAP_PLANES 65535
+#define MAX_MAP_NODES 65535 // because negative shorts are contents
+#define MAX_MAP_CLIPNODES 65530 //
+#define MAX_MAP_LEAFS 32768
 #define MAX_MAP_VERTS 65535
 #define MAX_MAP_FACES 65535
 #define MAX_MAP_MARKSURFACES 65535

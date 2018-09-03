@@ -45,7 +45,7 @@ typedef struct
 
 #define SIGNONS 4 // signon messages to receive before connected
 
-#define MAX_DLIGHTS 32
+#define MAX_DLIGHTS 128
 typedef struct
 {
 	vec3_t origin;
@@ -231,8 +231,8 @@ extern cvar_t m_yaw;
 extern cvar_t m_forward;
 extern cvar_t m_side;
 
-#define MAX_TEMP_ENTITIES 64 // lightning bolts, etc
-#define MAX_STATIC_ENTITIES 128 // torches, etc
+#define MAX_TEMP_ENTITIES 256 // lightning bolts, etc
+#define MAX_STATIC_ENTITIES 512 // torches, etc
 
 extern client_state_t cl;
 
@@ -265,7 +265,7 @@ void CL_Disconnect (void);
 void CL_Disconnect_f (void);
 void CL_NextDemo (void);
 
-#define MAX_VISEDICTS 256
+#define MAX_VISEDICTS 1024
 extern int cl_numvisedicts;
 extern entity_t *cl_visedicts[MAX_VISEDICTS];
 

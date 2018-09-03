@@ -32,8 +32,6 @@ uint8_t *r_warpbuffer;
 
 uint8_t *r_stack_start;
 
-bool r_fov_greater_than_90;
-
 //
 // view origin
 //
@@ -422,11 +420,6 @@ void R_ViewChanged (vrect_t *pvrect, int lineadj, float aspect)
 	r_aliastransition = r_aliastransbase.value * res_scale;
 	r_resfudge = r_aliastransadj.value * res_scale;
 
-	if (scr_fov.value <= 90.0)
-		r_fov_greater_than_90 = false;
-	else
-		r_fov_greater_than_90 = true;
-
 	D_ViewChanged ();
 }
 
@@ -559,7 +552,7 @@ void R_DrawViewModel (void)
 	float add;
 	dlight_t *dl;
 
-	if (!r_drawviewmodel.value || r_fov_greater_than_90)
+	if (!r_drawviewmodel.value)
 		return;
 
 	if (cl.items & IT_INVISIBILITY)
