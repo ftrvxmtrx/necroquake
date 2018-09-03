@@ -16,6 +16,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
+#include <execinfo.h>
 
 #include "quakedef.h"
 
@@ -51,12 +52,17 @@ void Sys_Init(void)
 
 void Sys_Error (char *error, ...)
 {
-    va_list argptr;
-    char string[1024];
+	va_list argptr;
+	char string[1024];
+	void *buf[32];
+	int levels;
 
-    va_start (argptr,error);
-    vsprintf (string,error,argptr);
-    va_end (argptr);
+	levels = backtrace(buf, nelem(buf));
+	backtrace_symbols_fd(&buf[1], levels-1, 2);
+
+	va_start (argptr,error);
+	vsprintf (string,error,argptr);
+	va_end (argptr);
 	fprintf(stderr, "Error: %s\n", string);
 
 	Host_Shutdown ();
@@ -66,12 +72,12 @@ void Sys_Error (char *error, ...)
 
 void Sys_Warn (char *warning, ...)
 {
-    va_list argptr;
-    char string[1024];
+	va_list argptr;
+	char string[1024];
 
-    va_start (argptr,warning);
-    vsprintf (string,warning,argptr);
-    va_end (argptr);
+	va_start (argptr,warning);
+	vsprintf (string,warning,argptr);
+	va_end (argptr);
 	fprintf(stderr, "Warning: %s", string);
 }
 
@@ -223,38 +229,38 @@ int Sys_FileTime (char *path)
 
 void Sys_mkdir (char *path)
 {
-    mkdir (path, 0777);
+	mkdir (path, 0777);
 }
 
 void Sys_DebugLog(char *file, char *fmt, ...)
 {
-    va_list argptr;
-    static char data[1024];
-    FILE *fp;
+	va_list argptr;
+	static char data[1024];
+	FILE *fp;
 
-    va_start(argptr, fmt);
-    vsprintf(data, fmt, argptr);
-    va_end(argptr);
-    fp = fopen(file, "a");
-    fwrite(data, strlen(data), 1, fp);
-    fclose(fp);
+	va_start(argptr, fmt);
+	vsprintf(data, fmt, argptr);
+	va_end(argptr);
+	fp = fopen(file, "a");
+	fwrite(data, strlen(data), 1, fp);
+	fclose(fp);
 }
 
 double Sys_FloatTime (void)
 {
-    struct timeval tp;
-    struct timezone tzp;
-    static int secbase;
+	struct timeval tp;
+	struct timezone tzp;
+	static int secbase;
 
-    gettimeofday(&tp, &tzp);
+	gettimeofday(&tp, &tzp);
 
-    if (!secbase)
-    {
-        secbase = tp.tv_sec;
-        return tp.tv_usec/1000000.0;
-    }
+	if (!secbase)
+	{
+		secbase = tp.tv_sec;
+		return tp.tv_usec/1000000.0;
+	}
 
-    return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
+	return (tp.tv_sec - secbase) + tp.tv_usec/1000000.0;
 }
 
 // =======================================================================
@@ -282,30 +288,30 @@ int main (int c, char **v)
 	parms.argv = com_argv;
 
 	Sys_Init();
-    Host_Init(&parms);
+	Host_Init(&parms);
 
-    oldtime = Sys_FloatTime () - 0.1;
-    while (1)
-    {
+	oldtime = Sys_FloatTime () - 0.1;
+	while (1)
+	{
 // find time spent rendering last frame
-        newtime = Sys_FloatTime ();
-        time = newtime - oldtime;
+		newtime = Sys_FloatTime ();
+		time = newtime - oldtime;
 
-        if (cls.state == ca_dedicated)
-        { // play vcrfiles at max speed
-            if (time < sys_ticrate.value && (vcrFile == -1 || recording) )
-            {
-                SDL_Delay (1);
-                continue; // not time to run a server only tic yet
-            }
-            time = sys_ticrate.value;
-        }
+		if (cls.state == ca_dedicated)
+		{ // play vcrfiles at max speed
+			if (time < sys_ticrate.value && (vcrFile == -1 || recording) )
+			{
+				SDL_Delay (1);
+				continue; // not time to run a server only tic yet
+			}
+			time = sys_ticrate.value;
+		}
 
-        if (time > sys_ticrate.value*2)
-            oldtime = newtime;
-        else
-            oldtime += time;
+		if (time > sys_ticrate.value*2)
+			oldtime = newtime;
+		else
+			oldtime += time;
 
 		Host_Frame (time);
-    }
+	}
 }
