@@ -331,12 +331,6 @@ typedef struct model_s
 	uint8_t *visdata;
 	uint8_t *lightdata;
 	char *entities;
-
-//
-// additional model data
-//
-	cache_user_t cache; // only access through Mod_Extradata
-
 } model_t;
 
 //============================================================================

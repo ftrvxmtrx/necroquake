@@ -1,21 +1,3 @@
-typedef struct sizebuf_s
-{
-	bool allowoverflow; // if false, do a Sys_Error
-	bool overflowed; // set to true if the buffer size failed
-	uint8_t *data;
-	int maxsize;
-	int cursize;
-} sizebuf_t;
-
-void SZ_Alloc (sizebuf_t *buf, int startsize);
-void SZ_Free (sizebuf_t *buf);
-void SZ_Clear (sizebuf_t *buf);
-void *SZ_GetSpace (sizebuf_t *buf, int length);
-void SZ_Write (sizebuf_t *buf, void *data, int length);
-void SZ_Print (sizebuf_t *buf, char *data); // strcats onto the sizebuf
-
-//============================================================================
-
 typedef struct link_s
 {
 	struct link_s *prev, *next;
@@ -33,20 +15,6 @@ void InsertLinkAfter (link_t *l, link_t *after);
 
 //============================================================================
 
-#define Q_MAXCHAR ((char)0x7f)
-#define Q_MAXSHORT ((short)0x7fff)
-#define Q_MAXINT ((int)0x7fffffff)
-#define Q_MAXLONG ((int)0x7fffffff)
-#define Q_MAXFLOAT ((int)0x7fffffff)
-
-#define Q_MINCHAR ((char)0x80)
-#define Q_MINSHORT ((short)0x8000)
-#define Q_MININT ((int)0x80000000)
-#define Q_MINLONG ((int)0x80000000)
-#define Q_MINFLOAT ((int)0x7fffffff)
-
-//============================================================================
-
 extern bool bigendien;
 
 extern short (*BigShort) (short l);
@@ -58,14 +26,14 @@ extern float (*LittleFloat) (float l);
 
 //============================================================================
 
-void MSG_WriteChar (sizebuf_t *sb, int c);
-void MSG_WriteByte (sizebuf_t *sb, int c);
-void MSG_WriteShort (sizebuf_t *sb, int c);
-void MSG_WriteLong (sizebuf_t *sb, int c);
-void MSG_WriteFloat (sizebuf_t *sb, float f);
-void MSG_WriteString (sizebuf_t *sb, char *s);
-void MSG_WriteCoord (sizebuf_t *sb, float f);
-void MSG_WriteAngle (sizebuf_t *sb, float f);
+void MSG_WriteChar (buf_t *sb, int c);
+void MSG_WriteByte (buf_t *sb, int c);
+void MSG_WriteShort (buf_t *sb, int c);
+void MSG_WriteLong (buf_t *sb, int c);
+void MSG_WriteFloat (buf_t *sb, float f);
+void MSG_WriteString (buf_t *sb, char *s);
+void MSG_WriteCoord (buf_t *sb, float f);
+void MSG_WriteAngle (buf_t *sb, float f);
 
 extern int msg_readcount;
 extern bool msg_badread; // set if a read goes beyond end of message

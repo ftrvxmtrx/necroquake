@@ -8,22 +8,22 @@ typedef struct
 	float forwardmove;
 	float sidemove;
 	float upmove;
-} usercmd_t;
+}usercmd_t;
 
 typedef struct
 {
 	int length;
 	char map[MAX_STYLESTRING];
-} lightstyle_t;
+}lightstyle_t;
 
 typedef struct
 {
-	char name[MAX_SCOREBOARDNAME];
+	char *name;
 	float entertime;
 	int frags;
 	int colors; // two 4 bit fields
 	uint8_t translations[VID_GRADES*256];
-} scoreboard_t;
+}scoreboard_t;
 
 typedef struct
 {
@@ -31,13 +31,14 @@ typedef struct
 	int percent; // 0-256
 } cshift_t;
 
-#define CSHIFT_CONTENTS 0
-#define CSHIFT_DAMAGE 1
-#define CSHIFT_BONUS 2
-#define CSHIFT_POWERUP 3
-#define NUM_CSHIFTS 4
+enum {
+	CSHIFT_CONTENTS,
+	CSHIFT_DAMAGE,
+	CSHIFT_BONUS,
+	CSHIFT_POWERUP,
 
-#define NAME_LENGTH 64
+	NUM_CSHIFTS
+};
 
 //
 // client_state_t should hold all pieces of the client state
@@ -54,7 +55,7 @@ typedef struct
 	float decay; // drop this each second
 	float minlight; // don't add when contributing less
 	int key;
-} dlight_t;
+}dlight_t;
 
 #define MAX_BEAMS 24
 typedef struct
@@ -72,10 +73,10 @@ typedef struct
 #define MAX_DEMONAME 16
 
 typedef enum {
-ca_dedicated, // a dedicated server with no ability to start a client
-ca_disconnected, // full screen console with no connection
-ca_connected // valid netcon, talking to a server
-} cactive_t;
+	ca_dedicated, // a dedicated server with no ability to start a client
+	ca_disconnected, // full screen console with no connection
+	ca_connected // valid netcon, talking to a server
+}cactive_t;
 
 //
 // the client_static_t structure is persistant through an arbitrary number
@@ -119,13 +120,15 @@ extern client_static_t cls;
 //
 typedef struct
 {
+	mem_pool_t pool;
+
 	int movemessages; // since connecting to this server
 								// throw out the first couple, so the player
 								// doesn't accidentally do something the
 								// first frame
 	usercmd_t cmd; // last command sent to the server
 
-// information for local display
+	// information for local display
 	int stats[MAX_CL_STATS]; // health, etc
 	int items; // inventory bit flags
 	float item_gettime[32]; // cl.time of aquiring item, for blinking
@@ -134,10 +137,10 @@ typedef struct
 	cshift_t cshifts[NUM_CSHIFTS]; // color shifts for damage, powerups
 	cshift_t prev_cshifts[NUM_CSHIFTS]; // and content types
 
-// the client maintains its own idea of view angles, which are
-// sent to the server each frame. The server sets punchangle when
-// the view is temporarliy offset, and an angle reset commands at the start
-// of each level and after teleporting.
+	// the client maintains its own idea of view angles, which are
+	// sent to the server each frame. The server sets punchangle when
+	// the view is temporarliy offset, and an angle reset commands at the start
+	// of each level and after teleporting.
 	vec3_t mviewangles[2]; // during demo playback viewangles is lerped
 								// between these
 	vec3_t viewangles;
@@ -148,7 +151,7 @@ typedef struct
 
 	vec3_t punchangle; // temporary offset
 
-// pitch drifting vars
+	// pitch drifting vars
 	float idealpitch;
 	float pitchvel;
 	bool nodrift;
@@ -174,18 +177,18 @@ typedef struct
 
 	float last_received_message; // (realtime) for net trouble icon
 
-//
-// information that is static for the entire time connected to a server
-//
-	struct model_s *model_precache[MAX_MODELS];
-	struct sfx_s *sound_precache[MAX_SOUNDS];
+	// information that is static for the entire time connected to a server
+	struct model_s **models;
+	int num_models;
+	struct sfx_s **sounds;
+	int num_sounds;
 
 	char levelname[40]; // for display on solo scoreboard
 	int viewentity; // cl_entitites[cl.viewentity] = player
 	int maxclients;
 	int gametype;
 
-// refresh related state
+	// refresh related state
 	struct model_s *worldmodel; // cl_entitites[0].model
 	struct efrag_s *free_efrags;
 	int num_entities; // held in cl_entities array
@@ -194,9 +197,9 @@ typedef struct
 
 	int cdtrack, looptrack; // cd audio
 
-// frag scoreboard
+	// frag scoreboard
 	scoreboard_t *scores; // [cl.maxclients]
-} client_state_t;
+}client_state_t;
 
 //
 // cvars

@@ -854,16 +854,3 @@ void S_LocalSound (char *sound)
 	}
 	S_StartSound (cl.viewentity, -1, sfx, vec3_origin, 1, 1);
 }
-
-void S_ClearPrecache (void)
-{
-}
-
-void S_BeginPrecaching (void)
-{
-}
-
-void S_EndPrecaching (void)
-{
-}
-

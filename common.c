@@ -24,10 +24,6 @@ bool msg_suppress_1 = 0;
 
 void COM_InitFilesystem (void);
 
-// if a packfile directory differs from this, it is assumed to be hacked
-#define PAK0_COUNT 339
-#define PAK0_CRC 32981
-
 char com_token[1024];
 int com_argc;
 char **com_argv;
@@ -1037,15 +1033,8 @@ int COM_FindFile (char *filename, int *handle, FILE **file)
 	if (!file && !handle)
 		Sys_Error ("COM_FindFile: neither handle or file set");
 
-//
-// search through the path, one element at a time
-//
+	// search through the path, one element at a time
 	search = com_searchpaths;
-	if (proghack)
-	{ // gross hack to use quake 1 progs with quake 2 maps
-		if (!strcmp(filename, "progs.dat"))
-			search = search->next;
-	}
 
 	for ( ; search ; search = search->next)
 	{
@@ -1294,22 +1283,12 @@ pack_t *COM_LoadPackFile (char *packfile)
 	if (numpackfiles > MAX_FILES_IN_PACK)
 		Sys_Error ("%s has %i files", packfile, numpackfiles);
 
-	if (numpackfiles != PAK0_COUNT)
-		com_modified = true; // not the original file
-
 	newfiles = Hunk_AllocName (numpackfiles * sizeof(packfile_t), "packfile");
 
 	Sys_FileSeek (packhandle, header.dirofs);
 	Sys_FileRead (packhandle, (void *)info, header.dirlen);
 
-// crc the directory to check for modifications
-	CRC_Init (&crc);
-	for (i=0 ; i<header.dirlen ; i++)
-		CRC_ProcessByte (&crc, ((uint8_t *)info)[i]);
-	if (crc != PAK0_CRC)
-		com_modified = true;
-
-// parse the directory
+	// parse the directory
 	for (i=0 ; i<numpackfiles ; i++)
 	{
 		strcpy (newfiles[i].name, info[i].name);

@@ -4,6 +4,9 @@ CFLAGS=$(shell pkg-config --cflags sdl) -Wall -Wextra -Wno-error=format-security
 LDFLAGS=$(shell pkg-config --libs sdl) -rdynamic
 
 srcs=\
+	buf.c\
+	mem.c\
+	\
 	cd_sdl.c \
 	chase.c \
 	cl_demo.c \
@@ -72,7 +75,6 @@ srcs=\
 	view.c \
 	wad.c \
 	world.c \
-	zone.c \
 
 objs=$(srcs:.c=.o)
 

@@ -5,10 +5,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
-
-#define nelem(x) (int)(sizeof(x)/sizeof((x)[0]))
-#define USED(x) (void)x
-#define MAX(a, b) ((a) < (b) ? (b) : (a))
+#include "util.h"
 
 #define QUAKE_GAME // as opposed to utilities
 
@@ -53,8 +50,6 @@
 //
 #define MAX_EDICTS 4096 // FIXME: ouch! ouch! ouch!
 #define MAX_LIGHTSTYLES 64
-#define MAX_MODELS 256 // these are sent over the net as bytes
-#define MAX_SOUNDS 256 // so they cannot be blindly increased
 
 #define SAVEGAME_COMMENT_LENGTH 39
 
@@ -160,11 +155,12 @@ enum {
 
 #define SOUND_CHANNELS 8
 
+#include "mem.h"
+#include "buf.h"
 #include "common.h"
 #include "bspfile.h"
 #include "vid.h"
 #include "sys.h"
-#include "zone.h"
 #include "mathlib.h"
 
 typedef struct

@@ -100,7 +100,7 @@ CL_ParseStartSoundPacket(void)
 	for (i = 0; i < 3; i++)
 		pos[i] = MSG_ReadCoord();
 
-    S_StartSound(ent, channel, cl.sound_precache[sound_num], pos, volume/255.0, attenuation);
+    S_StartSound(ent, channel, cl.sounds[sound_num], pos, volume/255.0, attenuation);
 }
 
 void
@@ -155,14 +155,11 @@ CL_KeepaliveMessage (void)
 	SZ_Clear(&cls.message);
 }
 
-void
+int
 CL_ParseServerInfo(void)
 {
 	char *str;
 	int i;
-	int nummodels, numsounds;
-	char model_precache[MAX_MODELS][MAX_QPATH];
-	char sound_precache[MAX_SOUNDS][MAX_QPATH];
 
 	Con_DPrintf("Serverinfo packet received.\n");
 
@@ -170,19 +167,18 @@ CL_ParseServerInfo(void)
 	CL_ClearState();
 
 	// parse protocol version number
-	i = MSG_ReadLong();
-	if (i != PROTOCOL_VERSION) {
-		Con_Printf ("Server returned version %i, not %i", i, PROTOCOL_VERSION);
-		return;
+	if ((i = MSG_ReadLong()) != PROTOCOL_VERSION) {
+		Con_Printf("Server returned version %d, not %d", i, PROTOCOL_VERSION);
+		return -1;
 	}
 
 	// parse maxclients
-	cl.maxclients = MSG_ReadByte();
-	if (cl.maxclients < 1 || cl.maxclients > MAX_SCOREBOARD) {
-		Con_Printf("Bad maxclients (%u) from server\n", cl.maxclients);
-		return;
+	if ((cl.maxclients = MSG_ReadByte()) < 1) {
+		Con_Printf("Bad maxclients (%d) from server\n", cl.maxclients);
+		return -1;
 	}
-	cl.scores = Hunk_AllocName(cl.maxclients*sizeof(*cl.scores), "scores");
+	cl.scores = mem_alloc(&cl.pool, cl.maxclients*sizeof(*cl.scores));
+	memset(cl.scores, 0, cl.maxclients*sizeof(*cl.scores));
 
 	// parse gametype
 	cl.gametype = MSG_ReadByte();
@@ -200,57 +196,34 @@ CL_ParseServerInfo(void)
 	// needlessly purge it
 
 	// precache models
-	memset(cl.model_precache, 0, sizeof(cl.model_precache));
-	for (nummodels = 1;; nummodels++) {
+	for (cl.num_models = 1;; cl.num_models++) {
 		str = MSG_ReadString();
 		if (!str[0])
 			break;
-		if (nummodels == MAX_MODELS) {
-			Con_Printf("Server sent too many model precaches\n");
-			return;
-		}
-		strcpy(model_precache[nummodels], str);
 		Mod_TouchModel(str);
+		cl.models = mem_realloc_pow2(&cl.pool, cl.models, sizeof(*cl.models), cl.num_models);
+		cl.models[cl.num_models] = Mod_ForName(str, false);
+		CL_KeepaliveMessage();
 	}
 
 	// precache sounds
-	memset(cl.sound_precache, 0, sizeof(cl.sound_precache));
-	for (numsounds = 1;; numsounds++) {
+	for (cl.num_sounds = 1;; cl.num_sounds++) {
 		str = MSG_ReadString();
 		if (!str[0])
 			break;
-		if (numsounds == MAX_SOUNDS) {
-			Con_Printf ("Server sent too many sound precaches\n");
-			return;
-		}
-		strcpy(sound_precache[numsounds], str);
 		S_TouchSound(str);
-	}
-
-	// now we try to load everything else until a cache allocation fails
-
-	for (i = 1; i < nummodels; i++) {
-		cl.model_precache[i] = Mod_ForName(model_precache[i], false);
-		if (cl.model_precache[i] == NULL) {
-			Con_Printf("Model %s not found\n", model_precache[i]);
-			return;
-		}
+		cl.sounds = mem_realloc_pow2(&cl.pool, cl.sounds, sizeof(*cl.sounds), cl.num_sounds);
+		cl.sounds[cl.num_sounds] = S_PrecacheSound(str);
 		CL_KeepaliveMessage();
 	}
-
-	S_BeginPrecaching();
-	for (i = 1; i < numsounds; i++) {
-		cl.sound_precache[i] = S_PrecacheSound(sound_precache[i]);
-		CL_KeepaliveMessage();
-	}
-	S_EndPrecaching();
 
 	// local state
-	cl_entities[0].model = cl.worldmodel = cl.model_precache[1];
+	cl_entities[0].model = cl.worldmodel = cl.models[1];
 
 	R_NewMap();
-	Hunk_Check(); // make sure nothing is hurt
 	noclip_anglehack = false; // noclip is turned off at start
+
+	return 0;
 }
 
 /*
@@ -258,17 +231,13 @@ CL_ParseServerInfo(void)
  * If an entities model or origin changes from frame to frame, it must be
  * relinked. Other attributes can change without relinking.
  */
-int bitcounts[16];
-
-void
+int
 CL_ParseUpdate(int bits)
 {
-	int i;
 	model_t *model;
-	int modnum;
-	bool forcelink;
 	entity_t *ent;
-	int num;
+	int i, num, modnum;
+	bool forcelink;
 
 	if (cls.signon == SIGNONS - 1) { // first update is the final signon stage
 		cls.signon = SIGNONS;
@@ -283,23 +252,20 @@ CL_ParseUpdate(int bits)
 	num = (bits & U_LONGENTITY) ? MSG_ReadShort() : MSG_ReadByte();
 	ent = CL_EntityNum(num);
 
-	for (i = 0; i < 16; i++) {
-		if (bits & (1<<i))
-			bitcounts[i]++;
-	}
-
 	forcelink = ent->msgtime != cl.mtime[1]; // no previous frame to lerp from
 	ent->msgtime = cl.mtime[0];
 
 	if (bits & U_MODEL) {
 		modnum = MSG_ReadByte();
-		if (modnum >= MAX_MODELS)
-			Host_Error("CL_ParseModel: bad modnum");
+		if (modnum >= cl.num_models) {
+			Con_Printf("CL_ParseUpdate: bad modnum %d >= %d", modnum, cl.num_models);
+			return -1;
+		}
 	} else {
 		modnum = ent->baseline.modelindex;
 	}
 
-	model = cl.model_precache[modnum];
+	model = cl.models[modnum];
 	if (model != ent->model) {
 		ent->model = model;
 		// automatic animation (torches, etc) can be either all together
@@ -344,6 +310,8 @@ CL_ParseUpdate(int bits)
 		VectorCopy(ent->msg_angles[0], ent->angles);
 		ent->forcelink = true;
 	}
+
+	return 0;
 }
 
 void
@@ -483,7 +451,7 @@ CL_ParseStatic(void)
 	CL_ParseBaseline(ent);
 
 	// copy it to the current state
-	ent->model = cl.model_precache[ent->baseline.modelindex];
+	ent->model = cl.models[ent->baseline.modelindex];
 	ent->frame = ent->baseline.frame;
 	ent->colormap = vid.colormap;
 	ent->skinnum = ent->baseline.skin;
@@ -507,7 +475,7 @@ CL_ParseStaticSound (void)
 	vol = MSG_ReadByte();
 	atten = MSG_ReadByte();
 
-	S_StaticSound(cl.sound_precache[sound_num], org, vol, atten);
+	S_StaticSound(cl.sounds[sound_num], org, vol, atten);
 }
 
 #define SHOWNET(x) if (cl_shownet.value == 2) Con_Printf("%3i:%s\n", msg_readcount-1, x);
@@ -630,7 +598,8 @@ CL_ParseServerMessage(void)
 			i = MSG_ReadByte();
 			if (i >= cl.maxclients)
 				Host_Error("CL_ParseServerMessage: svc_updatename > MAX_SCOREBOARD");
-			strcpy(cl.scores[i].name, MSG_ReadString());
+			mem_free(cl.scores[i].name);
+			cl.scores[i].name = mem_strdup(&cl.pool, MSG_ReadString());
 			break;
 
 		case svc_updatefrags:
